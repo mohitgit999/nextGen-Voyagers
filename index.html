@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="css/screens.css?v=2">
   <link rel="stylesheet" href="css/landing.css?v=3">
   <link rel="stylesheet" href="css/enhanced.css?v=2">
+  <link rel="stylesheet" href="css/auth-dashboard.css?v=1">
 
   <!-- Print styles -->
   <style>
@@ -65,11 +66,13 @@
     <li><a href="#planner-section">Plan Trip</a></li>
     <li><span class="nav-dot" aria-hidden="true"></span></li>
     <li><a href="#how-it-works">How It Works</a></li>
-    <button class="nav-search-icon" aria-label="Search destinations">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-    </button>
+    <li>
+      <button class="nav-search-icon" id="nav-search-btn" aria-label="Search destinations">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+    </li>
   </ul>
 
   <div class="nav-actions">
@@ -812,10 +815,166 @@
 
 
 <!-- ================================================================
+     AUTH MODAL (Login / Register / Demo)
+     ================================================================ -->
+<div class="app-modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+  <div class="app-modal-card">
+    <div class="modal-header-bar">
+      <div class="modal-header-title" id="auth-modal-title">
+        <span>✈️</span> NextGen Voyagers
+      </div>
+      <button class="modal-close-icon-btn" id="auth-modal-close" aria-label="Close modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab-btn active" id="tab-btn-login">Sign In</button>
+      <button class="auth-tab-btn" id="tab-btn-register">Create Account</button>
+    </div>
+
+    <div class="auth-body-content">
+      <div class="auth-error-msg" id="auth-error-msg"></div>
+
+      <!-- Sign In Form -->
+      <form class="auth-form active" id="form-login">
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input class="form-input" type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <div class="form-input-wrapper">
+            <input class="form-input" type="password" id="login-password" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="form-input-toggle-pw" data-target="login-password">Show</button>
+          </div>
+        </div>
+        <button type="submit" class="auth-submit-btn">
+          Sign In to Voyagers
+        </button>
+        <div class="auth-divider">or explore instantly</div>
+        <button type="button" class="btn-demo-quick">
+          ⚡ One-Click Demo Login
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form class="auth-form" id="form-register">
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full Name</label>
+          <input class="form-input" type="text" id="reg-name" placeholder="Traveler Name" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password (min 6 characters)</label>
+          <div class="form-input-wrapper">
+            <input class="form-input" type="password" id="reg-password" placeholder="Create a secure password" minlength="6" required autocomplete="new-password">
+            <button type="button" class="form-input-toggle-pw" data-target="reg-password">Show</button>
+          </div>
+        </div>
+        <button type="submit" class="auth-submit-btn">
+          Create Free Account
+        </button>
+        <div class="auth-divider">or explore instantly</div>
+        <button type="button" class="btn-demo-quick">
+          ⚡ One-Click Demo Login
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     USER DASHBOARD MODAL
+     ================================================================ -->
+<div class="app-modal-overlay" id="dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="dash-modal-title">
+  <div class="app-modal-card large-card">
+    <div class="modal-header-bar">
+      <div class="modal-header-title" id="dash-modal-title">
+        <span>📊</span> My Travel Dashboard
+      </div>
+      <button class="modal-close-icon-btn" id="dashboard-modal-close" aria-label="Close dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="dashboard-scroll-body">
+      <!-- Profile Hero Banner -->
+      <div class="dashboard-user-hero">
+        <div class="dash-profile-info">
+          <div class="dash-avatar-large" id="dash-user-avatar">T</div>
+          <div>
+            <div class="dash-user-name" id="dash-user-name">Traveler</div>
+            <div class="dash-user-email" id="dash-user-email">traveler@voyagers.com</div>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="dash-btn-new-trip" style="padding: 10px 18px;">
+          + Plan New Trip
+        </button>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card">
+          <span class="dash-stat-label">Saved Itineraries</span>
+          <span class="dash-stat-val" id="dash-stat-trips">0</span>
+        </div>
+        <div class="dash-stat-card">
+          <span class="dash-stat-label">Total Budget Allocated</span>
+          <span class="dash-stat-val" id="dash-stat-budget">₹0</span>
+        </div>
+        <div class="dash-stat-card">
+          <span class="dash-stat-label">Favorite Destination</span>
+          <span class="dash-stat-val" id="dash-stat-top">None</span>
+        </div>
+      </div>
+
+      <!-- Saved Trips Section -->
+      <div class="dash-section-header">
+        <div class="dash-section-title">Saved Cloud Itineraries</div>
+      </div>
+      <div class="saved-trips-grid" id="saved-trips-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================================
+     DESTINATION SEARCH MODAL (Ctrl+K)
+     ================================================================ -->
+<div class="app-modal-overlay" id="search-modal" role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
+  <div class="app-modal-card search-modal-card">
+    <div class="search-input-header">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:var(--ink-faint);flex-shrink:0;">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" class="search-field" id="search-dest-input" placeholder="Search Goa, Manali, Ladakh, beaches, mountains, winter..." autocomplete="off">
+      <button class="modal-close-icon-btn" id="search-modal-close" aria-label="Close search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="search-results-list" id="search-results-list">
+      <!-- Search items rendered dynamically -->
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ================================================================
      JAVASCRIPT — load in dependency order
      ================================================================ -->
 <script src="js/data.js"></script>
 <script src="js/state.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/search.js"></script>
 <script src="js/navigation.js"></script>
 <script src="js/screen1-locate.js"></script>
 <script src="js/screen2-prefs.js"></script>

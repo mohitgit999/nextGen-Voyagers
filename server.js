@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
 // API Routes
+app.use('/api/auth', require('./server/routes/auth'));
 app.use('/api/destinations', require('./server/routes/destinations'));
 app.use('/api/trips', require('./server/routes/trips'));
 

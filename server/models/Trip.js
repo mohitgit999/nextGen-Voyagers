@@ -9,6 +9,12 @@ const dayPartSchema = new mongoose.Schema({
 }, { _id: false });
 
 const tripSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null,
+    index: true,
+  },
   sessionId: {
     type: String,
     required: true,
@@ -62,9 +68,8 @@ const tripSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now }
 });
 
-tripSchema.pre('save', function(next) {
+tripSchema.pre('save', function() {
   this.updatedAt = new Date();
-  next();
 });
 
 // Virtual: total spent

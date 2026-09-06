@@ -32,10 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
     /* Navigation (step routing) */
     initNavigation();
 
-  /* Planner screens */
-  initScreen1();
-  initScreen2();
-  initScreen3();
     /* Planner screens */
     initScreen1();
     initScreen2();

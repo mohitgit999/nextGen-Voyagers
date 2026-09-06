@@ -66,6 +66,11 @@ function generateItinerary() {
       '<div class="recap-item"><div class="recap-label">Travellers</div><div class="recap-val">' + state.prefs.travelers + '</div></div>' +
       '<div class="recap-item"><div class="recap-label">Duration</div><div class="recap-val">' + duration + ' days</div></div>' +
       '<div class="recap-item"><div class="recap-label">Safety rating</div><div class="recap-val">' + d.safety.score.toFixed(1) + '/5 🛡️</div></div>' +
+      '<div class="recap-item" style="display:flex;align-items:center;justify-content:center;">' +
+        '<button class="btn btn-save-cloud btn-sm" id="btn-save-recap" style="padding:8px 16px;">' +
+          '<span>💾 Save to Cloud</span>' +
+        '</button>' +
+      '</div>' +
     '</div>' +
 
     /* Day chip navigation */
@@ -279,21 +284,134 @@ function bindPackingChecklist(d) {
 }
 
 /* ============================================================
-   SHARE PANEL
+   SHARE & SAVE PANEL
    ============================================================ */
 function renderSharePanel(d) {
   return '' +
     '<div class="share-panel">' +
-      '<h3>' + icon('share') + ' Share your itinerary</h3>' +
+      '<h3>' + icon('share') + ' Save & share your itinerary</h3>' +
       '<div class="share-actions">' +
-        '<button class="btn btn-ghost btn-sm" id="btn-copy-link">' + icon('share') + ' Copy link</button>' +
+        '<button class="btn btn-save-cloud btn-sm" id="btn-save-cloud">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+          '<span>Save Trip to Cloud</span>' +
+        '</button>' +
+        '<button class="btn btn-ghost btn-sm" id="btn-copy-link">' + icon('share') + ' Copy summary</button>' +
         '<button class="btn btn-ghost btn-sm" id="btn-print-plan">' + icon('print') + ' Print / Save PDF</button>' +
       '</div>' +
       '<div class="share-success" id="share-success">' + icon('check') + 'Link copied to clipboard!</div>' +
     '</div>';
 }
 
+function saveCurrentTripToCloud(d, duration, cost) {
+  if (typeof authState === 'undefined' || !authState.user || !authState.token) {
+    if (typeof showToast === 'function') {
+      showToast('Please sign in or create an account to save trips to the cloud ✈️', 'info');
+    }
+    if (typeof openAuthModal === 'function') {
+      openAuthModal('login');
+    }
+    return;
+  }
+
+  var btns = [byId('btn-save-cloud'), byId('btn-save-recap')];
+  btns.forEach(function(b) {
+    if (b) {
+      b.disabled = true;
+      var span = b.querySelector('span');
+      if (span) span.textContent = 'Saving to Atlas... ☁️';
+    }
+  });
+
+  // Extract day parts
+  var itineraryData = [];
+  for (var j = 1; j <= duration; j++) {
+    var theme = j === 1 ? 'Arrival & first impressions' : (j === duration && duration > 1 ? 'Leisure & departure' : d.dayThemes[(j - 1) % d.dayThemes.length]);
+    itineraryData.push({
+      morning: d.activities.morning[(j - 1) % d.activities.morning.length],
+      afternoon: d.activities.afternoon[(j - 1) % d.activities.afternoon.length],
+      evening: d.activities.evening[(j - 1) % d.activities.evening.length],
+      safetyTip: d.safety.points[(j - 1) % d.safety.points.length]
+    });
+  }
+
+  var payload = {
+    sessionId: state.sessionId || ('voyager-' + Date.now()),
+    origin: {
+      city: state.location.city || 'India',
+      source: state.location.source || 'manual',
+      lat: state.location.lat || null,
+      lon: state.location.lon || null
+    },
+    prefs: {
+      destination: d.id,
+      budget: state.prefs.budget || 'mid',
+      duration: duration,
+      group: state.prefs.group || 'couple',
+      travelers: state.prefs.travelers || 2
+    },
+    destinationId: d.id,
+    destinationName: d.name,
+    customPerDay: state.customPerDay || null,
+    estimatedTotal: cost.total,
+    itinerary: itineraryData,
+    budgetEntries: state.budgetLog || [],
+    packingState: state.packingState || {}
+  };
+
+  fetch('/api/trips', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + authState.token
+    },
+    body: JSON.stringify(payload)
+  })
+    .then(function(res) {
+      if (!res.ok) throw new Error('Save failed');
+      return res.json();
+    })
+    .then(function(saved) {
+      btns.forEach(function(b) {
+        if (b) {
+          b.disabled = false;
+          b.classList.add('saved');
+          var span = b.querySelector('span');
+          if (span) span.textContent = 'Saved in Cloud ✓';
+        }
+      });
+      if (typeof showToast === 'function') {
+        showToast('Itinerary saved to your account in MongoDB Atlas! 🎒', 'success');
+      }
+    })
+    .catch(function(err) {
+      btns.forEach(function(b) {
+        if (b) {
+          b.disabled = false;
+          var span = b.querySelector('span');
+          if (span) span.textContent = 'Save Trip to Cloud';
+        }
+      });
+      if (typeof showToast === 'function') {
+        showToast('Error saving trip: ' + err.message, 'error');
+      }
+    });
+}
+
 function bindSharePanel(d, duration, cost) {
+  var saveCloudBtn = byId('btn-save-cloud');
+  if (saveCloudBtn) {
+    saveCloudBtn.addEventListener('click', function() {
+      saveCurrentTripToCloud(d, duration, cost);
+    });
+  }
+
+  var saveRecapBtn = byId('btn-save-recap');
+  if (saveRecapBtn) {
+    saveRecapBtn.addEventListener('click', function() {
+      saveCurrentTripToCloud(d, duration, cost);
+    });
+  }
+
   byId('btn-copy-link').addEventListener('click', function() {
     var summary = '🗺️ My ' + duration + '-day ' + d.name + ' trip plan (via NextGen Voyagers)\n' +
       '📍 Destination: ' + d.name + ', ' + d.state + '\n' +
