@@ -1,0 +1,73 @@
+/* ============================================================
+   VOYAGER — Design Tokens v2
+   Elegant, clean travel aesthetic inspired by premium travel brands
+   ============================================================ */
+
+:root {
+  /* ---------- Core Palette ---------- */
+  --teal:          #1BB89A;
+  --teal-dark:     #15967D;
+  --teal-light:    #E6F9F5;
+  --teal-glow:     rgba(27, 184, 154, 0.18);
+
+  --ink:           #111827;
+  --ink-soft:      #374151;
+  --ink-muted:     #6B7280;
+  --ink-faint:     #9CA3AF;
+
+  --surface:       #FFFFFF;
+  --surface-soft:  #F9FAFB;
+  --surface-mid:   #F3F4F6;
+  --surface-deep:  #E5E7EB;
+  --line:          #E5E7EB;
+  --line-soft:     #F0F0F0;
+
+  --accent:        #FF6B35;
+  --accent-tint:   #FFF0EB;
+  --gold:          #F59E0B;
+  --danger:        #EF4444;
+
+  /* ---------- Legacy / App compat ---------- */
+  --forest:        var(--teal);
+  --forest-deep:   var(--teal-dark);
+  --paper:         var(--surface);
+  --paper-raised:  var(--surface-soft);
+  --paper-deep:    var(--surface-mid);
+  --signal:        var(--teal);
+  --signal-deep:   var(--teal-dark);
+  --signal-tint:   var(--teal-glow);
+  --sand:          var(--gold);
+  --white:         #FFFFFF;
+
+  /* ---------- Glassmorphism ---------- */
+  --glass-bg:      rgba(255, 255, 255, 0.80);
+  --glass-border:  rgba(255, 255, 255, 0.60);
+  --glass-blur:    20px;
+
+  /* ---------- Typography ---------- */
+  --font-display:  'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body:     'Inter', sans-serif;
+
+  /* ---------- Radii ---------- */
+  --radius-xs: 6px;
+  --radius-s:  10px;
+  --radius-m:  16px;
+  --radius-l:  24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* ---------- Shadows ---------- */
+  --shadow-xs:   0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-soft: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-card: 0 8px 32px rgba(0,0,0,0.10);
+  --shadow-hover:0 16px 48px rgba(0,0,0,0.14);
+  --shadow-teal: 0 8px 24px rgba(27,184,154,0.35);
+  --shadow-danger:0 8px 24px rgba(239,68,68,0.40);
+
+  /* ---------- Transitions ---------- */
+  --ease-out:  cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:  0.15s;
+  --dur-med:   0.28s;
+  --dur-slow:  0.45s;
+}

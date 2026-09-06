@@ -1,0 +1,65 @@
+/* ============================================================
+   VOYAGER — Animations & Keyframes
+   ============================================================ */
+
+/* ---------- Screen transitions ---------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Step dot ---------- */
+@keyframes pindrop {
+  0%   { transform: translateY(-10px) scale(0.8); opacity: 0; }
+  60%  { transform: translateY(2px) scale(1.08); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ---------- Card hover lift ---------- */
+@keyframes cardLift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-3px); }
+}
+
+/* ---------- Shimmer (loading skeleton) ---------- */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+/* ---------- Fade-in ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---------- Badge pop ---------- */
+@keyframes badgePop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Pulse ring (SOS button) ---------- */
+@keyframes sosRing {
+  0%   { box-shadow: 0 0 0 0 rgba(185, 64, 47, 0.5); }
+  70%  { box-shadow: 0 0 0 14px rgba(185, 64, 47, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(185, 64, 47, 0); }
+}
+
+/* ---------- Stepper line fill ---------- */
+@keyframes lineFill {
+  from { width: 0; }
+  to   { width: 100%; }
+}
+
+/* ---------- Spinner (for geolocation) ---------- */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Modal scale-in ---------- */
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.94) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}

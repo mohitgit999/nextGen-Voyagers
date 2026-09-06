@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voyager — plan your trip, safely</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- Reset ---------- */
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  ul{list-style:none;margin:0;padding:0;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;}
+  input{font:inherit;color:inherit;}
+  a{color:inherit;}
+  svg{display:block;flex-shrink:0;}
+
+  /* ---------- Tokens ---------- */
+  :root{
+    --ink:#12262A;
+    --ink-soft:#3C5257;
+    --ink-faint:#6C807F;
+    --paper:#ECE6D6;
+    --paper-raised:#F7F3E8;
+    --paper-deep:#DFD8C2;
+    --line:#C7BEA3;
+    --route:#9FA98F;
+    --forest:#2F6B5E;
+    --forest-deep:#1E4A40;
+    --signal:#FF7A1A;
+    --signal-deep:#D9600C;
+    --signal-tint:#FFE4CC;
+    --sand:#C9932E;
+    --danger:#B9402F;
+    --white:#FFFFFF;
+
+    --font-display:'Fraunces', serif;
+    --font-body:'Space Grotesk', sans-serif;
+
+    --radius-s:8px;
+    --radius-m:14px;
+    --radius-l:20px;
+    --shadow-soft:0 12px 28px -16px rgba(18,38,42,0.35);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important;}
+  }
+
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font-body);
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  :focus-visible{outline:2.5px solid var(--signal-deep); outline-offset:3px; border-radius:4px;}
+
+  h1,h2,h3{font-family:var(--font-display); margin:0; font-weight:600; letter-spacing:-0.01em;}
+  p{margin:0;}
+
+  .app{max-width:1080px; margin:0 auto; padding:0 20px 90px;}
+
+  /* ---------- Decorative topo background ---------- */
+  .topo-bg{position:absolute; inset:0; height:420px; overflow:hidden; pointer-events:none; z-index:0;}
+  .topo-bg svg{width:100%; height:100%; opacity:0.55;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    position:relative; z-index:1;
+    display:flex; align-items:flex-start; justify-content:space-between;
+    padding:32px 0 10px; gap:16px;
+  }
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{width:34px; height:34px; color:var(--forest-deep);}
+  .brand-text h1{font-size:1.5rem; color:var(--ink);}
+  .brand-text p{font-size:0.85rem; color:var(--ink-soft); margin-top:2px;}
+
+  /* ---------- Stepper (route) ---------- */
+  .route-stepper{
+    position:relative; z-index:1;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin:34px 0 6px; padding:0 4px;
+  }
+  .route-stepper::before{
+    content:"";
+    position:absolute; top:15px; left:5%; right:5%; height:0;
+    border-top:2px dashed var(--route);
+    z-index:0;
+  }
+  .step-item{
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    flex:1; min-width:0;
+  }
+  .step-dot{
+    width:32px; height:32px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--route);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-body); font-weight:600; font-size:0.85rem; color:var(--ink-faint);
+    transition:background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .step-item.done .step-dot{background:var(--forest); border-color:var(--forest); color:var(--white);}
+  .step-item.active .step-dot{
+    background:var(--signal); border-color:var(--signal); color:var(--white);
+    animation:pindrop 0.5s ease;
+  }
+  @keyframes pindrop{
+    0%{transform:translateY(-10px) scale(0.8); opacity:0;}
+    60%{transform:translateY(2px) scale(1.05);}
+    100%{transform:translateY(0) scale(1); opacity:1;}
+  }
+  .step-item button.step-hit{
+    position:absolute; inset:-8px -20px auto -20px; height:48px;
+    cursor:pointer;
+  }
+  .step-item:not(.reachable) .step-hit{cursor:default; pointer-events:none;}
+  .step-label{font-size:0.72rem; color:var(--ink-faint); text-align:center; max-width:80px;}
+  .step-item.active .step-label{color:var(--ink); font-weight:600;}
+
+  @media (max-width:560px){
+    .step-label{display:none;}
+    .route-stepper::before{left:8%; right:8%;}
+  }
+
+  /* ---------- Screens ---------- */
+  .screen{display:none; position:relative; z-index:1; padding-top:18px;}
+  .screen.active{display:block; animation:rise 0.35s ease;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  .eyebrow-note{font-size:0.95rem; color:var(--ink-soft); max-width:52ch; margin-top:10px;}
+  .screen-head h2{font-size:1.9rem; margin-bottom:4px;}
+  .screen-head{margin-bottom:28px;}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:13px 22px; border-radius:999px; font-weight:600; font-size:0.95rem;
+    transition:transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .btn-primary{background:var(--signal); color:var(--white);}
+  .btn-primary:hover:not(:disabled){background:var(--signal-deep); box-shadow:var(--shadow-soft);}
+  .btn-primary:disabled{background:var(--paper-deep); color:var(--ink-faint); cursor:not-allowed;}
+  .btn-ghost{background:transparent; color:var(--ink); border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink-soft); background:var(--paper-raised);}
+  .btn-text{color:var(--forest-deep); font-weight:600; padding:8px 4px;}
+  .btn-text:hover{text-decoration:underline;}
+  .btn-block{width:100%;}
+
+  .actions-row{display:flex; align-items:center; gap:16px; margin-top:28px; flex-wrap:wrap;}
+  .hint-text{font-size:0.82rem; color:var(--ink-faint);}
+
+  /* ---------- Locate screen ---------- */
+  .locate-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius-l);
+    padding:36px; max-width:560px;
+  }
+  .locate-icon{width:52px; height:52px; color:var(--forest-deep); margin-bottom:14px;}
+  .locate-card h3{font-size:1.25rem; margin-bottom:6px;}
+  .locate-card p{color:var(--ink-soft); font-size:0.92rem;}
+  .locate-status{
+    margin-top:18px; padding:12px 14px; border-radius:var(--radius-s);
+    background:var(--paper); border:1px dashed var(--line);
+    font-size:0.88rem; display:none; align-items:center; gap:10px;
+  }
+  .locate-status.show{display:flex;}
+  .locate-status svg{width:18px; height:18px; color:var(--forest-deep); flex-shrink:0;}
+  .locate-status.err svg{color:var(--danger);}
+  .manual-row{margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;}
+  .manual-row input{
+    flex:1; min-width:180px; padding:12px 14px; border-radius:var(--radius-s);
+    border:1.5px solid var(--line); background:var(--paper); font-size:0.92rem;
+  }
+  .manual-row input:focus{border-color:var(--forest);}
+  .or-divider{display:flex; align-items:center; gap:10px; margin:22px 0 4px; color:var(--ink-faint); font-size:0.8rem;}
+  .or-divider::before,.or-divider::after{content:""; flex:1; height:1px; background:var(--line);}
+
+  /* ---------- Form field groups (preferences) ---------- */
+  .field-group{margin-bottom:30px;}
+  .field-group > label, .field-legend{
+    display:block; font-weight:600; font-size:0.95rem; margin-bottom:10px; color:var(--ink);
+  }
+  .field-sub{font-size:0.82rem; color:var(--ink-faint); margin-top:-6px; margin-bottom:12px; display:block;}
+  .text-input{
+    width:100%; max-width:480px; padding:13px 16px; border-radius:var(--radius-s);
+    border:1.5px solid var(--line); background:var(--paper-raised); font-size:0.95rem;
+  }
+  .text-input:focus{border-color:var(--forest);}
+
+  .tile-row{display:flex; gap:12px; flex-wrap:wrap;}
+  .tile{
+    flex:1; min-width:140px; padding:16px; border-radius:var(--radius-m);
+    border:1.5px solid var(--line); background:var(--paper-raised); text-align:left;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .tile:hover{border-color:var(--ink-soft);}
+  .tile.selected{border-color:var(--signal); background:var(--signal-tint);}
+  .tile-title{font-weight:600; font-size:0.95rem; display:block;}
+  .tile-sub{font-size:0.8rem; color:var(--ink-faint); display:block; margin-top:3px;}
+
+  .group-tile{
+    flex:1; min-width:110px; padding:14px 10px; border-radius:var(--radius-m);
+    border:1.5px solid var(--line); background:var(--paper-raised); text-align:center;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .group-tile:hover{border-color:var(--ink-soft);}
+  .group-tile.selected{border-color:var(--signal); background:var(--signal-tint);}
+  .group-tile svg{width:44px; height:22px; margin:0 auto 8px; color:var(--ink-soft);}
+  .group-tile.selected svg{color:var(--signal-deep);}
+  .group-tile span{font-size:0.85rem; font-weight:600;}
+
+  .stepper-control{display:flex; align-items:center; gap:16px;}
+  .num-btn{
+    width:38px; height:38px; border-radius:50%; border:1.5px solid var(--line);
+    background:var(--paper-raised); display:flex; align-items:center; justify-content:center;
+  }
+  .num-btn svg{width:16px; height:16px;}
+  .num-btn:hover:not(:disabled){border-color:var(--ink-soft);}
+  .num-btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .num-display{font-family:var(--font-display); font-size:1.4rem; font-weight:600; min-width:70px; text-align:center;}
+  .num-display small{display:block; font-family:var(--font-body); font-weight:500; font-size:0.72rem; color:var(--ink-faint);}
+
+  .travelers-inline{margin-top:14px; display:flex; align-items:center; gap:14px;}
+  .travelers-inline .stepper-control{gap:10px;}
+  .travelers-inline .num-btn{width:30px; height:30px;}
+  .travelers-inline .num-display{font-size:1rem; min-width:auto; padding:0 4px;}
+
+  .validation-msg{font-size:0.85rem; color:var(--signal-deep); margin-top:10px; min-height:1.2em;}
+
+  /* ---------- Explore grid ---------- */
+  .explore-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(250px,1fr)); gap:18px;}
+  .dest-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:20px; text-align:left; display:flex; flex-direction:column; gap:12px; height:100%;
+    transition:border-color 0.15s ease, transform 0.15s ease;
+  }
+  .dest-card:hover{border-color:var(--forest-deep); transform:translateY(-2px);}
+  .dest-card-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .dest-icon-badge{
+    width:44px; height:44px; border-radius:50%; background:var(--paper-deep);
+    display:flex; align-items:center; justify-content:center; color:var(--forest-deep);
+  }
+  .dest-icon-badge svg{width:24px; height:24px;}
+  .match-badge{
+    background:var(--forest); color:var(--white); font-size:0.72rem; font-weight:700;
+    padding:5px 10px; border-radius:999px; white-space:nowrap;
+  }
+  .dest-name{font-size:1.15rem; margin-bottom:1px;}
+  .dest-state{font-size:0.8rem; color:var(--ink-faint);}
+  .dest-blurb{font-size:0.85rem; color:var(--ink-soft); flex-grow:1;}
+  .dest-meta-row{display:flex; align-items:center; justify-content:space-between; font-size:0.85rem; margin-top:auto;}
+  .rating-inline{display:flex; align-items:center; gap:5px; color:var(--sand); font-weight:600;}
+  .rating-inline svg{width:15px; height:15px;}
+  .price-chip{font-weight:600; color:var(--ink);}
+  .tag-row{display:flex; gap:6px; flex-wrap:wrap;}
+  .tag-chip{
+    font-size:0.72rem; padding:4px 9px; border-radius:999px; background:var(--paper-deep); color:var(--ink-soft);
+  }
+
+  /* ---------- Detail screen ---------- */
+  .detail-head{display:flex; flex-wrap:wrap; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:24px;}
+  .detail-head h2{font-size:2rem;}
+  .detail-head .dest-state{font-size:0.95rem;}
+  .detail-rating-pill{
+    display:flex; align-items:center; gap:8px; background:var(--paper-raised);
+    border:1px solid var(--line); padding:10px 16px; border-radius:999px; white-space:nowrap;
+  }
+  .detail-rating-pill strong{font-size:1.2rem; font-family:var(--font-display);}
+
+  .panels{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:18px; margin-bottom:8px;}
+  .panel{background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius-l); padding:24px;}
+  .panel h3{font-size:1.05rem; display:flex; align-items:center; gap:8px; margin-bottom:18px;}
+  .panel h3 svg{width:20px; height:20px; color:var(--forest-deep);}
+
+  .bar-row{margin-bottom:14px;}
+  .bar-row:last-child{margin-bottom:0;}
+  .bar-row-top{display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:5px;}
+  .bar-track{height:6px; border-radius:999px; background:var(--paper-deep); overflow:hidden;}
+  .bar-fill{height:100%; background:var(--forest); border-radius:999px;}
+
+  .cost-total{font-family:var(--font-display); font-size:1.9rem; margin-bottom:2px;}
+  .cost-sub{font-size:0.82rem; color:var(--ink-faint); margin-bottom:18px;}
+  .cost-row{display:flex; justify-content:space-between; font-size:0.87rem; padding:8px 0; border-top:1px solid var(--line);}
+  .cost-row:first-of-type{border-top:none;}
+
+  .safety-score-row{display:flex; align-items:center; gap:10px; margin-bottom:16px;}
+  .safety-score-badge{
+    background:var(--forest); color:var(--white); font-weight:700; font-size:0.85rem;
+    padding:6px 12px; border-radius:999px;
+  }
+  .safety-list li{display:flex; gap:10px; font-size:0.87rem; padding:7px 0; align-items:flex-start;}
+  .safety-list svg{width:16px; height:16px; color:var(--forest-deep); margin-top:2px; flex-shrink:0;}
+
+  /* ---------- Itinerary ---------- */
+  .itinerary-recap{
+    display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius-m);
+    padding:16px 20px; margin-bottom:26px;
+  }
+  .itinerary-recap .recap-total{font-family:var(--font-display); font-size:1.3rem;}
+  .day-chip-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:24px;}
+  .day-chip{
+    width:34px; height:34px; border-radius:50%; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:0.8rem; font-weight:600;
+    background:var(--paper-raised); color:var(--ink-soft);
+  }
+  .day-chip:hover{border-color:var(--forest-deep);}
+
+  .day-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius-l);
+    padding:24px; margin-bottom:18px; scroll-margin-top:20px;
+  }
+  .day-card-head{display:flex; align-items:baseline; gap:12px; margin-bottom:16px; flex-wrap:wrap;}
+  .day-num{
+    font-family:var(--font-display); font-size:1.6rem; color:var(--signal-deep); min-width:34px;
+  }
+  .day-theme{font-size:1.1rem; font-weight:600;}
+  .day-parts{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px;}
+  .day-part-label{display:flex; align-items:center; gap:8px; font-size:0.75rem; font-weight:700; letter-spacing:0.02em; color:var(--ink-faint); margin-bottom:6px;}
+  .part-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .dot-morning{background:var(--sand);}
+  .dot-afternoon{background:var(--signal);}
+  .dot-evening{background:var(--forest-deep);}
+  .day-part-text{font-size:0.9rem; color:var(--ink);}
+  .safety-note{
+    margin-top:14px; padding:10px 12px; border-radius:var(--radius-s); background:var(--paper);
+    border:1px dashed var(--line); font-size:0.82rem; color:var(--ink-soft); display:flex; gap:8px;
+  }
+  .safety-note svg{width:15px; height:15px; color:var(--forest-deep); flex-shrink:0; margin-top:1px;}
+
+  /* ---------- SOS ---------- */
+  .sos-fab{
+    position:fixed; right:20px; bottom:20px; z-index:40;
+    width:64px; height:64px; border-radius:50%; background:var(--danger); color:var(--white);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    box-shadow:0 10px 24px -8px rgba(185,64,47,0.6);
+    font-weight:700; font-size:0.68rem;
+  }
+  .sos-fab svg{width:20px; height:20px;}
+  .sos-fab:hover{background:#a13627;}
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(18,38,42,0.55); z-index:50;
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .modal-overlay.hidden{display:none;}
+  .modal-box{
+    background:var(--paper-raised); border-radius:var(--radius-l); padding:28px; max-width:420px; width:100%;
+    max-height:85vh; overflow-y:auto;
+  }
+  .modal-box-head{display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;}
+  .modal-box h3{font-size:1.3rem; color:var(--danger);}
+  .modal-close-btn{width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+  .modal-close-btn:hover{background:var(--paper-deep);}
+  .modal-close-btn svg{width:16px; height:16px;}
+  .emergency-list li{
+    display:flex; justify-content:space-between; align-items:center; padding:10px 0;
+    border-top:1px solid var(--line); font-size:0.92rem;
+  }
+  .emergency-list li:first-child{border-top:none;}
+  .emergency-num{font-family:var(--font-display); font-weight:600; font-size:1.1rem; color:var(--danger);}
+  .modal-note{font-size:0.82rem; color:var(--ink-faint); margin-top:14px;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    position:relative; z-index:1; margin-top:60px; padding-top:22px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:0.78rem; color:var(--ink-faint);
+  }
+
+  @media (max-width:640px){
+    .app{padding:0 16px 90px;}
+    .detail-head h2{font-size:1.6rem;}
+    .locate-card{padding:24px;}
+    .actions-row{flex-direction:column; align-items:stretch;}
+    .actions-row .btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topo-bg" aria-hidden="true">
+  <svg viewBox="0 0 1080 420" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="#12262A" stroke-width="1">
+      <path d="M-20 60 C 200 10, 400 110, 620 50 S 1000 90, 1120 40" />
+      <path d="M-20 110 C 220 60, 420 160, 640 100 S 1020 140, 1120 95" />
+      <path d="M-20 160 C 240 115, 440 210, 660 150 S 1040 190, 1120 150" />
+      <path d="M-20 210 C 260 170, 460 260, 680 200 S 1060 235, 1120 205" />
+      <path d="M-20 260 C 280 225, 480 305, 700 250 S 1080 280, 1120 255" />
+    </g>
+  </svg>
+</div>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 21s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12Z"/>
+        <circle cx="12" cy="9" r="2.4"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Voyager</h1>
+        <p>Plan the trip. Know the risks. Go anyway, prepared.</p>
+      </div>
+    </div>
+  </header>
+
+  <nav class="route-stepper" id="stepper" aria-label="Trip planning progress">
+    <div class="step-item active" data-step="1">
+      <button class="step-hit" aria-label="Go to step 1: Locate"></button>
+      <div class="step-dot">1</div>
+      <span class="step-label">Locate you</span>
+    </div>
+    <div class="step-item" data-step="2">
+      <button class="step-hit" aria-label="Go to step 2: Preferences"></button>
+      <div class="step-dot">2</div>
+      <span class="step-label">Trip details</span>
+    </div>
+    <div class="step-item" data-step="3">
+      <button class="step-hit" aria-label="Go to step 3: Explore"></button>
+      <div class="step-dot">3</div>
+      <span class="step-label">Explore</span>
+    </div>
+    <div class="step-item" data-step="4">
+      <button class="step-hit" aria-label="Go to step 4: Details"></button>
+      <div class="step-dot">4</div>
+      <span class="step-label">Deep dive</span>
+    </div>
+    <div class="step-item" data-step="5">
+      <button class="step-hit" aria-label="Go to step 5: Itinerary"></button>
+      <div class="step-dot">5</div>
+      <span class="step-label">Itinerary</span>
+    </div>
+  </nav>
+
+  <!-- SCREEN 1: LOCATE -->
+  <section class="screen active" id="screen-1" data-screen="1">
+    <div class="screen-head">
+      <h2>Where are you starting from?</h2>
+      <p class="eyebrow-note">We use your starting point to work out travel time and cost to each recommendation. Nothing is stored beyond this session.</p>
+    </div>
+
+    <div class="locate-card">
+      <svg class="locate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+      </svg>
+      <h3>Share your location</h3>
+      <p>One tap, and we'll detect your city automatically.</p>
+      <div class="actions-row" style="margin-top:20px;">
+        <button class="btn btn-primary" id="btn-use-location">Use my current location</button>
+      </div>
+      <div class="locate-status" id="locate-status">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg>
+        <span id="locate-status-text"></span>
+      </div>
+
+      <div class="or-divider">or enter it yourself</div>
+      <div class="manual-row">
+        <input type="text" id="manual-city-input" placeholder="e.g. Bareilly, Uttar Pradesh" aria-label="Your city">
+        <button class="btn btn-ghost" id="btn-set-manual">Set</button>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn btn-primary" id="btn-continue-locate" disabled>Continue</button>
+      <span class="hint-text" id="locate-continue-hint">Detect or enter a starting city to continue.</span>
+    </div>
+  </section>
+
+  <!-- SCREEN 2: PREFERENCES -->
+  <section class="screen" id="screen-2" data-screen="2">
+    <div class="screen-head">
+      <h2>Tell us about the trip</h2>
+      <p class="eyebrow-note">Starting from <strong id="pref-origin-echo">your location</strong>. A few details, and we'll shortlist the best-fitting places.</p>
+    </div>
+
+    <div class="field-group">
+      <label for="pref-destination">Any place, region or vibe in mind?</label>
+      <span class="field-sub">Try "beach", "mountains", or a name like Goa. Leave it blank and we'll surprise you.</span>
+      <input type="text" class="text-input" id="pref-destination" placeholder="Optional — e.g. hills, Rajasthan, Goa">
+    </div>
+
+    <div class="field-group">
+      <span class="field-legend">What's the budget like, per person per day?</span>
+      <div class="tile-row" id="budget-tiles">
+        <button class="tile" data-budget="budget">
+          <span class="tile-title">Budget-friendly</span>
+          <span class="tile-sub">Around ₹1,000–1,500</span>
+        </button>
+        <button class="tile" data-budget="mid">
+          <span class="tile-title">Mid-range</span>
+          <span class="tile-sub">Around ₹2,500–4,000</span>
+        </button>
+        <button class="tile" data-budget="luxury">
+          <span class="tile-title">Luxury</span>
+          <span class="tile-sub">₹6,000 and up</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <span class="field-legend">How many days?</span>
+      <div class="stepper-control">
+        <button class="num-btn" id="duration-minus" aria-label="Decrease duration">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+        </button>
+        <div class="num-display"><span id="duration-value">4</span><small>days</small></div>
+        <button class="num-btn" id="duration-plus" aria-label="Increase duration">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <span class="field-legend">Travelling as?</span>
+      <div class="tile-row" id="group-tiles">
+        <button class="group-tile" data-group="solo" data-default-travelers="1">
+          <svg viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="20" cy="10" r="6"/></svg>
+          <span>Solo</span>
+        </button>
+        <button class="group-tile" data-group="couple" data-default-travelers="2">
+          <svg viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="15" cy="10" r="6"/><circle cx="25" cy="10" r="6"/></svg>
+          <span>Couple</span>
+        </button>
+        <button class="group-tile" data-group="friends" data-default-travelers="4">
+          <svg viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="10" r="5.2"/><circle cx="20" cy="10" r="5.2"/><circle cx="31" cy="10" r="5.2"/></svg>
+          <span>Friends</span>
+        </button>
+        <button class="group-tile" data-group="family" data-default-travelers="4">
+          <svg viewBox="0 0 40 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="13" cy="8" r="6"/><circle cx="27" cy="8" r="6"/><circle cx="20" cy="16" r="3.6"/></svg>
+          <span>Family</span>
+        </button>
+      </div>
+      <div class="travelers-inline">
+        <span class="hint-text">Total travellers:</span>
+        <div class="stepper-control">
+          <button class="num-btn" id="travelers-minus" aria-label="Decrease travellers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+          </button>
+          <div class="num-display" id="travelers-value">1</div>
+          <button class="num-btn" id="travelers-plus" aria-label="Increase travellers">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn btn-ghost" id="btn-back-to-locate">Back</button>
+      <button class="btn btn-primary" id="btn-show-destinations" disabled>Show me destinations</button>
+    </div>
+    <p class="validation-msg" id="pref-validation"></p>
+  </section>
+
+  <!-- SCREEN 3: EXPLORE -->
+  <section class="screen" id="screen-3" data-screen="3">
+    <div class="screen-head">
+      <h2 id="explore-heading">Best matches for your trip</h2>
+      <p class="eyebrow-note" id="explore-sub">Ranked by fit — tap one to see ratings, cost and safety details.</p>
+    </div>
+    <div class="explore-grid" id="explore-grid"></div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" id="btn-back-to-prefs">Adjust trip details</button>
+    </div>
+  </section>
+
+  <!-- SCREEN 4: DETAIL -->
+  <section class="screen" id="screen-4" data-screen="4">
+    <button class="btn-text" id="btn-back-to-explore">&larr; Back to matches</button>
+    <div id="detail-content"></div>
+  </section>
+
+  <!-- SCREEN 5: ITINERARY -->
+  <section class="screen" id="screen-5" data-screen="5">
+    <button class="btn-text" id="btn-back-to-detail">&larr; Back to destination</button>
+    <div id="itinerary-content"></div>
+    <div class="actions-row">
+      <button class="btn btn-ghost" id="btn-new-trip">Plan a new trip</button>
+    </div>
+  </section>
+
+  <footer>
+    <span>Voyager — a working prototype.</span>
+    <span>NextGen Voyagers · Smart India Hackathon 2026</span>
+  </footer>
+</div>
+
+<button class="sos-fab" id="sos-fab" aria-haspopup="dialog">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/>
+  </svg>
+  SOS
+</button>
+
+<div class="modal-overlay hidden" id="sos-modal" role="dialog" aria-modal="true" aria-labelledby="sos-title">
+  <div class="modal-box">
+    <div class="modal-box-head">
+      <h3 id="sos-title">Emergency help</h3>
+      <button class="modal-close-btn" id="sos-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <p class="hint-text">India-wide helplines, reachable from any network.</p>
+    <ul class="emergency-list">
+      <li><span>National emergency</span><span class="emergency-num">112</span></li>
+      <li><span>Police</span><span class="emergency-num">100</span></li>
+      <li><span>Ambulance</span><span class="emergency-num">108</span></li>
+      <li><span>Women's helpline</span><span class="emergency-num">1091</span></li>
+      <li><span>Tourist helpline</span><span class="emergency-num">1363</span></li>
+    </ul>
+    <p class="modal-note" id="sos-context-note"></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= ICONS ================= */
+  var ICONS = {
+    mountain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 19 8 9l3.5 5L15 8l7 11Z"/></svg>',
+    wave: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14c2-2.5 4-2.5 6 0s4 2.5 6 0 4-2.5 6 0"/><path d="M2 18.5c2-2.5 4-2.5 6 0s4 2.5 6 0 4-2.5 6 0"/></svg>',
+    arch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V11a7 7 0 0 1 14 0v10"/><path d="M4 21h16"/></svg>',
+    leaf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c0-9.5 6.2-15.4 16-16-1 10-7.2 16-16 16Z"/><path d="M4.5 19.5 15 9"/></svg>',
+    island: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18.5c2.2-1.2 4.2-1.2 6.3 0s4.2 1.2 6.3 0 4.2-1.2 6.3 0"/><path d="M11.5 18V10"/><path d="M11.5 10c-1.6-1.6-3.2-1.7-4.2-1M11.5 10c1.6-1.6 3.4-1.7 4.6-1M11.5 10c-.7-2.4-.7-4 0-5.4"/></svg>',
+    river: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 7 4l3 5 3-5 5 8"/><path d="M2 20.5c2-1.4 4-1.4 6 0s4 1.4 6 0 4-1.4 6 0"/></svg>',
+    diya: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14.5c2.3-1.1 4.6-1.6 9-1.6s6.7.5 9 1.6"/><path d="M3 14.5c0 3 4 5.2 9 5.2s9-2.2 9-5.2"/><path d="M12 4.2c1.7 2 1.7 3.9 0 5.4-1.7-1.5-1.7-3.4 0-5.4Z"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3Z"/><path d="M9 12l2 2 4-4"/></svg>',
+    star: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 3.2l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.1l-5.4 2.9 1-6.1L3.2 9.7l6.1-.9Z"/></svg>',
+    wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2"/><path d="M3 7v10a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2Z"/><circle cx="17" cy="13" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    calendar: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l4 4 10-10"/></svg>'
+  };
+  function icon(name){ return ICONS[name] || ''; }
+  function starRow(rating){
+    var full = Math.round(rating);
+    var out = '';
+    for (var i=0;i<5;i++){
+      out += '<span style="opacity:'+(i<full?1:0.28)+'">'+icon('star')+'</span>';
+    }
+    return out;
+  }
+
+  /* ================= DATA ================= */
+  var DESTINATIONS = [
+    {
+      id:'manali', name:'Manali', state:'Himachal Pradesh', tags:['mountain','adventure','snow'], icon:'mountain',
+      rating:4.5, reviews:12400, cost:{budget:1400, mid:3200, luxury:7500},
+      bestFor:['friends','couple'],
+      blurb:"Pine forests, river rafting and snow-capped passes above Old Manali's cafés.",
+      safety:{score:4.4, points:[
+        'Tourist police post at the main mall road',
+        'Offline map pack covers Rohtang & Solang routes',
+        'High-altitude sickness advisory for onward Ladakh trips',
+        'Verified homestays only, ID-checked hosts'
+      ]},
+      dayThemes:['Valley walk & local market','River rafting on the Beas','Solang Valley & cable car','Old Manali cafés & nature walk'],
+      activities:{
+        morning:['Walk through Van Vihar pine forest','White-water rafting on the Beas river','Drive up to Solang Valley','Visit the Hidimba Devi temple grove','Short trek to Jogini waterfall'],
+        afternoon:["Browse Tibetan market stalls","Paragliding taster session at Solang","Explore Old Manali's café lane","Apple orchard walk near Naggar","Visit Vashisht hot springs"],
+        evening:['Bonfire dinner with local trout curry','Live music at a riverside café','Stargazing from the guesthouse terrace','Stroll along the Mall Road','Pack for tomorrow over hot chocolate']
+      }
+    },
+    {
+      id:'goa', name:'Goa', state:'India', tags:['beach','nightlife','coastal'], icon:'wave',
+      rating:4.3, reviews:21800, cost:{budget:1200, mid:2800, luxury:7000},
+      bestFor:['friends','solo','couple'],
+      blurb:'Palm-lined beaches by day, beach shacks and live music by night.',
+      safety:{score:4.1, points:[
+        'Lifeguard flags posted on major beaches',
+        'Tourist helpline booth at Baga & Calangute',
+        'Verified water-sports operators only',
+        'Well-lit main roads with 24-hour pharmacies'
+      ]},
+      dayThemes:['North Goa beaches','Old Goa heritage & spice farm','Water sports & beach shacks',"South Goa's quieter coast"],
+      activities:{
+        morning:['Sunrise walk on Anjuna beach','Visit the Basilica of Bom Jesus','Parasailing at Baga beach','Kayak through the mangroves','Cycle to Chapora Fort'],
+        afternoon:['Flea market browsing at Anjuna','Spice plantation tour & lunch','Beach shack lunch at Vagator','Dolphin-spotting boat trip','Relax at Palolem beach'],
+        evening:['Sunset at Chapora Fort','Live music at a Baga beach shack','Night market at Arpora','Candlelight dinner by the shore','Casual bar-hopping in Panaji']
+      }
+    },
+    {
+      id:'jaipur', name:'Jaipur', state:'Rajasthan', tags:['heritage','culture','city'], icon:'arch',
+      rating:4.6, reviews:18300, cost:{budget:1300, mid:3000, luxury:8000},
+      bestFor:['family','couple'],
+      blurb:"The Pink City's forts, palaces and bazaars, built for wandering.",
+      safety:{score:4.5, points:[
+        'Tourist police kiosks near Hawa Mahal & City Palace',
+        'Government-approved guides only, ID-verified',
+        "Offline maps for the walled city's narrow lanes",
+        '24-hour hospital within 3km of most hotels'
+      ]},
+      dayThemes:['Amber Fort & city views','Palaces of the Pink City','Bazaars & block-print workshops','Countryside day trip'],
+      activities:{
+        morning:['Walking tour of Amber Fort','Visit the City Palace museum','Explore Jantar Mantar observatory','Sunrise photo stop at Hawa Mahal','Day trip to Abhaneri stepwell'],
+        afternoon:['Shop for textiles in Bapu Bazaar','Block-printing workshop in Sanganer','Lunch at a rooftop haveli café','Visit the Albert Hall Museum','Camel ride near Nahargarh'],
+        evening:['Sunset at Nahargarh Fort','Rajasthani folk dance dinner show','Stroll through the illuminated City Palace','Rooftop dinner overlooking the old city','Shopping for lac bangles at the local market']
+      }
+    },
+    {
+      id:'rishikesh', name:'Rishikesh', state:'Uttarakhand', tags:['spiritual','adventure','river'], icon:'river',
+      rating:4.5, reviews:9600, cost:{budget:1000, mid:2400, luxury:6000},
+      bestFor:['solo','friends'],
+      blurb:'Ganga-side ghats, yoga ashrams and white-water rapids in the foothills.',
+      safety:{score:4.3, points:[
+        'Certified rafting operators with mandatory safety briefings',
+        'Life jackets required on all river activities',
+        'Tourist police present at Laxman Jhula & Ram Jhula',
+        'Offline maps for nearby waterfall treks'
+      ]},
+      dayThemes:['Ghats & Ganga aarti','White-water rafting','Yoga, cafés & the Beatles Ashram','Waterfall trek & bungee jump'],
+      activities:{
+        morning:['Sunrise yoga by the Ganga','Grade II–III white-water rafting','Visit the abandoned Beatles Ashram','Trek to Neer Garh waterfall',"Explore Laxman Jhula's temples"],
+        afternoon:['Café-hopping along Tapovan','Cliff jumping stop during the raft trip','Browse the local handicraft market','Bungee jumping at Jumpin Heights','Meditation session at an ashram'],
+        evening:['Ganga aarti at Triveni Ghat','Bonfire with river views','Rooftop dinner overlooking the river','Silent walk across Ram Jhula at dusk','Live acoustic music at a café']
+      }
+    },
+    {
+      id:'udaipur', name:'Udaipur', state:'Rajasthan', tags:['heritage','romantic','lake'], icon:'arch',
+      rating:4.7, reviews:14200, cost:{budget:1600, mid:3800, luxury:9500},
+      bestFor:['couple','family'],
+      blurb:'Palaces reflected in still lake water, best seen from a rooftop at dusk.',
+      safety:{score:4.6, points:[
+        'Tourist police near the City Palace & lake ghats',
+        'Boat operators licensed and life-jacket equipped',
+        'Well-lit lakefront promenade at night',
+        'Verified heritage-hotel partners only'
+      ]},
+      dayThemes:['City Palace & the lake','Boat ride & Jag Mandir','Old city bazaars','Sajjangarh sunset & gardens'],
+      activities:{
+        morning:['Tour the City Palace complex','Boat ride to Jag Mandir island','Visit Saheliyon-ki-Bari gardens','Explore the Vintage Car Museum','Walk through the old city lanes'],
+        afternoon:['Miniature painting workshop','Shop for silver jewellery near Jagdish Temple','Lunch overlooking Lake Pichola','Visit the Bagore ki Haveli museum','Relax at a lakeside café'],
+        evening:['Sunset from Sajjangarh (Monsoon Palace)','Rooftop dinner facing the City Palace','Cultural dance show at Bagore ki Haveli','Boat ride at dusk on Lake Pichola','Stroll along the illuminated ghats']
+      }
+    },
+    {
+      id:'coorg', name:'Coorg', state:'Karnataka', tags:['hill','nature','coffee'], icon:'leaf',
+      rating:4.4, reviews:8700, cost:{budget:1500, mid:3200, luxury:7800},
+      bestFor:['couple','family'],
+      blurb:'Misty coffee estates, waterfalls and Kodava villages in the Western Ghats.',
+      safety:{score:4.5, points:[
+        'Estate homestays vetted for safe road access',
+        'Guided treks only, on marked forest trails',
+        'Offline maps for estate & waterfall routes',
+        'Nearest multi-speciality hospital in Madikeri'
+      ]},
+      dayThemes:['Coffee estate walk','Abbey Falls & Namdroling Monastery','Dubare elephant camp','Talakaveri & viewpoint drive'],
+      activities:{
+        morning:['Guided coffee plantation walk','Visit Abbey Falls','Elephant interaction at Dubare camp','Drive to Talakaveri, source of the Kaveri','Trek to Mandalpatti viewpoint'],
+        afternoon:['Coffee tasting & estate lunch','Visit the golden Namdroling Monastery','Kayaking on the Kaveri river','Spice plantation tour','Relax at the homestay veranda'],
+        evening:['Bonfire with Kodava cuisine',"Sunset at Raja's Seat viewpoint",'Stargazing away from town lights','Traditional Kodava dinner at the homestay','Quiet walk through the estate']
+      }
+    },
+    {
+      id:'andaman', name:'Andaman Islands', state:'India', tags:['island','beach','diving'], icon:'island',
+      rating:4.7, reviews:6200, cost:{budget:2200, mid:5000, luxury:12000},
+      bestFor:['couple','family'],
+      blurb:'Turquoise water, coral reefs and quiet beaches far from the mainland.',
+      safety:{score:4.4, points:[
+        'PADI-certified dive operators only',
+        'Coast guard rescue posts on major beaches',
+        'Ferry schedules and weather advisories in-app',
+        'Verified resorts with on-site first aid'
+      ]},
+      dayThemes:['Port Blair & Cellular Jail',"Havelock's Radhanagar beach",'Snorkelling at Elephant Beach',"Neil Island's quiet coves"],
+      activities:{
+        morning:['Cellular Jail history tour','Ferry to Havelock Island','Snorkelling at Elephant Beach','Glass-bottom boat at Neil Island','Scuba diving taster session'],
+        afternoon:['Relax on Radhanagar Beach','Kayaking through mangrove creeks','Beach-hop by scooter on Neil Island','Sea-walking experience','Visit the local fish market'],
+        evening:['Sunset at Radhanagar Beach','Light & Sound show at Cellular Jail','Seafood dinner by the harbour','Bonfire on a quiet beach','Stargazing with no city lights']
+      }
+    },
+    {
+      id:'ladakh', name:'Ladakh', state:'Union Territory of Ladakh', tags:['mountain','adventure','offbeat'], icon:'mountain',
+      rating:4.8, reviews:7300, cost:{budget:1800, mid:4200, luxury:9800},
+      bestFor:['friends','solo'],
+      blurb:'High-altitude desert, cobalt lakes and monasteries above the clouds.',
+      safety:{score:4.2, points:[
+        'Mandatory acclimatisation day before altitude gain',
+        'Inner-line permits arranged for restricted areas',
+        'Offline maps essential — patchy network beyond Leh',
+        'Oxygen and altitude-sickness kits at verified stays'
+      ]},
+      dayThemes:['Leh acclimatisation & monasteries','Nubra Valley & sand dunes','Pangong Lake','Magnetic Hill & Sangam point'],
+      activities:{
+        morning:['Gentle walk around Leh Palace','Drive over Khardung La to Nubra Valley','Early drive to Pangong Lake','Visit Magnetic Hill','Explore Thiksey Monastery'],
+        afternoon:['Rest & hydrate — acclimatisation day',"Camel ride on Nubra's sand dunes",'Lakeside walk at Pangong','Sangam point — Indus & Zanskar confluence','Shanti Stupa sunset viewpoint'],
+        evening:['Early night for acclimatisation','Camping under the stars in Nubra','Overnight stay in a lakeside camp','Local Ladakhi dinner in Leh market','Butter tea at a monastery guesthouse']
+      }
+    },
+    {
+      id:'munnar', name:'Munnar', state:'Kerala', tags:['hill','nature','tea'], icon:'leaf',
+      rating:4.5, reviews:10100, cost:{budget:1300, mid:2900, luxury:7200},
+      bestFor:['family','couple'],
+      blurb:'Rolling tea gardens and cool hill air in the Western Ghats.',
+      safety:{score:4.5, points:[
+        'Forest department permits for wildlife sanctuary visits',
+        'Marked viewpoints with safety railings',
+        'Verified plantation-stay partners',
+        'Well-stocked pharmacies in Munnar town'
+      ]},
+      dayThemes:['Tea gardens & museum','Eravikulam National Park','Mattupetty & Kundala lakes','Top Station sunrise'],
+      activities:{
+        morning:['Walk through the tea estates','Visit Eravikulam National Park','Boating at Mattupetty Dam','Sunrise at Top Station','Visit the Tea Museum'],
+        afternoon:['Tea tasting session','Spice garden tour','Boating at Kundala Lake','Photograph the Neelakurinji hills','Visit Attukal waterfalls'],
+        evening:['Sunset from a tea-estate viewpoint','Kerala thali dinner at the homestay','Bonfire with local music','Quiet walk through the plantation','Pack up over hot chai']
+      }
+    },
+    {
+      id:'varanasi', name:'Varanasi', state:'Uttar Pradesh', tags:['spiritual','heritage','river'], icon:'diya',
+      rating:4.4, reviews:16700, cost:{budget:900, mid:2200, luxury:5800},
+      bestFor:['solo','family'],
+      blurb:'Ancient ghats along the Ganges, alive with ritual from dawn to dusk.',
+      safety:{score:4.2, points:[
+        'Tourist police posted along Dashashwamedh Ghat',
+        'Licensed boatmen only, life jackets provided',
+        "Offline maps for the old city's narrow lanes",
+        'Verified guides for the Sarnath day trip'
+      ]},
+      dayThemes:['Ghats & sunrise boat ride','Sarnath day trip','Old city lanes & temples','Evening aarti & markets'],
+      activities:{
+        morning:['Sunrise boat ride along the ghats',"Day trip to Sarnath's Buddhist ruins",'Visit the Kashi Vishwanath Temple',"Walk through the old city's lanes",'Visit Banaras Hindu University campus'],
+        afternoon:['Explore silk-weaving workshops','Visit the Ramnagar Fort museum','Shop for Banarasi silk sarees','Relax by the ghats with street food','Visit the Bharat Mata Temple'],
+        evening:['Ganga aarti at Dashashwamedh Ghat','Boat ride during the evening aarti','Stroll through the illuminated ghats','Dinner at a ghat-side rooftop café','Explore the night market near Chowk']
+      }
+    }
+  ];
+
+  var BUDGET_LABEL = {budget:'Budget-friendly', mid:'Mid-range', luxury:'Luxury'};
+  var GROUP_LABEL = {solo:'solo', couple:'couple', friends:'friends', family:'family'};
+
+  /* ================= STATE ================= */
+  var state = {
+    maxStep: 1,
+    currentStep: 1,
+    location: { city:null, source:null },
+    prefs: { destination:'', budget:null, duration:4, group:null, travelers:1 },
+    matches: [],
+    selectedId: null
+  };
+
+  /* ================= HELPERS ================= */
+  function inr(n){ return '₹' + Math.round(n).toLocaleString('en-IN'); }
+  function byId(id){ return document.getElementById(id); }
+  function findDest(id){
+    for (var i=0;i<DESTINATIONS.length;i++){ if (DESTINATIONS[i].id===id) return DESTINATIONS[i]; }
+    return null;
+  }
+
+  /* ================= STEP NAVIGATION ================= */
+  function goToStep(n){
+    if (n > state.maxStep) return;
+    state.currentStep = n;
+    document.querySelectorAll('.screen').forEach(function(s){
+      s.classList.toggle('active', parseInt(s.getAttribute('data-screen'),10) === n);
+    });
+    document.querySelectorAll('.step-item').forEach(function(el){
+      var step = parseInt(el.getAttribute('data-step'),10);
+      el.classList.toggle('active', step === n);
+      el.classList.toggle('done', step < n);
+      el.classList.toggle('reachable', step <= state.maxStep);
+    });
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  function unlockStep(n){ if (n > state.maxStep) state.maxStep = n; }
+
+  document.querySelectorAll('.step-hit').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var step = parseInt(btn.parentElement.getAttribute('data-step'),10);
+      if (step <= state.maxStep) goToStep(step);
+    });
+  });
+
+  /* ================= SCREEN 1: LOCATE ================= */
+  var locateStatus = byId('locate-status');
+  var locateStatusText = byId('locate-status-text');
+  var continueLocateBtn = byId('btn-continue-locate');
+  var locateHint = byId('locate-continue-hint');
+
+  function setLocation(city, source){
+    state.location.city = city;
+    state.location.source = source;
+    continueLocateBtn.disabled = false;
+    locateHint.textContent = 'Ready to continue.';
+    locateStatus.classList.remove('err');
+    locateStatus.classList.add('show');
+    locateStatusText.textContent = 'Starting point set to ' + city + '.';
+  }
+
+  function showLocateError(msg){
+    locateStatus.classList.add('show','err');
+    locateStatusText.textContent = msg;
+  }
+
+  byId('btn-use-location').addEventListener('click', function(){
+    if (!('geolocation' in navigator)){
+      showLocateError("Your browser doesn't support geolocation — enter your city manually below.");
+      return;
+    }
+    locateStatus.classList.remove('err');
+    locateStatus.classList.add('show');
+    locateStatusText.textContent = 'Detecting your location…';
+
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var lat = pos.coords.latitude, lon = pos.coords.longitude;
+      fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lon + '&zoom=10', {
+        headers: { 'Accept-Language': 'en' }
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var addr = data && data.address ? data.address : {};
+        var city = addr.city || addr.town || addr.village || addr.county || addr.state_district;
+        var region = addr.state;
+        var label = city ? (region ? city + ', ' + region : city) : ('near ' + lat.toFixed(2) + ', ' + lon.toFixed(2));
+        setLocation(label, 'gps');
+      })
+      .catch(function(){
+        setLocation('near ' + lat.toFixed(2) + ', ' + lon.toFixed(2), 'gps-coords');
+      });
+    }, function(err){
+      showLocateError('Location access was denied or unavailable — enter your city manually below.');
+    }, { timeout: 8000 });
+  });
+
+  byId('btn-set-manual').addEventListener('click', function(){
+    var val = byId('manual-city-input').value.trim();
+    if (!val){
+      showLocateError('Type a city name first.');
+      return;
+    }
+    setLocation(val, 'manual');
+  });
+  byId('manual-city-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ byId('btn-set-manual').click(); }
+  });
+
+  continueLocateBtn.addEventListener('click', function(){
+    if (!state.location.city) return;
+    byId('pref-origin-echo').textContent = state.location.city;
+    unlockStep(2);
+    goToStep(2);
+  });
+
+  /* ================= SCREEN 2: PREFERENCES ================= */
+  byId('btn-back-to-locate').addEventListener('click', function(){ goToStep(1); });
+
+  byId('pref-destination').addEventListener('input', function(e){
+    state.prefs.destination = e.target.value;
+  });
+
+  document.querySelectorAll('#budget-tiles .tile').forEach(function(tile){
+    tile.addEventListener('click', function(){
+      document.querySelectorAll('#budget-tiles .tile').forEach(function(t){ t.classList.remove('selected'); });
+      tile.classList.add('selected');
+      state.prefs.budget = tile.getAttribute('data-budget');
+      validatePrefs();
+    });
+  });
+
+  var durationValue = byId('duration-value');
+  byId('duration-minus').addEventListener('click', function(){
+    if (state.prefs.duration > 2){ state.prefs.duration--; durationValue.textContent = state.prefs.duration; }
+  });
+  byId('duration-plus').addEventListener('click', function(){
+    if (state.prefs.duration < 21){ state.prefs.duration++; durationValue.textContent = state.prefs.duration; }
+  });
+
+  document.querySelectorAll('#group-tiles .group-tile').forEach(function(tile){
+    tile.addEventListener('click', function(){
+      document.querySelectorAll('#group-tiles .group-tile').forEach(function(t){ t.classList.remove('selected'); });
+      tile.classList.add('selected');
+      state.prefs.group = tile.getAttribute('data-group');
+      state.prefs.travelers = parseInt(tile.getAttribute('data-default-travelers'),10);
+      byId('travelers-value').textContent = state.prefs.travelers;
+      validatePrefs();
+    });
+  });
+
+  byId('travelers-minus').addEventListener('click', function(){
+    if (state.prefs.travelers > 1){ state.prefs.travelers--; byId('travelers-value').textContent = state.prefs.travelers; }
+  });
+  byId('travelers-plus').addEventListener('click', function(){
+    if (state.prefs.travelers < 12){ state.prefs.travelers++; byId('travelers-value').textContent = state.prefs.travelers; }
+  });
+
+  var showDestBtn = byId('btn-show-destinations');
+  var prefValidation = byId('pref-validation');
+  function validatePrefs(){
+    var ok = !!state.prefs.budget && !!state.prefs.group;
+    showDestBtn.disabled = !ok;
+    prefValidation.textContent = ok ? '' : 'Pick a budget and who you\u2019re travelling with to continue.';
+  }
+
+  showDestBtn.addEventListener('click', function(){
+    computeMatches();
+    renderExplore();
+    unlockStep(3);
+    goToStep(3);
+  });
+
+  /* ================= MATCHING ================= */
+  function scoreDestination(d, prefs){
+    var score = 40 + (d.rating - 4) * 40;
+    var q = (prefs.destination || '').trim().toLowerCase();
+    if (q){
+      var words = q.split(/\s+/).filter(Boolean);
+      var haystack = (d.name + ' ' + d.state + ' ' + d.tags.join(' ') + ' ' + d.blurb).toLowerCase();
+      words.forEach(function(w){ if (haystack.indexOf(w) !== -1) score += 22; });
+    }
+    if (d.bestFor.indexOf(prefs.group) !== -1) score += 18;
+    if ((d.id === 'andaman' || d.id === 'ladakh') && prefs.duration < 5) score -= 15;
+    return score;
+  }
+
+  function computeMatches(){
+    var scored = DESTINATIONS.map(function(d){
+      var raw = scoreDestination(d, state.prefs);
+      return { dest:d, percent: Math.max(55, Math.min(98, Math.round(raw))) };
+    });
+    scored.sort(function(a,b){ return b.percent - a.percent; });
+    state.matches = scored.slice(0, 6);
+  }
+
+  function estimateCost(d, prefs){
+    var perDay = d.cost[prefs.budget];
+    var total = perDay * prefs.duration * prefs.travelers;
+    var slices = [
+      { label:'Stay', pct:0.35 },
+      { label:'Food', pct:0.25 },
+      { label:'Local transport', pct:0.20 },
+      { label:'Activities & entry fees', pct:0.20 }
+    ];
+    slices.forEach(function(s){ s.amount = Math.round(total * s.pct); });
+    return { perDay:perDay, total:total, slices:slices };
+  }
+
+  /* ================= SCREEN 3: EXPLORE ================= */
+  byId('btn-back-to-prefs').addEventListener('click', function(){ goToStep(2); });
+
+  function renderExplore(){
+    byId('explore-heading').textContent = 'Best matches for your ' + state.prefs.duration + '-day ' + state.prefs.group + ' trip';
+    byId('explore-sub').textContent = 'Ranked by fit for a ' + BUDGET_LABEL[state.prefs.budget].toLowerCase() + ' budget — tap one to see ratings, cost and safety details.';
+
+    var grid = byId('explore-grid');
+    grid.innerHTML = state.matches.map(function(m){
+      var d = m.dest;
+      var cost = estimateCost(d, state.prefs);
+      return '' +
+        '<button class="dest-card" data-dest-id="' + d.id + '">' +
+          '<div class="dest-card-top">' +
+            '<div class="dest-icon-badge">' + icon(d.icon) + '</div>' +
+            '<span class="match-badge">' + m.percent + '% match</span>' +
+          '</div>' +
+          '<div>' +
+            '<h3 class="dest-name">' + d.name + '</h3>' +
+            '<span class="dest-state">' + d.state + '</span>' +
+          '</div>' +
+          '<p class="dest-blurb">' + d.blurb + '</p>' +
+          '<div class="tag-row">' + d.tags.slice(0,3).map(function(t){ return '<span class="tag-chip">' + t + '</span>'; }).join('') + '</div>' +
+          '<div class="dest-meta-row">' +
+            '<span class="rating-inline">' + icon('star') + ' ' + d.rating.toFixed(1) + '</span>' +
+            '<span class="price-chip">' + inr(cost.perDay) + '/day</span>' +
+          '</div>' +
+        '</button>';
+    }).join('');
+
+    grid.querySelectorAll('.dest-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        selectDestination(card.getAttribute('data-dest-id'));
+      });
+    });
+  }
+
+  /* ================= SCREEN 4: DETAIL ================= */
+  byId('btn-back-to-explore').addEventListener('click', function(){ goToStep(3); });
+
+  function selectDestination(id){
+    state.selectedId = id;
+    renderDetail();
+    unlockStep(4);
+    goToStep(4);
+  }
+
+  function renderDetail(){
+    var d = findDest(state.selectedId);
+    if (!d) return;
+    var cost = estimateCost(d, state.prefs);
+    var sub = { Experience: Math.min(5, d.rating + 0.1), 'Value for money': Math.min(5, d.rating - 0.15), Safety: d.safety.score, Cleanliness: Math.min(5, d.rating - 0.05) };
+
+    var html = '' +
+      '<div class="detail-head">' +
+        '<div>' +
+          '<h2>' + d.name + '</h2>' +
+          '<span class="dest-state">' + d.state + '</span>' +
+          '<div class="tag-row" style="margin-top:10px;">' + d.tags.map(function(t){ return '<span class="tag-chip">' + t + '</span>'; }).join('') + '</div>' +
+        '</div>' +
+        '<div class="detail-rating-pill">' + icon('star') + '<strong>' + d.rating.toFixed(1) + '</strong><span class="hint-text">(' + d.reviews.toLocaleString('en-IN') + ' reviews)</span></div>' +
+      '</div>' +
+      '<p class="eyebrow-note" style="margin-bottom:26px;">' + d.blurb + '</p>' +
+      '<div class="panels">' +
+
+        '<div class="panel">' +
+          '<h3>' + icon('star') + ' Ratings</h3>' +
+          Object.keys(sub).map(function(k){
+            var val = sub[k];
+            return '<div class="bar-row"><div class="bar-row-top"><span>' + k + '</span><span>' + val.toFixed(1) + '/5</span></div><div class="bar-track"><div class="bar-fill" style="width:' + (val/5*100) + '%"></div></div></div>';
+          }).join('') +
+        '</div>' +
+
+        '<div class="panel">' +
+          '<h3>' + icon('wallet') + ' Estimated cost</h3>' +
+          '<div class="cost-total">' + inr(cost.total) + '</div>' +
+          '<div class="cost-sub">Total for ' + state.prefs.travelers + ' traveller' + (state.prefs.travelers>1?'s':'') + ', ' + state.prefs.duration + ' days · ' + BUDGET_LABEL[state.prefs.budget] + '</div>' +
+          cost.slices.map(function(s){ return '<div class="cost-row"><span>' + s.label + '</span><span>' + inr(s.amount) + '</span></div>'; }).join('') +
+        '</div>' +
+
+        '<div class="panel">' +
+          '<h3>' + icon('shield') + ' Safety options</h3>' +
+          '<div class="safety-score-row"><span class="safety-score-badge">' + d.safety.score.toFixed(1) + '/5 safety rating</span></div>' +
+          '<ul class="safety-list">' + d.safety.points.map(function(p){ return '<li>' + icon('check') + '<span>' + p + '</span></li>'; }).join('') + '</ul>' +
+        '</div>' +
+
+      '</div>' +
+      '<div class="actions-row">' +
+        '<button class="btn btn-primary" id="btn-build-itinerary">Build my day-by-day plan</button>' +
+      '</div>';
+
+    byId('detail-content').innerHTML = html;
+    byId('btn-build-itinerary').addEventListener('click', function(){
+      generateItinerary();
+      unlockStep(5);
+      goToStep(5);
+    });
+  }
+
+  /* ================= SCREEN 5: ITINERARY ================= */
+  byId('btn-back-to-detail').addEventListener('click', function(){ goToStep(4); });
+  byId('btn-new-trip').addEventListener('click', function(){
+    state.maxStep = 1;
+    state.location = { city:null, source:null };
+    state.prefs = { destination:'', budget:null, duration:4, group:null, travelers:1 };
+    state.matches = [];
+    state.selectedId = null;
+    byId('manual-city-input').value = '';
+    byId('pref-destination').value = '';
+    locateStatus.classList.remove('show','err');
+    continueLocateBtn.disabled = true;
+    locateHint.textContent = 'Detect or enter a starting city to continue.';
+    durationValue.textContent = '4';
+    byId('travelers-value').textContent = '1';
+    document.querySelectorAll('#budget-tiles .tile, #group-tiles .group-tile').forEach(function(t){ t.classList.remove('selected'); });
+    showDestBtn.disabled = true;
+    goToStep(1);
+  });
+
+  function generateItinerary(){
+    var d = findDest(state.selectedId);
+    if (!d) return;
+    var duration = state.prefs.duration;
+    var cost = estimateCost(d, state.prefs);
+
+    var chips = '';
+    var days = '';
+    for (var i=1;i<=duration;i++){
+      chips += '<a href="#day-' + i + '" class="day-chip">' + i + '</a>';
+
+      var theme;
+      if (i === 1) theme = 'Arrival & first impressions';
+      else if (i === duration && duration > 1) theme = 'Leisure & departure';
+      else theme = d.dayThemes[(i-1) % d.dayThemes.length];
+
+      var morning = d.activities.morning[(i-1) % d.activities.morning.length];
+      var afternoon = d.activities.afternoon[(i-1) % d.activities.afternoon.length];
+      var evening = d.activities.evening[(i-1) % d.activities.evening.length];
+      var tip = d.safety.points[(i-1) % d.safety.points.length];
+
+      days += '' +
+        '<div class="day-card" id="day-' + i + '">' +
+          '<div class="day-card-head"><span class="day-num">' + String(i).padStart(2,'0') + '</span><span class="day-theme">' + theme + '</span></div>' +
+          '<div class="day-parts">' +
+            '<div><div class="day-part-label"><span class="part-dot dot-morning"></span>Morning</div><div class="day-part-text">' + morning + '</div></div>' +
+            '<div><div class="day-part-label"><span class="part-dot dot-afternoon"></span>Afternoon</div><div class="day-part-text">' + afternoon + '</div></div>' +
+            '<div><div class="day-part-label"><span class="part-dot dot-evening"></span>Evening</div><div class="day-part-text">' + evening + '</div></div>' +
+          '</div>' +
+          '<div class="safety-note">' + icon('shield') + '<span>' + tip + '</span></div>' +
+        '</div>';
+    }
+
+    var html = '' +
+      '<div class="screen-head">' +
+        '<h2>' + duration + '-day ' + d.name + ' itinerary</h2>' +
+        '<p class="eyebrow-note">Built for your ' + state.prefs.group + ' trip, starting from ' + (state.location.city || 'your location') + '.</p>' +
+      '</div>' +
+      '<div class="itinerary-recap">' +
+        '<div><div class="hint-text">Estimated total</div><div class="recap-total">' + inr(cost.total) + '</div></div>' +
+        '<div><div class="hint-text">Travellers</div><div class="recap-total">' + state.prefs.travelers + '</div></div>' +
+        '<div><div class="hint-text">Duration</div><div class="recap-total">' + duration + ' days</div></div>' +
+        '<div><div class="hint-text">Safety rating</div><div class="recap-total">' + d.safety.score.toFixed(1) + '/5</div></div>' +
+      '</div>' +
+      '<div class="day-chip-row">' + chips + '</div>' +
+      days;
+
+    byId('itinerary-content').innerHTML = html;
+    byId('sos-context-note').textContent = 'You\u2019re viewing the plan for ' + d.name + ', ' + d.state + '. Local safety notes are woven into each day above.';
+  }
+
+  /* ================= SOS MODAL ================= */
+  var sosModal = byId('sos-modal');
+  byId('sos-fab').addEventListener('click', function(){ sosModal.classList.remove('hidden'); });
+  byId('sos-close').addEventListener('click', function(){ sosModal.classList.add('hidden'); });
+  sosModal.addEventListener('click', function(e){ if (e.target === sosModal) sosModal.classList.add('hidden'); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') sosModal.classList.add('hidden'); });
+
+  /* ================= INIT ================= */
+  goToStep(1);
+})();
+</script>
+</body>
+</html>

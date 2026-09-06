@@ -1,0 +1,271 @@
+/* ============================================================
+   VOYAGER — Layout
+   App shell, topbar, topo-bg, route stepper, screen containers, footer
+   ============================================================ */
+
+
+
+/* ---------- App shell ---------- */
+.app {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 36px 0 12px;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  color: var(--forest-deep);
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-size: 1.55rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.brand-text p {
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+/* ---------- Stepper (route progress) ---------- */
+.route-stepper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 36px 0 8px;
+  padding: 0 4px;
+}
+
+/* Dashed baseline */
+.route-stepper::before {
+  content: '';
+  position: absolute;
+  top: 15px;
+  left: 5%;
+  right: 5%;
+  height: 0;
+  border-top: 2px dashed var(--route);
+  z-index: 0;
+}
+
+/* Animated fill line */
+.route-stepper::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  left: 5%;
+  height: 2px;
+  background: var(--forest);
+  z-index: 0;
+  width: 0;
+  transition: width var(--dur-slow) var(--ease-out);
+  border-radius: 999px;
+}
+
+/* Filled to 0% on step 1 */
+.route-stepper[data-progress="1"]::after  { width: 0%; }
+.route-stepper[data-progress="2"]::after  { width: 22.5%; }
+.route-stepper[data-progress="3"]::after  { width: 45%; }
+.route-stepper[data-progress="4"]::after  { width: 67.5%; }
+.route-stepper[data-progress="5"]::after  { width: 90%; }
+
+/* ---------- Step item ---------- */
+.step-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--route);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  transition:
+    background var(--dur-med) ease,
+    border-color var(--dur-med) ease,
+    color var(--dur-med) ease,
+    transform var(--dur-med) ease,
+    box-shadow var(--dur-med) ease;
+}
+
+.step-item.done .step-dot {
+  background: var(--forest);
+  border-color: var(--forest);
+  color: var(--white);
+}
+
+.step-item.active .step-dot {
+  background: var(--signal);
+  border-color: var(--signal);
+  color: var(--white);
+  animation: pindrop 0.5s ease;
+  box-shadow: 0 0 0 5px var(--signal-tint);
+}
+
+.step-item button.step-hit {
+  position: absolute;
+  inset: -8px -20px auto -20px;
+  height: 48px;
+  cursor: pointer;
+}
+
+.step-item:not(.reachable) .step-hit {
+  cursor: default;
+  pointer-events: none;
+}
+
+.step-label {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  text-align: center;
+  max-width: 80px;
+  transition: color var(--dur-fast) ease;
+}
+
+.step-item.active .step-label {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.step-item.done .step-label {
+  color: var(--forest);
+}
+
+/* ---------- Screens ---------- */
+.screen {
+  display: none;
+  position: relative;
+  z-index: 1;
+  padding-top: 20px;
+}
+
+.screen.active {
+  display: block;
+  animation: rise 0.38s var(--ease-out);
+}
+
+.screen-head {
+  margin-bottom: 30px;
+}
+
+.screen-head h2 {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+/* ---------- Action rows ---------- */
+.actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Footer ---------- */
+footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 64px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+footer a:hover {
+  color: var(--forest);
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 640px) {
+  .app {
+    padding: 0 16px 96px;
+    margin: 20px auto 40px;
+    border-radius: var(--radius-m);
+  }
+
+  .topbar {
+    padding: 24px 0 8px;
+  }
+
+  .screen-head h2 {
+    font-size: 1.5rem;
+  }
+
+  .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions-row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Responsive Stepper */
+  .route-stepper {
+    padding: 12px 10px;
+    gap: 4px;
+  }
+  .route-stepper::before {
+    left: 10px;
+    right: 10px;
+  }
+  .step-label {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .step-label {
+    display: none;
+  }
+  .route-stepper::before {
+    left: 8%;
+    right: 8%;
+  }
+}
