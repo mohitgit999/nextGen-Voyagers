@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="css/landing.css?v=3">
   <link rel="stylesheet" href="css/enhanced.css?v=2">
   <link rel="stylesheet" href="css/auth-dashboard.css?v=1">
+  <link rel="stylesheet" href="css/responsive.css?v=1">
 
   <!-- Print styles -->
   <style>
@@ -76,10 +77,42 @@
   </ul>
 
   <div class="nav-actions">
+    <button class="nav-search-icon mobile-search-btn-nav" id="nav-search-btn-mobile" aria-label="Search destinations" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
     <button class="nav-btn-login" id="nav-btn-login">Log in</button>
     <button class="nav-btn-signup" id="nav-btn-signup" data-cta="start-planning">Start Planning</button>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile Navigation Drawer -->
+<div class="mobile-nav-drawer" id="mobile-nav-drawer">
+  <div class="mobile-nav-links">
+    <a href="#destinations-section" class="mobile-nav-link" id="mobile-link-destinations">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+      Destinations
+    </a>
+    <a href="#planner-section" class="mobile-nav-link" id="mobile-link-planner" data-cta="start-planning">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+      Plan Trip
+    </a>
+    <a href="#how-it-works" class="mobile-nav-link" id="mobile-link-how">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      How It Works
+    </a>
+    <button class="mobile-nav-link" id="mobile-btn-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:18px;height:18px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search Destinations (Ctrl+K)
+    </button>
+  </div>
+</div>
 
 <!-- ================================================================
      HERO
