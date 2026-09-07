@@ -3,8 +3,11 @@ import React, { useEffect } from 'react';
 
 function App() {
   useEffect(() => {
+    window.__API_BASE_URL__ = import.meta.env.VITE_API_URL || '';
+
     const loadScripts = () => {
       const scripts = [
+        '/js/api.js',
         '/js/data.js',
         '/js/state.js',
         '/js/auth.js',

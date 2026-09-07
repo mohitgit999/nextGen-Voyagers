@@ -358,7 +358,7 @@ function saveCurrentTripToCloud(d, duration, cost) {
     packingState: state.packingState || {}
   };
 
-  fetch('/api/trips', {
+  fetch(apiUrl('/api/trips'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

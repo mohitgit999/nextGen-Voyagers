@@ -59,7 +59,7 @@ function initContact() {
       submitBtn.innerHTML = '<div class="spinner-sm" style="display:inline-block;vertical-align:middle;margin-right:8px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;width:14px;height:14px;animation:spin 0.8s linear infinite;"></div> Sending Message…';
     }
 
-    fetch('/api/contact', {
+    fetch(apiUrl('/api/contact'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

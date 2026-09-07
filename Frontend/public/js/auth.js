@@ -61,7 +61,7 @@ function checkAuthSession() {
   }
 
   if (authState.token) {
-    fetch('/api/auth/me', {
+    fetch(apiUrl('/api/auth/me'), {
       headers: {
         Authorization: 'Bearer ' + authState.token,
       },
@@ -254,7 +254,7 @@ function login(email, password, callback) {
     submitBtn.textContent = 'Logging in...';
   }
 
-  fetch('/api/auth/login', {
+  fetch(apiUrl('/api/auth/login'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: email, password: password }),
@@ -297,7 +297,7 @@ function register(name, email, password, callback) {
     submitBtn.textContent = 'Creating account...';
   }
 
-  fetch('/api/auth/register', {
+  fetch(apiUrl('/api/auth/register'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: name, email: email, password: password }),

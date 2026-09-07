@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
   loadPersistedState();
 
   /* Fetch dynamic destinations from API, fallback to local data.js */
-  fetch('/api/destinations')
+  fetch(apiUrl('/api/destinations'))
     .then(function(res) {
       if (!res.ok) throw new Error('API failed');
       return res.json();

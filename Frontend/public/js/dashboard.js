@@ -54,7 +54,7 @@ function loadUserDashboard() {
     tripsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--ink-faint);">Loading your cloud itineraries... ✈️</div>';
   }
 
-  fetch('/api/trips/user/my-trips', {
+  fetch(apiUrl('/api/trips/user/my-trips'), {
     headers: {
       Authorization: 'Bearer ' + authState.token,
     },
@@ -242,7 +242,7 @@ function resumeTrip(trip) {
 }
 
 function deleteUserTrip(tripId) {
-  fetch('/api/trips/' + tripId, {
+  fetch(apiUrl('/api/trips/' + tripId), {
     method: 'DELETE',
     headers: {
       Authorization: 'Bearer ' + authState.token,
