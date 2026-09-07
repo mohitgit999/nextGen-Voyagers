@@ -18,6 +18,11 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-m);
 }
+#planner-section .explore-controls {
+  background: rgba(18, 38, 42, 0.78);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.16);
+}
 .filter-chips-row {
   display: flex;
   gap: 8px;
@@ -31,6 +36,26 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   flex-shrink: 0;
+}
+#planner-section .filter-label {
+  color: rgba(255, 255, 255, 0.72);
+}
+#planner-section .filter-chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.88);
+}
+#planner-section .filter-chip:hover,
+#planner-section .filter-chip:focus-visible {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.42);
+  color: var(--white);
+}
+#planner-section .filter-chip.active {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 14px rgba(27, 184, 154, 0.24);
 }
 
 .sort-row {
@@ -52,6 +77,16 @@
   transition: border-color var(--dur-fast) ease;
 }
 .sort-select:focus { border-color: var(--forest); }
+#planner-section .sort-select {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.24);
+  color: var(--white);
+}
+#planner-section .sort-select:focus { border-color: var(--teal); }
+#planner-section .sort-select option {
+  background: #19383c;
+  color: var(--white);
+}
 
 /* Explore grid */
 .explore-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
@@ -206,12 +241,36 @@
   padding-top: 12px;
   border-top: 1px solid var(--line);
 }
+.temp-range svg {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  color: var(--teal);
+  transform-origin: center;
+  animation: weather-sun-drift 7s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(27, 184, 154, 0.24));
+}
+.temp-range > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.35;
+}
 .temp-range strong { color: var(--ink); }
 .weather-note {
   font-size: 0.8rem;
   color: var(--ink-faint);
   margin-top: 8px;
   font-style: italic;
+}
+
+@keyframes weather-sun-drift {
+  0%, 100% { transform: rotate(-5deg) scale(1); }
+  50% { transform: rotate(5deg) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .temp-range svg { animation: none; }
 }
 
 /* ===================== PACKING LIST ===================== */
