@@ -459,32 +459,9 @@ function initScreen5() {
   byId('btn-back-to-detail').addEventListener('click', function() { goToStep(4); });
 
   byId('btn-new-trip').addEventListener('click', function() {
-    /* Reset state */
-    state.maxStep    = 1;
-    state.location   = { city: null, source: null, lat: null, lon: null };
-    state.prefs      = { destination: '', budget: null, duration: 4, group: null, travelers: 1 };
-    state.matches    = [];
-    state.selectedId = null;
-    state.compareIds = [];
-    state.customPerDay = null;
-    clearPersistedState();
-    state.packingState = {};
-    state.budgetLog    = [];
-
-    /* Reset UI */
-    byId('manual-city-input').value = '';
-    byId('pref-destination').value  = '';
-    var ls = byId('locate-status');
-    if (ls) ls.className = 'locate-status';
-    var clb = byId('btn-continue-locate');
-    if (clb) clb.disabled = true;
-    var lh = byId('locate-continue-hint');
-    if (lh) lh.textContent = 'Detect or enter a starting city to continue.';
-    byId('duration-value').textContent   = '4';
-    byId('travelers-value').textContent  = '1';
-    document.querySelectorAll('#budget-tiles .tile, #group-tiles .group-tile').forEach(function(t) { t.classList.remove('selected'); });
-    byId('btn-show-destinations').disabled = true;
-    byId('itinerary-content').innerHTML    = '';
+    /* Reset state and UI */
+    resetPlanner();
+    resetPlannerUI();
 
     goToStep(1);
 

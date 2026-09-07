@@ -159,6 +159,17 @@ function renderDetail() {
     unlockStep(5);
     goToStep(5);
   });
+
+  /* Bind add to compare if present */
+  var addCompareBtn = byId('btn-add-to-compare');
+  if (addCompareBtn) {
+    addCompareBtn.addEventListener('click', function() {
+      if (typeof toggleCompare === 'function') {
+        toggleCompare(state.selectedId);
+        addCompareBtn.textContent = (state.compareIds.indexOf(state.selectedId) !== -1) ? 'Added to compare ✓' : 'Add to compare';
+      }
+    });
+  }
 }
 
 /* ── Weather widget ── */

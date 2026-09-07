@@ -60,6 +60,21 @@ function loadPersistedState() {
   state.budgetLog    = lsGet('budgetLog', []);
 }
 
+/* Reset the planner to its initial state */
+function resetPlanner() {
+  state.maxStep    = 1;
+  state.currentStep = 1;
+  state.location   = { city: null, source: null, lat: null, lon: null };
+  state.prefs      = { destination: '', budget: null, duration: 4, group: null, travelers: 1 };
+  state.matches    = [];
+  state.selectedId = null;
+  state.compareIds = [];
+  state.customPerDay = null;
+  state.packingState = {};
+  state.budgetLog    = [];
+  clearPersistedState();
+}
+
 /* Persist on change */
 function persistPackingState() { lsSet('packingState', state.packingState); }
 function persistBudgetLog()    { lsSet('budgetLog', state.budgetLog); }
@@ -92,6 +107,10 @@ function estimateCost(d, prefs, customPerDay) {
 function initScrollReveal() {
   var els = document.querySelectorAll('.reveal');
   if (!els.length) return;
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(function(el) { el.classList.add('visible'); });
+    return;
+  }
   var observer = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting) {
@@ -99,9 +118,10 @@ function initScrollReveal() {
         observer.unobserve(e.target);
       }
     });
-  }, { threshold: 0.12 });
+  }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
   els.forEach(function(el) { observer.observe(el); });
 }
+window.initScrollReveal = initScrollReveal;
 
 /* ===================== STAT COUNTER ===================== */
 function animateCounter(el, target, duration) {

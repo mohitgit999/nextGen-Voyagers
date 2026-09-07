@@ -21,17 +21,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve frontend static files
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, '../Frontend')));
 
 // API Routes
 app.use('/api/auth', require('./server/routes/auth'));
 app.use('/api/destinations', require('./server/routes/destinations'));
 app.use('/api/trips', require('./server/routes/trips'));
+app.use('/api/contact', require('./server/routes/contact'));
 
 // Fallback to index.html for unknown GET routes
 app.use((req, res, next) => {
   if (req.method === 'GET' && !req.path.startsWith('/api')) {
-    return res.sendFile(path.join(__dirname, 'index.html'));
+    return res.sendFile(path.join(__dirname, '../Frontend', 'index.html'));
   }
   next();
 });

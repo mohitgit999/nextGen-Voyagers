@@ -55,14 +55,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
 /* ===================== LANDING PAGE ===================== */
 
+/* Reset the UI elements for a fresh planner start */
+function resetPlannerUI() {
+  var inputs = ['manual-city-input', 'pref-destination'];
+  inputs.forEach(function(id) { if (byId(id)) byId(id).value = ''; });
+  
+  var ls = byId('locate-status');
+  if (ls) ls.className = 'locate-status';
+  
+  var clb = byId('btn-continue-locate');
+  if (clb) clb.disabled = true;
+  
+  var lh = byId('locate-continue-hint');
+  if (lh) lh.textContent = 'Detect or enter a starting city to continue.';
+  
+  if (byId('duration-value')) byId('duration-value').textContent   = '4';
+  if (byId('travelers-value')) byId('travelers-value').textContent  = '1';
+  
+  document.querySelectorAll('#budget-tiles .tile, #group-tiles .group-tile').forEach(function(t) { 
+    t.classList.remove('selected'); 
+  });
+  
+  if (byId('btn-show-destinations')) byId('btn-show-destinations').disabled = true;
+  if (byId('itinerary-content')) byId('itinerary-content').innerHTML = '';
+}
+
 function initLandingCTA() {
-  /* "Start planning" buttons and nav links jump to planner */
+  /* "Start planning" buttons and nav links restart the planner and jump to it */
   document.querySelectorAll('[data-cta="start-planning"], a[href="#planner-section"]').forEach(function(el) {
     el.addEventListener('click', function(e) {
       e.preventDefault();
+      
+      /* Reset planner state and UI */
+      if (typeof resetPlanner === 'function') resetPlanner();
+      if (typeof resetPlannerUI === 'function') resetPlannerUI();
+      goToStep(1, true); // Update the active step classes
+
       var plannerEl = byId('planner-section');
       if (plannerEl) {
-        // Scroll exactly to the top of the planner, minus header height if needed
+        // Scroll exactly to the top of the planner
         plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });

@@ -40,9 +40,10 @@
   --white:         #FFFFFF;
 
   /* ---------- Glassmorphism ---------- */
-  --glass-bg:      rgba(255, 255, 255, 0.80);
-  --glass-border:  rgba(255, 255, 255, 0.60);
-  --glass-blur:    20px;
+  --glass-bg:      rgba(255, 255, 255, 0.06);
+  --glass-border:  rgba(255, 255, 255, 0.12);
+  --glass-blur:    40px;
+  --glass-shadow:  0 8px 32px 0 rgba(0, 0, 0, 0.3);
 
   /* ---------- Typography ---------- */
   --font-display:  'Plus Jakarta Sans', 'Inter', sans-serif;

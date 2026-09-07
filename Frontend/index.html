@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextGen Voyagers — Plan Your Trip, Travel Safe</title>
+  <meta name="description" content="NextGen Voyagers is India's safety-first travel planner. Get personalised destination matches, day-by-day itineraries, cost breakdowns, weather insights and emergency contacts for 10 iconic Indian destinations.">
+  <meta name="theme-color" content="#1BB89A">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="NextGen Voyagers — Plan Your Trip, Travel Safe">
+  <meta property="og:description" content="Safety-first trip planning for India. 10 destinations, personalised itineraries, real cost estimates and emergency contacts.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- Google Fonts — Plus Jakarta Sans + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    @media print {
+      .global-nav, .topbar, .route-stepper, .sos-fab, .modal-overlay,
+      .landing-hero, .stats-bar, .section-wrapper, .landing-footer,
+      .actions-row, .budget-tracker, .share-panel,
+      .explore-controls, .compare-bar, .compare-drawer { display: none !important; }
+      .screen { display: block !important; }
+      .screen:not(#screen-5) { display: none !important; }
+      #screen-5 { animation: none !important; }
+      .day-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
