@@ -93,9 +93,11 @@ html, body {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 #planner-section .locate-status {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
+  background: rgba(27, 184, 154, 0.15) !important;
+  border: 1px solid rgba(27, 184, 154, 0.35) !important;
+  color: #1BB89A !important;
+  margin: 14px 0 0 0 !important;
+  align-self: flex-start !important;
 }
 #planner-section .btn-ghost {
   color: #ffffff !important;

@@ -463,16 +463,29 @@
 }
 .detail-head h2 { font-size: 2.2rem; }
 .detail-rating-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background: var(--paper-raised);
   border: 1px solid var(--line);
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: 999px;
   white-space: nowrap;
 }
-.detail-rating-pill strong { font-size: 1.25rem; font-family: var(--font-display); }
+.detail-rating-pill svg {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  min-height: 18px;
+  max-height: 18px;
+  color: #F59E0B;
+  fill: #F59E0B;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
+}
+.detail-rating-pill strong { font-size: 1.15rem; font-family: var(--font-display); }
 
 /* ===================== ITINERARY ===================== */
 .itinerary-recap {

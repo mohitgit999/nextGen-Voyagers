@@ -40,28 +40,32 @@ function initScreen1() {
     // Enable continue
     if (continueLocateBtn) continueLocateBtn.disabled = false;
     if (locateHint) locateHint.textContent = 'Starting point detected & set. Ready to continue →';
+    
+    // Change "Detecting your location..." text to "Location Detected"
     if (locateStatus) {
       locateStatus.classList.remove('err');
       locateStatus.classList.add('show');
-    }
-    if (locateStatusText) {
-      locateStatusText.textContent = '📍 ' + city;
+      locateStatus.innerHTML =
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: #1BB89A; flex-shrink: 0;"><path d="M5 12l4 4 10-10"/></svg>' +
+        '<span id="locate-status-text" style="color: #1BB89A; font-weight: 600;">Location Detected: ' + city + '</span>';
     }
   }
 
   function showLocateError(msg) {
     if (!locateStatus) return;
     locateStatus.innerHTML =
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
-      '<span id="locate-status-text">' + msg + '</span>';
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px; color: #F87171; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+      '<span id="locate-status-text" style="color: #F87171;">' + msg + '</span>';
     locateStatus.classList.add('show', 'err');
   }
 
   function setLoading() {
     if (!locateStatus) return;
-    locateStatus.innerHTML = '<div class="spinner"></div><span id="locate-status-text">Detecting your location…</span>';
     locateStatus.classList.remove('err');
     locateStatus.classList.add('show');
+    locateStatus.innerHTML =
+      '<div class="spinner" style="width: 16px; height: 16px; border: 2px solid rgba(27,184,154,0.3); border-top-color: #1BB89A; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block;"></div>' +
+      '<span id="locate-status-text">Detecting your location…</span>';
   }
 
   /* ---- Reverse Geocoding with Fallback ---- */
