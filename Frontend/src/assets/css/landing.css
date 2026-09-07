@@ -175,7 +175,7 @@
   background-size: cover;
   background-position: center;
   transition: opacity 0.4s ease-in-out, transform 8s ease;
-  animation: heroZoom 16s ease-in-out infinite alternate;
+  animation: heroZoom 24s ease-in-out infinite alternate;
 }
 @keyframes heroZoom {
   from { transform: scale(1); }

@@ -452,8 +452,23 @@
     padding: 0 14px !important;
   }
 
+  .nav-brand {
+    min-width: 0;
+    flex: 1 1 auto;
+    gap: 7px;
+  }
+
   .nav-brand-name {
-    display: none; /* Icon mark remains, saves space for action buttons */
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: clamp(0.78rem, 3.7vw, 1rem);
+  }
+
+  .nav-actions {
+    flex: 0 0 auto;
   }
 
   .hero-h1 {
@@ -525,5 +540,185 @@
   /* Smooth momentum scrolling for iOS & Android */
   .featured-scroll, .filter-chips-row, .search-results-list, .dashboard-scroll-body {
     -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ── FINAL RESPONSIVE ALIGNMENT PASS ── */
+html,
+body {
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .hero-bg-img {
+    animation: none;
+    transform: none;
+  }
+
+  .hero-content {
+    padding-inline: 18px !important;
+  }
+
+  #planner-section .app {
+    padding-inline: 12px !important;
+  }
+
+  #planner-section .screen {
+    padding: 22px 16px !important;
+    border-radius: var(--radius-m) !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  #planner-section .screen-head {
+    margin-bottom: 24px;
+  }
+
+  #planner-section .screen-head h2 {
+    font-size: clamp(1.45rem, 6vw, 1.8rem);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  #planner-section .screen-head p,
+  #planner-section .field-sub,
+  #planner-section .hint-text {
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  #planner-section .locate-card {
+    padding: 22px 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #planner-section .locate-card .actions-row,
+  #planner-section .manual-row,
+  #planner-section .actions-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  #planner-section .manual-row input,
+  #planner-section .manual-row .btn,
+  #planner-section .actions-row .btn {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    justify-content: center;
+  }
+
+  #planner-section .tile-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #planner-section #budget-tiles {
+    grid-template-columns: 1fr;
+  }
+
+  #planner-section .tile,
+  #planner-section .group-tile {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #planner-section .duration-inline,
+  #planner-section .travelers-inline {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  #planner-section .duration-inline .stepper-control,
+  #planner-section .travelers-inline .stepper-control {
+    margin-left: auto;
+  }
+
+  #planner-section .compare-drawer-head {
+    padding: 16px;
+  }
+
+  .modal-overlay {
+    padding: 12px;
+  }
+
+  .modal-box {
+    max-height: calc(100svh - 24px);
+    padding: 22px 18px;
+    border-radius: var(--radius-m);
+  }
+
+  .emergency-list li {
+    gap: 10px;
+  }
+
+  .emergency-list li > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .call-btn {
+    flex-shrink: 0;
+  }
+
+  .sos-fab {
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 390px) {
+  .global-nav {
+    padding-inline: 10px !important;
+  }
+
+  .nav-actions {
+    gap: 4px;
+  }
+
+  #planner-section .tile-row {
+    grid-template-columns: 1fr;
+  }
+
+  #planner-section .duration-inline,
+  #planner-section .travelers-inline {
+    align-items: flex-start;
+  }
+
+  #planner-section .duration-inline .stepper-control,
+  #planner-section .travelers-inline .stepper-control {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-bg-img {
+    animation: none !important;
+    transform: none !important;
   }
 }
