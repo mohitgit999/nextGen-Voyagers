@@ -334,7 +334,7 @@ Return ONLY valid JSON in this exact shape:
     res.json({ success: true, source: 'ai', mode: parsed.mode || 'mood', summary: parsed.summary || '', destinations });
   } catch (error) {
     console.error('AI destination recommendation error:', error.message);
-    res.status(502).json({ message: 'AI destination recommendations failed' });
+    res.status(502).json({ message: 'AI destination recommendations failed', error: error.message });
   }
 };
 
