@@ -1,0 +1,8 @@
+{
+  "name": "nextgen-voyagers-root",
+  "private": true,
+  "scripts": {
+    "postinstall": "cd Frontend && npm install",
+    "build": "cd Frontend && npm run build"
+  }
+}
