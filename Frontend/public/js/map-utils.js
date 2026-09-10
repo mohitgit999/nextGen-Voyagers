@@ -68,44 +68,74 @@ function getMarkerIcon(type) {
   });
 }
 
+/* ── Geocode a place name via Nominatim (returns a promise) ── */
+function geocodePlace(name, destName, destState) {
+  var query = name + (destName ? ', ' + destName : '') + (destState ? ', ' + destState : '') + ', India';
+  var url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query);
+  return fetch(url, { headers: { 'Accept-Language': 'en' } })
+    .then(function(r) { return r.json(); })
+    .then(function(results) {
+      if (results && results[0]) {
+        return { lat: parseFloat(results[0].lat), lon: parseFloat(results[0].lon) };
+      }
+      return null;
+    })
+    .catch(function() { return null; });
+}
+
+/* ── Add a single marker with optional geocoding fallback ── */
+function addMapMarker(map, name, lat, lon, type, popupHtml, geocodeName, destName, destState) {
+  if (typeof lat === 'number' && typeof lon === 'number' && !isNaN(lat) && !isNaN(lon)) {
+    var marker = L.marker([lat, lon], { icon: getMarkerIcon(type) }).addTo(map);
+    marker.bindPopup(popupHtml);
+    return;
+  }
+  // Real geocoding via Nominatim
+  geocodePlace(geocodeName || name, destName, destState).then(function(coords) {
+    if (coords && map) {
+      var marker = L.marker([coords.lat, coords.lon], { icon: getMarkerIcon(type) }).addTo(map);
+      marker.bindPopup(popupHtml);
+    }
+  });
+}
+
 /* ── Render destination detail map ── */
 function renderDestinationMap(containerId, dest, originLat, originLon) {
   if (!dest || !dest.coordinates) return;
 
-  var map = initMap(containerId, dest.coordinates.lat, dest.coordinates.lon, 10);
+  var map = initMap(containerId, dest.coordinates.lat, dest.coordinates.lon, 11);
   if (!map) return;
 
   // Main destination marker
+  var destPopup = '<strong>' + dest.name + '</strong><br><em>' + dest.state + '</em>' +
+    '<br><a href="https://www.google.com/maps/search/?api=1&query=' +
+    encodeURIComponent(dest.name + ', ' + dest.state) +
+    '" target="_blank" rel="noopener" style="color:#1BB89A;font-weight:600;">Open in Google Maps ↗</a>';
   L.marker([dest.coordinates.lat, dest.coordinates.lon], {
     icon: getMarkerIcon('destination')
-  }).addTo(map)
-    .bindPopup('<strong>' + dest.name + '</strong><br>' + dest.state);
+  }).addTo(map).bindPopup(destPopup);
 
-  // Nearby attractions
+  // Nearby attractions — use real lat/lon from data, geocode if missing
   if (dest.nearbyAttractions && Array.isArray(dest.nearbyAttractions)) {
-    dest.nearbyAttractions.forEach(function(a, idx) {
-      var aLat = (typeof a.lat === 'number') ? a.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.008 * (idx % 2 === 0 ? 1 : -1)) : null);
-      var aLon = (typeof a.lon === 'number') ? a.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.008 * (idx % 3 === 0 ? 1 : -1)) : null);
-      if (aLat !== null && aLon !== null) {
-        L.marker([aLat, aLon], {
-          icon: getMarkerIcon(a.type || 'activity')
-        }).addTo(map)
-          .bindPopup('<strong>' + a.name + '</strong>' + (a.type ? '<br><em>' + a.type + '</em>' : ''));
-      }
+    dest.nearbyAttractions.forEach(function(a) {
+      var popup = '<strong>' + a.name + '</strong>' +
+        (a.type ? '<br><em>' + a.type + '</em>' : '') +
+        '<br><a href="https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(a.name + ', ' + dest.name + ', ' + dest.state) +
+        '" target="_blank" rel="noopener" style="color:#1BB89A;font-weight:600;">Open in Maps ↗</a>';
+      addMapMarker(map, a.name, a.lat, a.lon, a.type || 'landmark', popup, a.name, dest.name, dest.state);
     });
   }
 
-  // Hidden gems
+  // Hidden gems — use real lat/lon from data, geocode if missing
   if (dest.hiddenGems && Array.isArray(dest.hiddenGems)) {
-    dest.hiddenGems.forEach(function(g, idx) {
-      var gLat = (typeof g.lat === 'number') ? g.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.012 * (idx % 2 === 0 ? -1 : 1)) : null);
-      var gLon = (typeof g.lon === 'number') ? g.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.012 * (idx % 3 === 0 ? -1 : 1)) : null);
-      if (gLat !== null && gLon !== null) {
-        L.marker([gLat, gLon], {
-          icon: getMarkerIcon('hidden-gem')
-        }).addTo(map)
-          .bindPopup('<strong>💎 ' + g.name + '</strong>' + (g.description ? '<br>' + g.description : ''));
-      }
+    dest.hiddenGems.forEach(function(g) {
+      var popup = '<strong>💎 ' + g.name + '</strong>' +
+        (g.description ? '<br>' + g.description.substring(0, 80) + '...' : '') +
+        '<br><a href="https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(g.name + ', ' + dest.name + ', ' + dest.state) +
+        '" target="_blank" rel="noopener" style="color:#1BB89A;font-weight:600;">Open in Maps ↗</a>';
+      addMapMarker(map, g.name, g.lat, g.lon, 'hidden-gem', popup, g.name, dest.name, dest.state);
     });
   }
 
@@ -113,10 +143,8 @@ function renderDestinationMap(containerId, dest, originLat, originLon) {
   if (originLat && originLon) {
     L.marker([originLat, originLon], {
       icon: getMarkerIcon('origin')
-    }).addTo(map)
-      .bindPopup('<strong>Your starting point</strong>');
+    }).addTo(map).bindPopup('<strong>📍 Your starting point</strong>');
 
-    // Draw route line
     L.polyline([
       [originLat, originLon],
       [dest.coordinates.lat, dest.coordinates.lon]
@@ -127,16 +155,13 @@ function renderDestinationMap(containerId, dest, originLat, originLon) {
       opacity: 0.7
     }).addTo(map);
 
-    // Fit bounds to show both markers
     map.fitBounds([
       [originLat, originLon],
       [dest.coordinates.lat, dest.coordinates.lon]
     ], { padding: [40, 40] });
   }
 
-  // Force resize after render
   setTimeout(function() { map.invalidateSize(); }, 200);
-
   return map;
 }
 
@@ -144,26 +169,23 @@ function renderDestinationMap(containerId, dest, originLat, originLon) {
 function renderDayMap(containerId, dest, dayActivities) {
   if (!dest || !dest.coordinates) return;
 
-  var map = initMap(containerId, dest.coordinates.lat, dest.coordinates.lon, 13);
+  var map = initMap(containerId, dest.coordinates.lat, dest.coordinates.lon, 12);
   if (!map) return;
 
   // Main destination marker
   L.marker([dest.coordinates.lat, dest.coordinates.lon], {
     icon: getMarkerIcon('destination')
-  }).addTo(map)
-    .bindPopup('<strong>' + dest.name + '</strong>');
+  }).addTo(map).bindPopup('<strong>' + dest.name + '</strong><br><em>' + dest.state + '</em>');
 
-  // If we have nearby attractions, place some contextual ones
+  // Nearby attractions with real coordinates
   if (dest.nearbyAttractions && Array.isArray(dest.nearbyAttractions)) {
-    dest.nearbyAttractions.forEach(function(a, idx) {
-      var aLat = (typeof a.lat === 'number') ? a.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.008 * (idx % 2 === 0 ? 1 : -1)) : null);
-      var aLon = (typeof a.lon === 'number') ? a.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.008 * (idx % 3 === 0 ? 1 : -1)) : null);
-      if (aLat !== null && aLon !== null) {
-        L.marker([aLat, aLon], {
-          icon: getMarkerIcon(a.type || 'activity')
-        }).addTo(map)
-          .bindPopup('<strong>' + a.name + '</strong>' + (a.type ? '<br><em>' + a.type + '</em>' : ''));
-      }
+    dest.nearbyAttractions.forEach(function(a) {
+      var popup = '<strong>' + a.name + '</strong>' +
+        (a.type ? '<br><em>' + a.type + '</em>' : '') +
+        '<br><a href="https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(a.name + ', ' + dest.name) +
+        '" target="_blank" rel="noopener" style="color:#1BB89A;font-weight:600;">Open in Maps ↗</a>';
+      addMapMarker(map, a.name, a.lat, a.lon, a.type || 'landmark', popup, a.name, dest.name, dest.state);
     });
   }
 

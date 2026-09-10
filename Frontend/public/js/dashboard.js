@@ -191,57 +191,127 @@ function renderSavedTrips(trips) {
   container.querySelectorAll('.btn-delete-trip').forEach(function (btn) {
     btn.addEventListener('click', function () {
       var tripId = btn.getAttribute('data-trip-id');
-      if (confirm('Are you sure you want to remove this trip from your cloud account?')) {
-        deleteUserTrip(tripId);
-      }
+      var card = btn.closest('.saved-trip-card');
+      var destName = card ? (card.querySelector('.saved-trip-dest-name') || {}).textContent : 'this trip';
+      showDeleteTripConfirm(tripId, destName ? destName.trim() : 'this trip');
     });
   });
 }
 
 function resumeTrip(trip) {
-  // Populate global state with trip data
-  if (typeof state !== 'undefined') {
-    state.sessionId = trip.sessionId || state.sessionId;
-    if (trip.origin) state.location = { ...state.location, ...trip.origin };
-    if (trip.prefs) state.prefs = { ...state.prefs, ...trip.prefs };
-    state.selectedId = trip.destinationId;
-    if (trip.customPerDay) state.customPerDay = trip.customPerDay;
-    if (trip.budgetEntries) state.budgetLog = trip.budgetEntries;
-    if (trip.packingState) state.packingState = trip.packingState;
+  if (typeof state === 'undefined') return;
 
-    // Echo location into UI
-    var echo = document.getElementById('pref-origin-echo');
-    if (echo && state.location.city) echo.textContent = state.location.city;
+  // 1. Restore state from saved trip
+  state.sessionId = trip.sessionId || state.sessionId;
+  if (trip.origin) state.location = Object.assign({}, state.location, trip.origin);
+  if (trip.prefs) state.prefs = Object.assign({}, state.prefs, trip.prefs);
+  state.selectedId = trip.destinationId;
+  if (trip.customPerDay) state.customPerDay = trip.customPerDay;
+  if (trip.budgetEntries) state.budgetLog = trip.budgetEntries;
+  if (trip.packingState) state.packingState = trip.packingState;
 
-    if (typeof computeMatches === 'function') computeMatches();
-    if (typeof unlockStep === 'function') {
-      unlockStep(2);
-      unlockStep(3);
-      unlockStep(4);
-      unlockStep(5);
-    }
+  // 2. Echo location into prefs UI
+  var echo = document.getElementById('pref-origin-echo');
+  if (echo && state.location.city) echo.textContent = state.location.city;
 
+  // 3. Unlock all steps up to 5 (MUST happen before goToStep)
+  if (typeof unlockStep === 'function') {
+    unlockStep(2);
+    unlockStep(3);
+    unlockStep(4);
+    unlockStep(5);
+  }
+  // Ensure maxStep is 5 so goToStep(5) doesn't bail out
+  if (typeof state !== 'undefined') state.maxStep = 5;
+
+  if (typeof computeMatches === 'function') computeMatches();
+
+  // 4. Close modal first
+  closeDashboardModal();
+
+  // 5. Navigate to step 5 (makes screen-5 active in the DOM)
+  if (typeof goToStep === 'function') {
+    goToStep(5);
+  }
+
+  // 6. Generate itinerary AFTER screen is active so DOM targets exist
+  setTimeout(function() {
     if (typeof generateItinerary === 'function') {
       generateItinerary();
     }
-
-    closeDashboardModal();
-
-    // Smooth scroll to planner
+    // Scroll to planner after generation starts
     var plannerEl = document.getElementById('planner-section');
-    if (plannerEl) {
-      plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    if (plannerEl) plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
 
-    if (typeof goToStep === 'function') {
-      goToStep(5);
-    }
-
-    showToast('Loaded ' + (trip.destinationName || 'itinerary') + ' from cloud! 🌟', 'success');
-  }
+  showToast('Loaded ' + (trip.destinationName || 'itinerary') + ' from cloud! 🌟', 'success');
 }
 
-function deleteUserTrip(tripId) {
+function showDeleteTripConfirm(tripId, destName) {
+  var existing = document.getElementById('delete-trip-confirm-overlay');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'delete-trip-confirm-overlay';
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'z-index:999999',
+    'display:flex', 'align-items:center', 'justify-content:center',
+    'background:rgba(0,0,0,0.65)', 'backdrop-filter:blur(8px)',
+    '-webkit-backdrop-filter:blur(8px)',
+    'animation:dtOverlayIn 0.2s ease both'
+  ].join(';');
+
+  overlay.innerHTML = [
+    '<style>',
+    '@keyframes dtOverlayIn{from{opacity:0}to{opacity:1}}',
+    '@keyframes dtPopIn{from{opacity:0;transform:scale(0.8) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}',
+    '#delete-trip-confirm-box{background:linear-gradient(160deg,#0f1923,#13243a);border:1px solid rgba(239,68,68,0.3);border-radius:20px;padding:40px 36px 32px;max-width:380px;width:90%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,0.7),0 0 0 1px rgba(239,68,68,0.1);animation:dtPopIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;}',
+    '.dt-icon-ring{width:68px;height:68px;border-radius:50%;background:rgba(239,68,68,0.12);border:2px solid rgba(239,68,68,0.4);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:1.8rem;}',
+    '.dt-title{font-size:1.25rem;font-weight:800;color:#fff;margin:0 0 8px;}',
+    '.dt-sub{font-size:0.88rem;color:rgba(255,255,255,0.5);margin:0 0 6px;line-height:1.5;}',
+    '.dt-dest{font-size:0.92rem;color:rgba(255,255,255,0.75);font-weight:600;margin:0 0 28px;padding:8px 14px;background:rgba(255,255,255,0.06);border-radius:8px;border:1px solid rgba(255,255,255,0.1);}',
+    '.dt-actions{display:flex;gap:12px;}',
+    '.dt-cancel{flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:rgba(255,255,255,0.7);font-size:0.95rem;font-weight:600;cursor:pointer;transition:background 0.15s;}',
+    '.dt-cancel:hover{background:rgba(255,255,255,0.08);}',
+    '.dt-delete{flex:1;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:0.95rem;font-weight:700;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 14px rgba(239,68,68,0.4);}',
+    '.dt-delete:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(239,68,68,0.5);}',
+    '.dt-delete:disabled{opacity:0.6;transform:none;cursor:not-allowed;}',
+    '</style>',
+    '<div id="delete-trip-confirm-box">',
+      '<div class="dt-icon-ring">🗑️</div>',
+      '<h3 class="dt-title">Delete Itinerary?</h3>',
+      '<p class="dt-sub">This will permanently remove your saved trip from the cloud. This action cannot be undone.</p>',
+      '<div class="dt-dest">' + (destName || 'Saved Trip') + '</div>',
+      '<div class="dt-actions">',
+        '<button class="dt-cancel" id="dt-cancel-btn">Cancel</button>',
+        '<button class="dt-delete" id="dt-confirm-btn">🗑️ Delete from Cloud</button>',
+      '</div>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+
+  document.getElementById('dt-cancel-btn').addEventListener('click', function() {
+    overlay.style.animation = 'dtOverlayIn 0.15s ease reverse forwards';
+    setTimeout(function() { overlay.remove(); }, 150);
+  });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.style.animation = 'dtOverlayIn 0.15s ease reverse forwards';
+      setTimeout(function() { overlay.remove(); }, 150);
+    }
+  });
+
+  document.getElementById('dt-confirm-btn').addEventListener('click', function() {
+    var btn = document.getElementById('dt-confirm-btn');
+    btn.disabled = true;
+    btn.textContent = 'Deleting...';
+    deleteUserTrip(tripId, overlay);
+  });
+}
+
+function deleteUserTrip(tripId, overlay) {
   fetch(apiUrl('/api/trips/' + tripId), {
     method: 'DELETE',
     headers: {
@@ -253,10 +323,15 @@ function deleteUserTrip(tripId) {
       return res.json();
     })
     .then(function () {
-      showToast('Trip removed from cloud', 'info');
+      if (overlay) {
+        overlay.style.animation = 'dtOverlayIn 0.15s ease reverse forwards';
+        setTimeout(function() { overlay.remove(); }, 150);
+      }
+      showToast('✅ Trip deleted from cloud successfully', 'success');
       loadUserDashboard();
     })
     .catch(function (err) {
+      if (overlay) overlay.remove();
       showToast('Could not delete trip: ' + err.message, 'error');
     });
 }
