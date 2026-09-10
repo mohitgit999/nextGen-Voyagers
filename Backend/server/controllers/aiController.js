@@ -86,7 +86,13 @@ GENERATE a JSON response with this exact structure:
       "budget": { "stay": 800, "food": 500, "transport": 300, "activities": 400 },
       "safetyTip": "safety advice for the day",
       "culturalNote": "local custom or cultural insight",
-      "hiddenGem": "off-the-beaten-path suggestion",
+      "hiddenGem": {
+        "name": "Secret Spot Name",
+        "location": "Exact landmark, trail or viewpoint in ${destination}",
+        "description": "Why it is an undiscovered gem and what makes it special",
+        "bestTime": "early morning before 8am",
+        "tip": "insider secret tip"
+      },
       "crowdLevel": "Low/Moderate/High",
       "bestTimeToVisit": "early morning before 9am"
     }
@@ -94,7 +100,14 @@ GENERATE a JSON response with this exact structure:
   "packingSuggestions": ["item1", "item2"],
   "culturalHighlights": ["highlight1", "highlight2"],
   "hiddenGems": [
-    { "name": "place name", "description": "why it's special", "bestFor": "photography" }
+    {
+      "name": "Secret Spot Name",
+      "location": "Exact landmark, trail or viewpoint in ${destination}",
+      "description": "Why locals cherish this spot and what makes it extraordinary",
+      "bestFor": "solitude, sunset, photography or nature walks",
+      "bestTime": "early morning or golden hour",
+      "tip": "insider advice on how to explore this hidden place"
+    }
   ],
   "emergencyInfo": {
     "nearestHospital": "name",
@@ -104,8 +117,9 @@ GENERATE a JSON response with this exact structure:
 }
 
 IMPORTANT RULES:
-- CRITICAL: Every single "location" field (morning, midday, afternoon, evening, smartTip) MUST be an authentic, specific, real-world place name, landmark, sanctuary, cafe, viewpoint, temple, or trail in ${destination}.
+- CRITICAL: Every single "location" field (morning, midday, afternoon, evening, smartTip, and hiddenGem) MUST be an authentic, specific, real-world place name, landmark, sanctuary, cafe, viewpoint, temple, or trail in ${destination}.
 - NEVER use generic placeholders like 'Morning Spot', 'Afternoon Spot', 'In Transit', 'Nearby Cafe', or '${destination} Area'.
+- Include at least 2-3 genuine, offbeat hidden spots for ${destination} with exact locations and insider tips.
 - Budget values must be realistic for ${destination} in INR (₹)
 - Include at least 2 hidden gems across the trip
 - Cultural notes should be authentic and respectful

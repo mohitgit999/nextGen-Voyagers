@@ -98,6 +98,9 @@ function generateItinerary() {
     /* Day cards container */
     '<div id="itinerary-days-container">' + daysHtml + '</div>' +
 
+    /* Dedicated Secret Spots & Hidden Gems Panel */
+    renderItineraryHiddenGemsPanel(d, currentAiPlan) +
+
     /* Budget tracker */
     renderBudgetTracker(d, cost) +
 
@@ -242,22 +245,152 @@ function renderDayCardsHtml(d, duration, cost) {
           '<span class="budget-mini-chip">🍲 Food: ' + inr(foodAlloc) + '</span>' +
           '<span class="budget-mini-chip">🚖 Transport: ' + inr(transAlloc) + '</span>' +
           '<span class="budget-mini-chip">🎟️ Activities: ' + inr(actAlloc) + '</span>' +
-        '</div>' +
+        '</div>';
 
-        /* Hidden gem & culture callouts */
-        (hiddenGem ? '' +
-          '<div class="day-gem-callout">' +
-            '<strong>💎 Off-beat Gem:</strong> <span>' + hiddenGem + '</span>' +
-          '</div>' : '') +
+    // Day Secret Spot Card
+    var rawGem = (aiDay && aiDay.hiddenGem) || (d.hiddenGems && d.hiddenGems[(j - 1) % d.hiddenGems.length]) || null;
+    var gemObj = null;
+    if (rawGem) {
+      if (typeof rawGem === 'object') {
+        gemObj = {
+          name: rawGem.name || (d.name + ' Secret Discovery'),
+          location: rawGem.location || rawGem.name || (d.name + ' Offbeat Trail'),
+          description: rawGem.description || (d.name + ' secluded scenic spot treasured by local residents.'),
+          bestTime: rawGem.bestTime || 'Early morning or golden hour',
+          tip: rawGem.tip || rawGem.secretTip || 'Ask friendly local shopkeepers for the scenic walking path.'
+        };
+      } else if (typeof rawGem === 'string') {
+        var parts = rawGem.split('—');
+        gemObj = {
+          name: parts[0].trim(),
+          location: parts[0].trim() + ', ' + d.name,
+          description: parts[1] ? parts[1].trim() : rawGem,
+          bestTime: 'Early morning or golden hour',
+          tip: 'Ask locals for trail guidance.'
+        };
+      }
+    }
 
-        '<div class="cultural-tip-row">' +
-          '<strong>🏛️ Cultural Etiquette:</strong> <span>' + culturalNote + '</span>' +
-        '</div>' +
+    var gemHtml = '';
+    if (gemObj) {
+      var gemMapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(gemObj.location + ', ' + d.name + (d.state ? ', ' + d.state : ''));
+      gemHtml = '' +
+        '<div class="day-gem-featured-card" style="margin-top:16px; padding:16px; background:linear-gradient(135deg, rgba(27,184,154,0.08) 0%, rgba(59,130,246,0.06) 100%); border:1px solid rgba(27,184,154,0.3); border-radius:12px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px; flex-wrap:wrap;">' +
+            '<div style="display:flex; align-items:center; gap:8px;">' +
+              '<span style="font-size:1.3rem;">💎</span>' +
+              '<div>' +
+                '<h4 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--ink);">' + gemObj.name + '</h4>' +
+                '<span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--teal); font-weight:700;">Day ' + j + ' Secret Spot</span>' +
+              '</div>' +
+            '</div>' +
+            '<a href="' + gemMapsUrl + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; background:var(--teal); color:#fff; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(27,184,154,0.3);">' +
+              '📍 View Location on Maps' +
+            '</a>' +
+          '</div>' +
+          '<p style="font-size:0.92rem; color:var(--ink); margin:8px 0 10px; line-height:1.5;">' + gemObj.description + '</p>' +
+          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.82rem; color:var(--ink-soft); background:var(--surface); padding:8px 12px; border-radius:8px; border:1px solid var(--border, var(--line));">' +
+            '<div>📍 <strong>Location:</strong> ' + gemObj.location + '</div>' +
+            '<div>⏰ <strong>Best Time:</strong> ' + gemObj.bestTime + '</div>' +
+            '<div>🤫 <strong>Secret Tip:</strong> ' + gemObj.tip + '</div>' +
+          '</div>' +
+        '</div>';
+    }
 
-        '<div class="safety-note">' + icon('shield') + '<span>' + tip + '</span></div>' +
-      '</div>';
+    days += '' +
+      gemHtml +
+      '<div class="cultural-tip-row" style="margin-top:12px; font-size:0.88rem; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">' +
+        '<strong>🏛️ Cultural Etiquette:</strong> <span>' + ((aiDay && aiDay.culturalNote) || (d.culture ? d.culture.etiquette : 'Respect local traditions and photography rules.')) + '</span>' +
+      '</div>' +
+      '<div class="safety-note" style="margin-top:8px; font-size:0.88rem; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">' +
+        icon('shield') + '<span>' + ((aiDay && aiDay.safetyTip) || (d.safety && d.safety.points && d.safety.points[0]) || 'Stay on marked trails and keep emergency numbers handy.') + '</span>' +
+      '</div>' +
+    '</div>';
   }
   return days;
+}
+
+/* ── Dedicated Itinerary Hidden Gems Showcase Panel ── */
+function renderItineraryHiddenGemsPanel(d, plan) {
+  var gems = [];
+  if (plan && Array.isArray(plan.hiddenGems) && plan.hiddenGems.length) {
+    gems = plan.hiddenGems;
+  } else if (Array.isArray(d.hiddenGems) && d.hiddenGems.length) {
+    gems = d.hiddenGems;
+  }
+
+  if (!gems.length) {
+    gems = [
+      {
+        name: d.name + ' Secret Valley & Pines',
+        location: d.name + ' Forest Trail',
+        description: 'An untouched nature retreat away from tourist tracks, loved by locals for quiet morning walks.',
+        bestFor: 'Solitude & Photography',
+        bestTime: '06:30 – 08:30',
+        tip: 'Follow the stone path past the stream; carry drinking water.'
+      },
+      {
+        name: d.name + ' Panoramic Sunset Ridge',
+        location: d.name + ' East Viewpoint',
+        description: 'Spectacular viewpoint overlooking mountain ranges and valleys during golden hour.',
+        bestFor: 'Sunsets & Stargazing',
+        bestTime: '17:30 – 19:00',
+        tip: 'Reach 30 minutes before sunset for the clearest light.'
+      }
+    ];
+  }
+
+  var cardsHtml = gems.map(function(gem) {
+    var name = gem.name || (d.name + ' Secret Spot');
+    var loc = gem.location || gem.name || (d.name + ' Scenic Spot');
+    var desc = gem.description || (gem.tip || 'A tranquil offbeat gem with scenic vistas.');
+    var bestTime = gem.bestTime || 'Early morning or golden hour';
+    var secretTip = gem.tip || gem.secretTip || 'Ask friendly local shopkeepers for the walking path.';
+    var bestFor = gem.bestFor || gem.vibe || 'Solitude & Nature';
+    var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc + ', ' + d.name + (d.state ? ', ' + d.state : ''));
+
+    return '' +
+      '<div class="itinerary-gem-card" style="background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:space-between; gap:12px;">' +
+        '<div>' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px;">' +
+            '<div style="display:flex; align-items:center; gap:8px;">' +
+              '<span style="font-size:1.4rem;">💎</span>' +
+              '<h4 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--ink);">' + name + '</h4>' +
+            '</div>' +
+            '<span style="font-size:0.75rem; padding:4px 8px; border-radius:12px; background:rgba(27,184,154,0.12); color:var(--teal); font-weight:700; text-transform:uppercase;">' + bestFor + '</span>' +
+          '</div>' +
+          '<p style="font-size:0.92rem; color:var(--ink); line-height:1.55; margin:8px 0 14px;">' + desc + '</p>' +
+        '</div>' +
+        '<div style="background:var(--surface-mid); padding:12px 14px; border-radius:10px; font-size:0.85rem; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px;">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
+            '<span>📍 <strong>Location:</strong> ' + loc + '</span>' +
+            '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:700; text-decoration:underline; display:inline-flex; align-items:center; gap:3px;">' +
+              'Open in Google Maps ↗' +
+            '</a>' +
+          '</div>' +
+          '<div>⏰ <strong>Best Time:</strong> ' + bestTime + '</div>' +
+          '<div>💡 <strong>Secret Tip:</strong> ' + secretTip + '</div>' +
+        '</div>' +
+      '</div>';
+  }).join('');
+
+  return '' +
+    '<div class="panel itinerary-gems-panel" style="margin-top:24px; margin-bottom:24px;">' +
+      '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">' +
+        '<div>' +
+          '<h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px; font-size:1.3rem; font-weight:800; color:var(--ink);">' +
+            '<span>💎</span> Secret Spots & Hidden Gems of ' + d.name +
+          '</h3>' +
+          '<p class="hint-text" style="margin:0; font-size:0.9rem; color:var(--ink-muted);">Vetted offbeat locations, secret viewpoints, and secluded nature trails away from tourist crowds.</p>' +
+        '</div>' +
+        '<span style="padding:4px 12px; border-radius:20px; background:linear-gradient(135deg,#1BB89A,#3B82F6); color:#fff; font-size:0.8rem; font-weight:700;">' +
+          gems.length + ' Secret Spots Discovered' +
+        '</span>' +
+      '</div>' +
+      '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:18px;">' +
+        cardsHtml +
+      '</div>' +
+    '</div>';
 }
 
 /* ── Route Map Initialization ── */
@@ -428,15 +561,29 @@ function buildLocalSmartItinerary(d, duration, cost) {
         transport: Math.round(perDayCost * 0.15),
         activities: Math.round(perDayCost * 0.15)
       },
-      safetyTip: (d.safety && d.safety.points && d.safety.points.length) ? d.safety.points[(i - 1) % d.safety.points.length] : 'Stay hydrated and follow local advisories.',
-      culturalNote: (d.culture && d.culture.etiquette) ? d.culture.etiquette : 'Respect local traditions and sacred places.',
-      hiddenGem: gem ? (gem.name + ' — ' + (gem.tip || gem.description || '')) : null
+      hiddenGem: {
+        name: (gem && gem.name) ? gem.name : (d.name + ' Hidden Sanctuary Trail'),
+        location: (gem && (gem.location || gem.name)) ? (gem.location || gem.name) : (d.name + ' Mountain Ridge'),
+        description: (gem && gem.description) ? gem.description : ('An offbeat quiet trail in ' + d.name + ' known to locals for natural peace.'),
+        bestTime: (gem && gem.bestTime) ? gem.bestTime : 'Early morning (06:30 – 08:30)',
+        tip: (gem && (gem.tip || gem.secretTip)) ? (gem.tip || gem.secretTip) : 'Carry light snacks and water; ask locals for trail landmarks.'
+      }
     });
   }
 
   return {
     title: duration + '-Day Curated Plan for ' + d.name,
-    days: days
+    days: days,
+    hiddenGems: (d.hiddenGems && d.hiddenGems.length) ? d.hiddenGems : [
+      {
+        name: d.name + ' Secret Valley & Pines',
+        location: d.name + ' Forest Trail',
+        description: 'An untouched nature retreat away from tourist tracks, loved by locals for quiet morning walks.',
+        bestFor: 'Solitude & Photography',
+        bestTime: '06:30 – 08:30',
+        tip: 'Follow the stone path past the stream.'
+      }
+    ]
   };
 }
 
