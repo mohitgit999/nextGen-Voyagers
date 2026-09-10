@@ -222,42 +222,103 @@ function renderWeatherWidget(d) {
 
 /* ── Transport panel ── */
 function renderTransportPanel(d) {
+  if (!d.transport) {
+    return '<p class="hint-text">Transport details unavailable for this destination.</p>';
+  }
   var t = d.transport;
-  var train = t.train || {};
+  var train  = t.train  || {};
   var flight = t.flight || {};
-  var road = t.road || {};
-  var value = function(item, key, fallback) {
-    return item[key] || fallback;
-  };
+  var road   = t.road   || {};
+
+  var trainLabel   = train.label   || train.station  || 'Train';
+  var trainDetail  = train.station || '';
+  var trainNote    = train.note    || '';
+  var flightLabel  = flight.label  || flight.airport || 'Flight';
+  var flightDetail = flight.airport || '';
+  var flightNote   = flight.note   || '';
+  var roadLabel    = road.label    || 'By Road';
+  var roadNote     = road.note     || '';
+
+  function mapsLink(query) {
+    return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query + ', India');
+  }
+
   return '<div class="transport-list">' +
+
+    /* Train */
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('train') + '</div>' +
-      '<div><div class="transport-label">' + value(train, 'label', 'Train details') + '</div><div class="transport-detail">' + value(train, 'station', 'Check live route options') + '</div><div class="transport-note">' + value(train, 'note', 'Live details available from the destination search') + '</div></div>' +
+      '<div style="flex:1;">' +
+        '<div class="transport-label">' + trainLabel + '</div>' +
+        (trainDetail ? '<div class="transport-detail">' +
+          '<a href="' + mapsLink(trainLabel) + '" target="_blank" rel="noopener" style="color:var(--teal);font-weight:600;text-decoration:none;">' + trainDetail + ' ↗</a>' +
+        '</div>' : '') +
+        (trainNote ? '<div class="transport-note">' + trainNote + '</div>' : '') +
+      '</div>' +
     '</div>' +
+
+    /* Flight */
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('plane') + '</div>' +
-      '<div><div class="transport-label">' + value(flight, 'label', 'Flight details') + '</div><div class="transport-detail">' + value(flight, 'airport', 'Check live airport options') + '</div><div class="transport-note">' + value(flight, 'note', 'Live details available from the destination search') + '</div></div>' +
+      '<div style="flex:1;">' +
+        '<div class="transport-label">' + flightLabel + '</div>' +
+        (flightDetail ? '<div class="transport-detail">' +
+          '<a href="' + mapsLink(flightDetail) + '" target="_blank" rel="noopener" style="color:var(--teal);font-weight:600;text-decoration:none;">' + flightDetail + ' ↗</a>' +
+        '</div>' : '') +
+        (flightNote ? '<div class="transport-note">' + flightNote + '</div>' : '') +
+      '</div>' +
     '</div>' +
+
+    /* Road */
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('car') + '</div>' +
-      '<div><div class="transport-label">' + value(road, 'label', 'Road route details') + '</div><div class="transport-note">' + value(road, 'note', 'Live route details are generated for your origin') + '</div></div>' +
+      '<div style="flex:1;">' +
+        '<div class="transport-label">' + roadLabel + '</div>' +
+        (roadNote ? '<div class="transport-note">' + roadNote + '</div>' : '') +
+        '<a href="https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(d.name + ', ' + d.state) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:6px;font-size:0.8rem;color:var(--teal);font-weight:700;text-decoration:none;">🗺️ Get Directions →</a>' +
+      '</div>' +
     '</div>' +
+
   '</div>';
 }
 
 /* ── Local emergency panel ── */
 function renderLocalEmergencyPanel(d) {
-  var e = d.localEmergency;
-  var police = e.police || 'Live local contact unavailable';
-  var hospital = e.hospital || 'Live hospital contact unavailable';
-  var tourist = e.tourist || 'Live tourist helpline unavailable';
+  var e = d.localEmergency || {};
+  var police   = e.police   || null;
+  var hospital = e.hospital || null;
+  var tourist  = e.tourist  || null;
+
+  function phoneRow(label, val) {
+    if (!val) return '<div class="local-emerg-item">' +
+      '<span class="local-emerg-label">' + label + '</span>' +
+      '<span class="local-emerg-num" style="opacity:0.4;">Not listed</span>' +
+    '</div>';
+
+    /* Extract first number-like token for tel: link */
+    var numMatch = val.match(/[\d\-\+\s]{7,}/);
+    var telNum = numMatch ? numMatch[0].replace(/\s/g, '') : null;
+
+    return '<div class="local-emerg-item">' +
+      '<span class="local-emerg-label">' + label + '</span>' +
+      '<span class="local-emerg-num">' +
+        icon('phone') +
+        (telNum
+          ? '<a href="tel:' + telNum + '" style="color:var(--teal);font-weight:700;text-decoration:none;">' + val + '</a>'
+          : '<strong>' + val + '</strong>') +
+      '</span>' +
+    '</div>';
+  }
+
   return '<div class="local-emergency-list">' +
-    '<div class="local-emerg-item"><span class="local-emerg-label">Local police</span>' +
-      '<span class="local-emerg-num">' + icon('phone') + police + '</span></div>' +
-    '<div class="local-emerg-item"><span class="local-emerg-label">Hospital</span>' +
-      '<span class="local-emerg-num">' + hospital + '</span></div>' +
-    '<div class="local-emerg-item"><span class="local-emerg-label">Tourism helpline</span>' +
-      '<span class="local-emerg-num">' + icon('phone') + tourist + '</span></div>' +
+    phoneRow('Local Police', police) +
+    phoneRow('Hospital', hospital) +
+    phoneRow('Tourism Helpline', tourist) +
+    '<div style="margin-top:14px;padding:10px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.82rem;color:var(--ink-soft);">' +
+      '🚨 <strong>National Emergency:</strong> <a href="tel:112" style="color:#ef4444;font-weight:700;text-decoration:none;">112</a> &nbsp;|&nbsp; ' +
+      '🏥 <strong>Ambulance:</strong> <a href="tel:108" style="color:#ef4444;font-weight:700;text-decoration:none;">108</a> &nbsp;|&nbsp; ' +
+      '👮 <strong>Police:</strong> <a href="tel:100" style="color:#ef4444;font-weight:700;text-decoration:none;">100</a>' +
+    '</div>' +
   '</div>';
 }
 
