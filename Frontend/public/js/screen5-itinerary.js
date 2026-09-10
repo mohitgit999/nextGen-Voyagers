@@ -159,10 +159,39 @@ function renderDayCardsHtml(d, duration, cost) {
     var hiddenGem = aiDay && aiDay.hiddenGem ? aiDay.hiddenGem : (d.hiddenGems && d.hiddenGems[(j - 1) % d.hiddenGems.length] ? d.hiddenGems[(j - 1) % d.hiddenGems.length].name + ' — ' + (d.hiddenGems[(j - 1) % d.hiddenGems.length].tip || d.hiddenGems[(j - 1) % d.hiddenGems.length].description || '') : null);
     var taskText = function(task, fallback) {
       if (!task) return fallback;
-      var activity = task.activity || task.description || fallback;
-      var location = task.location ? ' <span class="task-location">📍 ' + task.location + '</span>' : '';
-      return activity + location;
+      return task.activity || task.description || fallback;
     };
+
+    var locMorning = (aiDay && aiDay.morning && aiDay.morning.location) ? aiDay.morning.location : d.name + ' - Morning Spot';
+    var locAfternoon = (aiDay && aiDay.afternoon && aiDay.afternoon.location) ? aiDay.afternoon.location : d.name + ' - Afternoon Spot';
+    var locEvening = (aiDay && aiDay.evening && aiDay.evening.location) ? aiDay.evening.location : d.name + ' - Evening Spot';
+
+    var acts = [
+      { label: 'Morning (08:30 – 12:30)', dot: 'dot-morning', text: (aiDay && aiDay.morning ? taskText(aiDay.morning, morning) : morning), loc: locMorning },
+      { label: 'Midday (12:30 – 13:00)', dot: 'dot-afternoon', text: 'Travel to the next AI-selected stop and take a short break.', loc: 'In Transit / Nearby Cafe' },
+      { label: 'Afternoon (13:00 – 17:00)', dot: 'dot-afternoon', text: (aiDay && aiDay.afternoon ? taskText(aiDay.afternoon, afternoon) : afternoon), loc: locAfternoon },
+      { label: 'Evening & Night (18:00 – 22:00)', dot: 'dot-evening', text: (aiDay && aiDay.evening ? taskText(aiDay.evening, evening) : evening), loc: locEvening },
+      { label: 'Smart Tip', dot: 'dot-evening', text: (hiddenGem || culturalNote), loc: d.name + ' Area' }
+    ];
+
+    var actsHtml = '<div class="activity-cards-list" style="display:flex; flex-direction:column; gap:16px; margin-top:16px; margin-bottom:16px;">';
+    acts.forEach(function(act) {
+      actsHtml += '' +
+        '<div class="activity-card-vertical" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
+          '<div style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">' +
+            '<span class="part-dot ' + act.dot + '"></span> ' + act.label + 
+          '</div>' +
+          '<div style="font-size:1.05rem; font-weight:500; color:var(--text); margin-bottom:14px; line-height:1.5;">' +
+            act.text +
+          '</div>' +
+          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted); background:var(--bg); padding:10px 12px; border-radius:8px;">' +
+            '<div style="display:flex; align-items:center; gap:4px;">📍 <span>' + act.loc + '</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span>' + d.weather.temp.min + '-' + d.weather.temp.max + '°C</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">👥 <span>' + crowdLevel + ' Crowd</span></div>' +
+          '</div>' +
+        '</div>';
+    });
+    actsHtml += '</div>';
 
     days += '' +
       '<div class="day-card' + (j === 1 ? ' day-active' : '') + '" id="day-' + j + '" data-day="' + j + '">' +
@@ -172,37 +201,13 @@ function renderDayCardsHtml(d, duration, cost) {
             '<div>' +
               '<span class="day-theme">' + theme + '</span>' +
               '<div class="day-meta-pill-row">' +
-                '<span class="day-sub-pill crowd-pill">👥 ' + crowdLevel + ' Crowd</span>' +
-                '<span class="day-sub-pill peak-pill">⏰ Peak: ' + peakHours + '</span>' +
-                '<span class="day-sub-pill weather-pill">☀️ ' + d.weather.temp.min + '-' + d.weather.temp.max + '°C</span>' +
+                '<span class="day-sub-pill peak-pill">⏰ Peak Hours: ' + peakHours + '</span>' +
               '</div>' +
             '</div>' +
           '</div>' +
           '<div class="day-budget-badge">' + inr(perDayCost) + '/person</div>' +
         '</div>' +
-
-        '<div class="day-parts day-task-grid">' +
-          '<div class="day-part">' +
-            '<div class="day-part-label"><span class="part-dot dot-morning"></span>Morning (08:30 – 12:30)</div>' +
-            '<div class="day-part-text">' + (aiDay && aiDay.morning ? taskText(aiDay.morning, morning) : morning) + '</div>' +
-          '</div>' +
-          '<div class="day-part">' +
-            '<div class="day-part-label"><span class="part-dot dot-afternoon"></span>Midday (12:30 – 13:00)</div>' +
-            '<div class="day-part-text">Travel to the next AI-selected stop and take a short break.</div>' +
-          '</div>' +
-          '<div class="day-part">' +
-            '<div class="day-part-label"><span class="part-dot dot-afternoon"></span>Afternoon (13:00 – 17:00)</div>' +
-            '<div class="day-part-text">' + (aiDay && aiDay.afternoon ? taskText(aiDay.afternoon, afternoon) : afternoon) + '</div>' +
-          '</div>' +
-          '<div class="day-part">' +
-            '<div class="day-part-label"><span class="part-dot dot-evening"></span>Evening & Night (18:00 – 22:00)</div>' +
-            '<div class="day-part-text">' + (aiDay && aiDay.evening ? taskText(aiDay.evening, evening) : evening) + '</div>' +
-          '</div>' +
-          '<div class="day-part">' +
-            '<div class="day-part-label"><span class="part-dot dot-evening"></span>Smart Tip</div>' +
-            '<div class="day-part-text">' + (hiddenGem || culturalNote) + '</div>' +
-          '</div>' +
-        '</div>' +
+        actsHtml +
 
         /* Day budget breakdown */
         '<div class="day-budget-row">' +
