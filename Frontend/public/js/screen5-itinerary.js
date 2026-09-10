@@ -959,12 +959,10 @@ function saveCurrentTripToCloud(d, duration, cost) {
           b.disabled = false;
           b.classList.add('saved');
           var span = b.querySelector('span');
-          if (span) span.textContent = 'Saved in Cloud ✓';
+          if (span) span.textContent = 'Saved in Dashboard ✓';
         }
       });
-      if (typeof showToast === 'function') {
-        showToast('Itinerary saved to your account in MongoDB Atlas! 🎒', 'success');
-      }
+      showItinerarySavedPopup();
     })
     .catch(function(err) {
       btns.forEach(function(b) {
@@ -978,6 +976,96 @@ function saveCurrentTripToCloud(d, duration, cost) {
         showToast('Error saving trip: ' + err.message, 'error');
       }
     });
+}
+
+/* ── Itinerary Saved Popup ── */
+function showItinerarySavedPopup() {
+  // Remove existing popup if any
+  var existing = document.getElementById('itinerary-saved-popup-overlay');
+  if (existing) existing.remove();
+
+  var overlay = document.createElement('div');
+  overlay.id = 'itinerary-saved-popup-overlay';
+  overlay.style.cssText = [
+    'position:fixed', 'inset:0', 'z-index:99999',
+    'display:flex', 'align-items:center', 'justify-content:center',
+    'background:rgba(0,0,0,0.55)', 'backdrop-filter:blur(6px)',
+    '-webkit-backdrop-filter:blur(6px)',
+    'animation:itinOverlayIn 0.25s ease'
+  ].join(';');
+
+  overlay.innerHTML = [
+    '<style>',
+    '@keyframes itinOverlayIn{from{opacity:0}to{opacity:1}}',
+    '@keyframes itinPopupIn{from{opacity:0;transform:scale(0.75) translateY(30px)}to{opacity:1;transform:scale(1) translateY(0)}}',
+    '@keyframes itinCheckBounce{0%{transform:scale(0)}60%{transform:scale(1.25)}80%{transform:scale(0.9)}100%{transform:scale(1)}}',
+    '@keyframes itinConfetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(-80px) rotate(360deg);opacity:0}}',
+    '#itinerary-saved-popup{',
+      'background:linear-gradient(145deg,#0f1923 0%,#13243a 60%,#0d1f2d 100%);',
+      'border:1px solid rgba(27,184,154,0.35);',
+      'border-radius:24px;',
+      'padding:48px 40px 40px;',
+      'text-align:center;',
+      'max-width:420px;',
+      'width:90%;',
+      'box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(27,184,154,0.15),inset 0 1px 0 rgba(255,255,255,0.06);',
+      'animation:itinPopupIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;',
+      'position:relative;overflow:hidden;',
+    '}',
+    '#itinerary-saved-popup::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(27,184,154,0.12) 0%,transparent 65%);pointer-events:none;}',
+    '.itin-check-ring{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(27,184,154,0.2),rgba(59,130,246,0.15));border:2px solid rgba(27,184,154,0.5);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:itinCheckBounce 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;box-shadow:0 0 30px rgba(27,184,154,0.3);}',
+    '.itin-check-svg{width:38px;height:38px;}',
+    '.itin-saved-title{font-size:1.55rem;font-weight:800;color:#fff;margin:0 0 8px;letter-spacing:-0.3px;line-height:1.25;}',
+    '.itin-saved-sub{font-size:0.95rem;color:rgba(255,255,255,0.55);margin:0 0 28px;line-height:1.5;}',
+    '.itin-saved-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#1BB89A,#3B82F6);color:#fff;font-size:0.85rem;font-weight:700;margin-bottom:28px;box-shadow:0 4px 16px rgba(27,184,154,0.35);letter-spacing:0.2px;}',
+    '.itin-saved-dismiss{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#1BB89A,#16a085);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 16px rgba(27,184,154,0.4);letter-spacing:0.2px;}',
+    '.itin-saved-dismiss:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(27,184,154,0.5);}',
+    '.itin-confetti-dot{position:absolute;width:8px;height:8px;border-radius:50%;animation:itinConfetti 1.2s ease forwards;}',
+    '</style>',
+    '<div id="itinerary-saved-popup">',
+      '<span class="itin-confetti-dot" style="top:20%;left:15%;background:#1BB89A;animation-delay:0.1s;"></span>',
+      '<span class="itin-confetti-dot" style="top:15%;left:70%;background:#3B82F6;animation-delay:0.2s;"></span>',
+      '<span class="itin-confetti-dot" style="top:25%;left:85%;background:#F59E0B;animation-delay:0.05s;width:6px;height:6px;"></span>',
+      '<span class="itin-confetti-dot" style="top:30%;left:8%;background:#EC4899;animation-delay:0.15s;width:5px;height:5px;"></span>',
+      '<div class="itin-check-ring">',
+        '<svg class="itin-check-svg" viewBox="0 0 24 24" fill="none">',
+          '<circle cx="12" cy="12" r="11" stroke="#1BB89A" stroke-width="1.5" opacity="0.4"/>',
+          '<path d="M7 12.5l3.5 3.5 6.5-7" stroke="#1BB89A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>',
+        '</svg>',
+      '</div>',
+      '<h2 class="itin-saved-title">Itinerary Saved! 🎒</h2>',
+      '<p class="itin-saved-sub">Your trip plan has been saved successfully and is ready to access anytime.</p>',
+      '<div class="itin-saved-badge">',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12l2 2 4-4"/></svg>',
+        'Saved In Your Dashboard',
+      '</div>',
+      '<button class="itin-saved-dismiss" id="itin-popup-dismiss">View Dashboard &rarr;</button>',
+    '</div>'
+  ].join('');
+
+  document.body.appendChild(overlay);
+
+  // Dismiss on button click
+  document.getElementById('itin-popup-dismiss').addEventListener('click', function() {
+    overlay.style.animation = 'itinOverlayIn 0.2s ease reverse forwards';
+    setTimeout(function() { overlay.remove(); }, 200);
+  });
+
+  // Dismiss on backdrop click
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.style.animation = 'itinOverlayIn 0.2s ease reverse forwards';
+      setTimeout(function() { overlay.remove(); }, 200);
+    }
+  });
+
+  // Auto-dismiss after 6 seconds
+  setTimeout(function() {
+    if (document.getElementById('itinerary-saved-popup-overlay')) {
+      overlay.style.animation = 'itinOverlayIn 0.3s ease reverse forwards';
+      setTimeout(function() { overlay.remove(); }, 300);
+    }
+  }, 6000);
 }
 
 function bindSharePanel(d, duration, cost) {
