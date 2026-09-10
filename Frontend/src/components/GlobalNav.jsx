@@ -8,6 +8,11 @@ const GlobalNav = () => {
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  if (isPlanner) {
+    return null;
+  }
+
+
   return (
     <>
       <nav className="global-nav" id="global-nav" aria-label="Main navigation">

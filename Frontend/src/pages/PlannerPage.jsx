@@ -10,7 +10,6 @@ const PlannerPage = () => {
       {/* Hero Banner Header */}
       <header className="planner-hero">
         <div className="planner-hero-inner">
-          <span className="planner-hero-badge">✨ NextGen AI Travel Suite</span>
           <h1 className="planner-hero-title">Craft Your Perfect India Itinerary</h1>
           <p className="planner-hero-subtitle">
             Personalized day-by-day itineraries, live weather &amp; crowd predictions, free interactive Leaflet maps, verified safety guidelines, and budget tracking — tailored to your unique travel vibe in 5 simple steps.
