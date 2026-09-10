@@ -8,6 +8,7 @@
    ============================================================ */
 
 var currentAiPlan = null;
+var currentAiPlanDest = null;
 var isGeneratingAi = false;
 
 /* ============================================================
@@ -18,6 +19,18 @@ function generateItinerary() {
   if (!d) return;
   var duration = state.prefs.duration;
   var cost     = estimateCost(d, state.prefs, state.customPerDay);
+
+  if (currentAiPlanDest !== d.name) {
+    currentAiPlan = null;
+    currentAiPlanDest = d.name;
+  }
+
+  // Auto-request AI itinerary if not yet loaded
+  if (!currentAiPlan && !isGeneratingAi) {
+    setTimeout(function() {
+      requestAiItinerary(d, duration, cost);
+    }, 30);
+  }
 
   /* ── Day chips ── */
   var chips = '';
@@ -133,6 +146,18 @@ function renderDayCardsHtml(d, duration, cost) {
   var crowdLevel = d.crowdPatterns ? d.crowdPatterns.generalLevel : 'Moderate';
   var peakHours = d.crowdPatterns ? d.crowdPatterns.peakHours : '11:00 AM – 3:30 PM';
 
+  if (isGeneratingAi && (!currentAiPlan || !currentAiPlan.days)) {
+    return '' +
+      '<div class="ai-generating-loader" style="text-align:center; padding:48px 24px; background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:16px; margin:24px 0; box-shadow:0 4px 20px rgba(0,0,0,0.05);">' +
+        '<div style="font-size:2.5rem; margin-bottom:12px; display:inline-block;">⚡</div>' +
+        '<h3 style="font-size:1.3rem; font-weight:700; color:var(--ink); margin-bottom:8px;">Crafting Personalized AI Itinerary for ' + d.name + '...</h3>' +
+        '<p style="color:var(--ink-muted); font-size:0.95rem; max-width:520px; margin:0 auto 16px;">NextGen Gemini AI is discovering authentic local attractions, scenic viewpoints, dining spots, and crowd-optimized routing.</p>' +
+        '<div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(27,184,154,0.1); color:var(--teal); font-weight:600; font-size:0.85rem;">' +
+          '<span>✨ Live AI Generation in Progress</span>' +
+        '</div>' +
+      '</div>';
+  }
+
   var days = '';
   for (var j = 1; j <= duration; j++) {
     var aiDay = currentAiPlan && currentAiPlan.days && currentAiPlan.days[j - 1] ? currentAiPlan.days[j - 1] : null;
@@ -145,33 +170,35 @@ function renderDayCardsHtml(d, duration, cost) {
     } else if (j === duration && duration > 1) {
       theme = 'Souvenirs, Hidden Corners & Departure';
     } else {
-      theme = d.dayThemes[(j - 1) % d.dayThemes.length];
+      theme = (d.dayThemes && d.dayThemes.length) ? d.dayThemes[(j - 1) % d.dayThemes.length] : ('Day ' + j + ' Discovery');
     }
 
-    var morning = aiDay && aiDay.morning ? (aiDay.morning.activity + (aiDay.morning.location ? ' (📍 ' + aiDay.morning.location + ')' : '')) : d.activities.morning[(j - 1) % d.activities.morning.length];
-    var afternoon = aiDay && aiDay.afternoon ? (aiDay.afternoon.activity + (aiDay.afternoon.location ? ' (📍 ' + aiDay.afternoon.location + ')' : '')) : d.activities.afternoon[(j - 1) % d.activities.afternoon.length];
-    var evening = aiDay && aiDay.evening ? (aiDay.evening.activity + (aiDay.evening.location ? ' (📍 ' + aiDay.evening.location + ')' : '')) : d.activities.evening[(j - 1) % d.activities.evening.length];
-    var safetyPoints = d.safety && Array.isArray(d.safety.points) && d.safety.points.length
-      ? d.safety.points
-      : ['Follow current local safety guidance and keep emergency contacts accessible.'];
-    var tip = aiDay && aiDay.safetyTip ? aiDay.safetyTip : safetyPoints[(j - 1) % safetyPoints.length];
-    var culturalNote = aiDay && aiDay.culturalNote ? aiDay.culturalNote : (d.culture ? d.culture.etiquette : 'Respect local customs and sacred sites.');
-    var hiddenGem = aiDay && aiDay.hiddenGem ? aiDay.hiddenGem : (d.hiddenGems && d.hiddenGems[(j - 1) % d.hiddenGems.length] ? d.hiddenGems[(j - 1) % d.hiddenGems.length].name + ' — ' + (d.hiddenGems[(j - 1) % d.hiddenGems.length].tip || d.hiddenGems[(j - 1) % d.hiddenGems.length].description || '') : null);
-    var taskText = function(task, fallback) {
-      if (!task) return fallback;
-      return task.activity || task.description || fallback;
-    };
+    var attr0 = (d.nearbyAttractions && d.nearbyAttractions[0] && d.nearbyAttractions[0].name) || (d.name + ' Heritage Quarter');
+    var attr1 = (d.nearbyAttractions && d.nearbyAttractions[1] && d.nearbyAttractions[1].name) || (d.name + ' Scenic Ridge');
+    var attr2 = (d.nearbyAttractions && d.nearbyAttractions[2] && d.nearbyAttractions[2].name) || (d.name + ' Sunset Point');
+    var gem0 = (d.hiddenGems && d.hiddenGems[0] && d.hiddenGems[0].name) || (d.name + ' Valley Trail');
 
-    var locMorning = (aiDay && aiDay.morning && aiDay.morning.location) ? aiDay.morning.location : d.name + ' - Morning Spot';
-    var locAfternoon = (aiDay && aiDay.afternoon && aiDay.afternoon.location) ? aiDay.afternoon.location : d.name + ' - Afternoon Spot';
-    var locEvening = (aiDay && aiDay.evening && aiDay.evening.location) ? aiDay.evening.location : d.name + ' - Evening Spot';
+    var locMorning = (aiDay && aiDay.morning && aiDay.morning.location) ? aiDay.morning.location : attr0;
+    var locMidday = (aiDay && aiDay.midday && aiDay.midday.location) ? aiDay.midday.location : (d.name + ' Old Town Cafe & Eatery');
+    var locAfternoon = (aiDay && aiDay.afternoon && aiDay.afternoon.location) ? aiDay.afternoon.location : attr1;
+    var locEvening = (aiDay && aiDay.evening && aiDay.evening.location) ? aiDay.evening.location : attr2;
+    var locSmartTip = (aiDay && aiDay.smartTip && aiDay.smartTip.location) ? aiDay.smartTip.location : gem0;
+
+    var textMorning = (aiDay && aiDay.morning && (aiDay.morning.activity || aiDay.morning.description)) || (d.activities && d.activities.morning && d.activities.morning[(j - 1) % d.activities.morning.length]) || ('Morning exploration and sightseeing at ' + locMorning);
+    var textMidday = (aiDay && aiDay.midday && (aiDay.midday.activity || aiDay.midday.description)) || ('Midday pause for authentic lunch and refreshments at ' + locMidday);
+    var textAfternoon = (aiDay && aiDay.afternoon && (aiDay.afternoon.activity || aiDay.afternoon.description)) || (d.activities && d.activities.afternoon && d.activities.afternoon[(j - 1) % d.activities.afternoon.length]) || ('Afternoon visit and activities around ' + locAfternoon);
+    var textEvening = (aiDay && aiDay.evening && (aiDay.evening.activity || aiDay.evening.description)) || (d.activities && d.activities.evening && d.activities.evening[(j - 1) % d.activities.evening.length]) || ('Evening stroll, vibrant atmosphere and sunset at ' + locEvening);
+    var textSmartTip = (aiDay && aiDay.smartTip && (aiDay.smartTip.activity || aiDay.smartTip.text)) || (aiDay && aiDay.hiddenGem) || (d.culture ? d.culture.etiquette : 'Respect local sacred traditions, carry cash for mountain markets, and keep emergency contacts handy.');
+
+    var dayCrowd = (aiDay && aiDay.crowdLevel) ? aiDay.crowdLevel : crowdLevel;
+    var dayWeather = (aiDay && aiDay.weather) ? aiDay.weather : (d.weather.temp.min + '-' + d.weather.temp.max + '°C');
 
     var acts = [
-      { label: 'Morning (08:30 – 12:30)', dot: 'dot-morning', text: (aiDay && aiDay.morning ? taskText(aiDay.morning, morning) : morning), loc: locMorning },
-      { label: 'Midday (12:30 – 13:00)', dot: 'dot-afternoon', text: 'Travel to the next AI-selected stop and take a short break.', loc: 'In Transit / Nearby Cafe' },
-      { label: 'Afternoon (13:00 – 17:00)', dot: 'dot-afternoon', text: (aiDay && aiDay.afternoon ? taskText(aiDay.afternoon, afternoon) : afternoon), loc: locAfternoon },
-      { label: 'Evening & Night (18:00 – 22:00)', dot: 'dot-evening', text: (aiDay && aiDay.evening ? taskText(aiDay.evening, evening) : evening), loc: locEvening },
-      { label: 'Smart Tip', dot: 'dot-evening', text: (hiddenGem || culturalNote), loc: d.name + ' Area' }
+      { label: 'Morning (08:30 – 12:30)', dot: 'dot-morning', text: textMorning, loc: locMorning },
+      { label: 'Midday (12:30 – 13:00)', dot: 'dot-afternoon', text: textMidday, loc: locMidday },
+      { label: 'Afternoon (13:00 – 17:00)', dot: 'dot-afternoon', text: textAfternoon, loc: locAfternoon },
+      { label: 'Evening & Night (18:00 – 22:00)', dot: 'dot-evening', text: textEvening, loc: locEvening },
+      { label: 'Smart Tip', dot: 'dot-evening', text: textSmartTip, loc: locSmartTip }
     ];
 
     var actsHtml = '<div class="activity-cards-list" style="display:flex; flex-direction:column; gap:16px; margin-top:16px; margin-bottom:16px;">';
@@ -185,9 +212,9 @@ function renderDayCardsHtml(d, duration, cost) {
             act.text +
           '</div>' +
           '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:var(--ink-soft); background:var(--surface-mid); padding:10px 12px; border-radius:8px;">' +
-            '<div style="display:flex; align-items:center; gap:4px;">📍 <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(act.loc + ' ' + d.name) + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:600; text-decoration:underline;">' + act.loc + '</a></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span style="color:var(--ink); font-weight:500;">' + d.weather.temp.min + '-' + d.weather.temp.max + '°C</span></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">👥 <span style="color:var(--ink); font-weight:500;">' + crowdLevel + ' Crowd</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">📍 <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(act.loc + ', ' + d.name + (d.state ? ', ' + d.state : '')) + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:600; text-decoration:underline;">' + act.loc + '</a></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span style="color:var(--ink); font-weight:500;">' + dayWeather + '</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">👥 <span style="color:var(--ink); font-weight:500;">' + dayCrowd + (String(dayCrowd).toLowerCase().indexOf('crowd') === -1 ? ' Crowd' : '') + '</span></div>' +
           '</div>' +
         '</div>';
     });
@@ -304,7 +331,7 @@ function requestAiItinerary(d, duration, cost) {
     origin: state.location.city || ''
   };
 
-  fetch('/api/ai/generate-itinerary', {
+  fetch(apiUrl('/api/ai/generate-itinerary'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
@@ -318,6 +345,7 @@ function requestAiItinerary(d, duration, cost) {
       var itinerary = data && data.itinerary ? data.itinerary : data;
       if (itinerary && itinerary.days && itinerary.days.length) {
         currentAiPlan = itinerary;
+        currentAiPlanDest = d.name;
         if (typeof showToast === 'function') {
           showToast('Gemini AI created a tailored ' + duration + '-day plan! ✨', 'success');
         }
@@ -332,8 +360,9 @@ function requestAiItinerary(d, duration, cost) {
 
       // Smart fallback using local generative templates
       currentAiPlan = buildLocalSmartItinerary(d, duration, cost);
+      currentAiPlanDest = d.name;
       if (typeof showToast === 'function') {
-        showToast('Smart local itinerary generated with hidden gems & cultural tips!', 'info');
+        showToast('Itinerary ready with curated local locations & tips!', 'info');
       }
       generateItinerary();
     });
@@ -344,26 +373,54 @@ function buildLocalSmartItinerary(d, duration, cost) {
   var perDayCost = cost.perDay;
   var gems = d.hiddenGems || [];
   var attrs = d.nearbyAttractions || [];
+  var defaultSpots = [
+    d.name + ' Heritage & Old Quarter',
+    d.name + ' Central Bazaar & Artisan Lane',
+    d.name + ' Panoramic Ridge / Viewpoint',
+    d.name + ' Nature Sanctuary Trail',
+    d.name + ' Lakeside Promenade',
+    d.name + ' Historic Temple & Grove'
+  ];
 
   for (var i = 1; i <= duration; i++) {
     var gem = gems[(i - 1) % (gems.length || 1)];
-    var attr = attrs[(i - 1) % (attrs.length || 1)];
-    var theme = d.dayThemes[(i - 1) % d.dayThemes.length];
+    var attr1 = attrs[(i * 2 - 2) % (attrs.length || 1)];
+    var attr2 = attrs[(i * 2 - 1) % (attrs.length || 1)];
+    var theme = (d.dayThemes && d.dayThemes.length) ? d.dayThemes[(i - 1) % d.dayThemes.length] : ('Exploration & Discovery Day ' + i);
+
+    var morningLoc = (attr1 && attr1.name) ? attr1.name : defaultSpots[(i * 2 - 2) % defaultSpots.length];
+    var middayLoc = d.name + ' Heritage Cafe & Rest Stop';
+    var afternoonLoc = (attr2 && attr2.name) ? attr2.name : defaultSpots[(i * 2 - 1) % defaultSpots.length];
+    var eveningLoc = (gem && gem.name) ? gem.name : (d.name + ' Sunset Viewpoint');
+    var smartLoc = (gem && gem.name) ? gem.name : (d.name + ' Valley Trail');
 
     days.push({
       day: i,
-      theme: theme + (gem ? ' & Secret Discovery' : ''),
+      theme: theme,
       morning: {
-        activity: d.activities.morning[(i - 1) % d.activities.morning.length],
-        location: attr ? attr.name : d.name + ' Old Quarter'
+        activity: (d.activities && d.activities.morning && d.activities.morning.length) ? d.activities.morning[(i - 1) % d.activities.morning.length] : ('Morning discovery of ' + morningLoc),
+        location: morningLoc,
+        tip: 'Best visited early in the morning for fewer crowds.'
+      },
+      midday: {
+        activity: 'Local culinary break and cafe experience in ' + d.name,
+        location: middayLoc,
+        tip: 'Try authentic local regional delicacies.'
       },
       afternoon: {
-        activity: d.activities.afternoon[(i - 1) % d.activities.afternoon.length],
-        location: gem ? gem.name : d.name + ' Central'
+        activity: (d.activities && d.activities.afternoon && d.activities.afternoon.length) ? d.activities.afternoon[(i - 1) % d.activities.afternoon.length] : ('Afternoon exploration around ' + afternoonLoc),
+        location: afternoonLoc,
+        tip: 'Carry comfortable walking shoes and camera.'
       },
       evening: {
-        activity: d.activities.evening[(i - 1) % d.activities.evening.length],
-        location: d.name + ' Scenic Vista'
+        activity: (d.activities && d.activities.evening && d.activities.evening.length) ? d.activities.evening[(i - 1) % d.activities.evening.length] : ('Golden hour sunset and leisure in ' + eveningLoc),
+        location: eveningLoc,
+        tip: 'Enjoy the vibrant evening atmosphere and sunset.'
+      },
+      smartTip: {
+        activity: gem ? (gem.name + ' — ' + (gem.tip || gem.description || 'Hidden local gem')) : 'Respect local traditions and keep emergency numbers handy.',
+        location: smartLoc,
+        tip: 'Authentic offbeat recommendation.'
       },
       budget: {
         stay: Math.round(perDayCost * 0.45),
@@ -371,14 +428,14 @@ function buildLocalSmartItinerary(d, duration, cost) {
         transport: Math.round(perDayCost * 0.15),
         activities: Math.round(perDayCost * 0.15)
       },
-      safetyTip: d.safety.points[(i - 1) % d.safety.points.length],
-      culturalNote: d.culture ? d.culture.etiquette : 'Respect local traditions and photography rules.',
-      hiddenGem: gem ? gem.name + ' — ' + gem.tip : null
+      safetyTip: (d.safety && d.safety.points && d.safety.points.length) ? d.safety.points[(i - 1) % d.safety.points.length] : 'Stay hydrated and follow local advisories.',
+      culturalNote: (d.culture && d.culture.etiquette) ? d.culture.etiquette : 'Respect local traditions and sacred places.',
+      hiddenGem: gem ? (gem.name + ' — ' + (gem.tip || gem.description || '')) : null
     });
   }
 
   return {
-    title: duration + '-Day Curated Voyager Plan',
+    title: duration + '-Day Curated Plan for ' + d.name,
     days: days
   };
 }

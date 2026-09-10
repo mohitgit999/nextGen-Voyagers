@@ -336,7 +336,7 @@ function renderLiveWeatherCrowdPanel(d) {
 
 function loadLiveWeatherAndCrowd(d) {
   // Weather
-  fetch('/api/weather/' + encodeURIComponent(d.name))
+  fetch(apiUrl('/api/weather/' + encodeURIComponent(d.name)))
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var wEl = byId('live-weather-content');
@@ -372,7 +372,7 @@ function loadLiveWeatherAndCrowd(d) {
     });
 
   // Crowd
-  fetch('/api/weather/' + encodeURIComponent(d.name) + '/crowd')
+  fetch(apiUrl('/api/weather/' + encodeURIComponent(d.name) + '/crowd'))
     .then(function(res) { return res.json(); })
     .then(function(data) {
       var cEl = byId('live-crowd-content');

@@ -78,14 +78,16 @@ GENERATE a JSON response with this exact structure:
     {
       "day": 1,
       "theme": "Day theme",
-      "morning": { "activity": "description", "location": "place name", "tip": "insider tip" },
-      "afternoon": { "activity": "description", "location": "place name", "tip": "insider tip" },
-      "evening": { "activity": "description", "location": "place name", "tip": "insider tip" },
+      "morning": { "activity": "detailed morning activity description", "location": "Exact landmark/place name", "tip": "insider tip" },
+      "midday": { "activity": "midday activity or local culinary lunch stop", "location": "Exact cafe, restaurant or street name", "tip": "food recommendation" },
+      "afternoon": { "activity": "detailed afternoon activity description", "location": "Exact landmark/place name", "tip": "insider tip" },
+      "evening": { "activity": "detailed evening activity description", "location": "Exact landmark, market or viewpoint name", "tip": "insider tip" },
+      "smartTip": { "activity": "cultural highlight, safety tip or offbeat recommendation", "location": "Exact landmark, neighborhood or viewpoint name", "tip": "practical tip" },
       "budget": { "stay": 800, "food": 500, "transport": 300, "activities": 400 },
       "safetyTip": "safety advice for the day",
       "culturalNote": "local custom or cultural insight",
       "hiddenGem": "off-the-beaten-path suggestion",
-      "crowdLevel": "low/medium/high",
+      "crowdLevel": "Low/Moderate/High",
       "bestTimeToVisit": "early morning before 9am"
     }
   ],
@@ -102,6 +104,8 @@ GENERATE a JSON response with this exact structure:
 }
 
 IMPORTANT RULES:
+- CRITICAL: Every single "location" field (morning, midday, afternoon, evening, smartTip) MUST be an authentic, specific, real-world place name, landmark, sanctuary, cafe, viewpoint, temple, or trail in ${destination}.
+- NEVER use generic placeholders like 'Morning Spot', 'Afternoon Spot', 'In Transit', 'Nearby Cafe', or '${destination} Area'.
 - Budget values must be realistic for ${destination} in INR (₹)
 - Include at least 2 hidden gems across the trip
 - Cultural notes should be authentic and respectful
@@ -283,7 +287,9 @@ Return ONLY valid JSON in this exact shape:
       "estimatedDailyCost": { "budget": 0, "mid": 0, "luxury": 0 },
       "safetyScore": 0,
       "weather": { "min": 0, "max": 0, "condition": "string", "bestTime": "string" },
-      "liveDataQuery": "city name for live weather lookup"
+      "liveDataQuery": "city name for live weather lookup",
+      "attractions": ["Top Attraction 1", "Top Attraction 2", "Top Attraction 3"],
+      "hiddenGems": ["Hidden Gem 1", "Hidden Gem 2"]
     }
   ]
 }`;
@@ -335,12 +341,17 @@ Return ONLY valid JSON in this exact shape:
         },
         liveWeather: weather,
         coordinates: weather.coordinates || null,
-        hiddenGems: [],
-        dayThemes: ['AI-curated arrival and orientation'],
+        hiddenGems: Array.isArray(item.hiddenGems) ? item.hiddenGems.slice(0, 4).map(g => ({ name: String(g), tip: 'Scenic offbeat experience' })) : [],
+        nearbyAttractions: Array.isArray(item.attractions) ? item.attractions.slice(0, 5).map(a => ({ name: String(a) })) : [],
+        dayThemes: [
+          'Arrival & ' + ((item.attractions && item.attractions[0]) ? item.attractions[0] : 'First Sights'),
+          'Heritage & ' + ((item.attractions && item.attractions[1]) ? item.attractions[1] : 'Scenic Discovery'),
+          'Hidden Trails & ' + ((item.hiddenGems && item.hiddenGems[0]) ? item.hiddenGems[0] : 'Sunset Views')
+        ],
         activities: {
-          morning: [`Explore ${name} with an AI-curated morning plan`],
-          afternoon: [`Discover recommended experiences around ${name}`],
-          evening: [`Enjoy a personalized evening in ${name}`]
+          morning: [(item.attractions && item.attractions[0]) ? `Visit ${item.attractions[0]} for morning sightseeing` : `Explore iconic nature and heritage trails in ${name}`],
+          afternoon: [(item.attractions && item.attractions[1]) ? `Discover ${item.attractions[1]} and local cafes` : `Discover local artisan markets and scenic spots in ${name}`],
+          evening: [(item.attractions && item.attractions[2]) ? `Sunset viewpoints and dinner around ${item.attractions[2]}` : `Enjoy a tranquil evening and sunset in ${name}`]
         },
         transport: {
           train: { label: 'Live transport lookup', station: 'Details available in destination search' },
