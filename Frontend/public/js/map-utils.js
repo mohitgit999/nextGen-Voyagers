@@ -82,23 +82,29 @@ function renderDestinationMap(containerId, dest, originLat, originLon) {
     .bindPopup('<strong>' + dest.name + '</strong><br>' + dest.state);
 
   // Nearby attractions
-  if (dest.nearbyAttractions) {
-    dest.nearbyAttractions.forEach(function(a) {
-      L.marker([a.lat, a.lon], {
-        icon: getMarkerIcon(a.type)
-      }).addTo(map)
-        .bindPopup('<strong>' + a.name + '</strong><br><em>' + a.type + '</em>');
+  if (dest.nearbyAttractions && Array.isArray(dest.nearbyAttractions)) {
+    dest.nearbyAttractions.forEach(function(a, idx) {
+      var aLat = (typeof a.lat === 'number') ? a.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.008 * (idx % 2 === 0 ? 1 : -1)) : null);
+      var aLon = (typeof a.lon === 'number') ? a.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.008 * (idx % 3 === 0 ? 1 : -1)) : null);
+      if (aLat !== null && aLon !== null) {
+        L.marker([aLat, aLon], {
+          icon: getMarkerIcon(a.type || 'activity')
+        }).addTo(map)
+          .bindPopup('<strong>' + a.name + '</strong>' + (a.type ? '<br><em>' + a.type + '</em>' : ''));
+      }
     });
   }
 
   // Hidden gems
-  if (dest.hiddenGems) {
-    dest.hiddenGems.forEach(function(g) {
-      if (g.lat && g.lon) {
-        L.marker([g.lat, g.lon], {
+  if (dest.hiddenGems && Array.isArray(dest.hiddenGems)) {
+    dest.hiddenGems.forEach(function(g, idx) {
+      var gLat = (typeof g.lat === 'number') ? g.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.012 * (idx % 2 === 0 ? -1 : 1)) : null);
+      var gLon = (typeof g.lon === 'number') ? g.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.012 * (idx % 3 === 0 ? -1 : 1)) : null);
+      if (gLat !== null && gLon !== null) {
+        L.marker([gLat, gLon], {
           icon: getMarkerIcon('hidden-gem')
         }).addTo(map)
-          .bindPopup('<strong>💎 ' + g.name + '</strong><br>' + g.description);
+          .bindPopup('<strong>💎 ' + g.name + '</strong>' + (g.description ? '<br>' + g.description : ''));
       }
     });
   }

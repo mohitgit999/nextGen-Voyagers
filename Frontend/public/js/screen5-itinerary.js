@@ -409,13 +409,17 @@ function initItineraryRouteMap(dest, duration) {
   var points = [[dest.coordinates.lat, dest.coordinates.lon]];
 
   // Add attraction pins for days
-  if (dest.nearbyAttractions) {
+  if (dest.nearbyAttractions && Array.isArray(dest.nearbyAttractions)) {
     dest.nearbyAttractions.slice(0, Math.min(duration + 2, 7)).forEach(function(a, idx) {
-      points.push([a.lat, a.lon]);
-      var attractionMarker = L.marker([a.lat, a.lon], {
-        icon: getMarkerIcon(a.type)
-      }).addTo(map);
-      bindGoogleMapsMarker(attractionMarker, a.name, a.lat, a.lon, 'Day ' + ((idx % duration) + 1) + ' stop');
+      var aLat = (typeof a.lat === 'number') ? a.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.008 * (idx % 2 === 0 ? 1 : -1)) : null);
+      var aLon = (typeof a.lon === 'number') ? a.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.008 * (idx % 3 === 0 ? 1 : -1)) : null);
+      if (aLat !== null && aLon !== null) {
+        points.push([aLat, aLon]);
+        var attractionMarker = L.marker([aLat, aLon], {
+          icon: getMarkerIcon(a.type || 'activity')
+        }).addTo(map);
+        bindGoogleMapsMarker(attractionMarker, a.name, aLat, aLon, 'Day ' + ((idx % duration) + 1) + ' stop', dest.name);
+      }
     });
   }
 
@@ -432,8 +436,8 @@ function initItineraryRouteMap(dest, duration) {
   setTimeout(function() { map.invalidateSize(); }, 200);
 }
 
-function bindGoogleMapsMarker(marker, label, lat, lon, prefix) {
-  var googleUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(lat + ',' + lon);
+function bindGoogleMapsMarker(marker, label, lat, lon, prefix, destName) {
+  var googleUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(label + (destName ? ', ' + destName : ''));
   marker.bindPopup(
     '<strong>' + (prefix ? prefix + ': ' : '') + label + '</strong><br>' +
     '<a href="' + googleUrl + '" target="_blank" rel="noopener noreferrer">Open in Google Maps ↗</a>'
