@@ -8,10 +8,6 @@ const GlobalNav = () => {
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  if (isPlanner) {
-    return null;
-  }
-
 
   return (
     <>
@@ -26,68 +22,78 @@ const GlobalNav = () => {
           <span className="nav-brand-name">NextGen Voyagers</span>
         </Link>
 
-        <ul className="nav-links" role="list">
-          <li>
-            <Link to="/" className={!isPlanner ? 'nav-link-active' : ''}>Home</Link>
-          </li>
-          <li><span className="nav-dot" aria-hidden="true"></span></li>
-          <li>
-            <a href="/#destinations-section">Destinations</a>
-          </li>
-          <li><span className="nav-dot" aria-hidden="true"></span></li>
-          <li>
-            <Link to="/plan" className={isPlanner ? 'nav-link-active' : ''} style={isPlanner ? { color: 'var(--teal, #1BB89A)', fontWeight: 700 } : {}}>
-              ✨ AI Trip Planner
-            </Link>
-          </li>
-          <li><span className="nav-dot" aria-hidden="true"></span></li>
-          <li>
-            <a href="/#features-section">Features</a>
-          </li>
-          <li><span className="nav-dot" aria-hidden="true"></span></li>
-          <li>
-            <a href="/#how-it-works">How It Works</a>
-          </li>
-          <li><span className="nav-dot" aria-hidden="true"></span></li>
-          <li>
-            <a href="/#contact-section">Contact</a>
-          </li>
-          <li>
-            <button className="nav-search-icon" id="nav-search-btn" aria-label="Search destinations" title="Search destinations (Ctrl+K)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {!isPlanner && (
+          <ul className="nav-links" role="list">
+            <li>
+              <Link to="/" className={!isPlanner ? 'nav-link-active' : ''}>Home</Link>
+            </li>
+            <li><span className="nav-dot" aria-hidden="true"></span></li>
+            <li>
+              <a href="/#destinations-section">Destinations</a>
+            </li>
+            <li><span className="nav-dot" aria-hidden="true"></span></li>
+            <li>
+              <Link to="/plan" className={isPlanner ? 'nav-link-active' : ''} style={isPlanner ? { color: 'var(--teal, #1BB89A)', fontWeight: 700 } : {}}>
+                ✨ AI Trip Planner
+              </Link>
+            </li>
+            <li><span className="nav-dot" aria-hidden="true"></span></li>
+            <li>
+              <a href="/#features-section">Features</a>
+            </li>
+            <li><span className="nav-dot" aria-hidden="true"></span></li>
+            <li>
+              <a href="/#how-it-works">How It Works</a>
+            </li>
+            <li><span className="nav-dot" aria-hidden="true"></span></li>
+            <li>
+              <a href="/#contact-section">Contact</a>
+            </li>
+            <li>
+              <button className="nav-search-icon" id="nav-search-btn" aria-label="Search destinations" title="Search destinations (Ctrl+K)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                </svg>
+              </button>
+            </li>
+          </ul>
+        )}
+
+        <div className="nav-actions">
+          {!isPlanner && (
+            <button className="nav-search-icon mobile-search-btn-nav" id="nav-search-btn-mobile" aria-label="Search destinations" style={{ display: 'none' }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
             </button>
-          </li>
-        </ul>
-
-        <div className="nav-actions">
-          <button className="nav-search-icon mobile-search-btn-nav" id="nav-search-btn-mobile" aria-label="Search destinations" style={{ display: 'none' }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-          </button>
+          )}
+          
           <button className="nav-btn-login" id="nav-btn-login">Log in</button>
-          <Link
-            to="/plan"
-            className="nav-btn-signup"
-            id="nav-btn-signup"
-            data-cta="start-planning"
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            {isPlanner ? 'Start Fresh Plan' : 'Start Planning'}
-          </Link>
-          <button
-            className={`nav-hamburger ${isMobileMenuOpen ? 'active' : ''}`}
-            id="nav-hamburger"
-            aria-label="Toggle navigation menu"
-            aria-expanded={isMobileMenuOpen}
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-            <span className="hamburger-line"></span>
-          </button>
+          
+          {!isPlanner && (
+            <>
+              <Link
+                to="/plan"
+                className="nav-btn-signup"
+                id="nav-btn-signup"
+                data-cta="start-planning"
+                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+              >
+                Start Planning
+              </Link>
+              <button
+                className={`nav-hamburger ${isMobileMenuOpen ? 'active' : ''}`}
+                id="nav-hamburger"
+                aria-label="Toggle navigation menu"
+                aria-expanded={isMobileMenuOpen}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                <span className="hamburger-line"></span>
+                <span className="hamburger-line"></span>
+                <span className="hamburger-line"></span>
+              </button>
+            </>
+          )}
         </div>
       </nav>
 

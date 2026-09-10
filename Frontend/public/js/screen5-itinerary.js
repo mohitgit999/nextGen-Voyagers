@@ -177,17 +177,17 @@ function renderDayCardsHtml(d, duration, cost) {
     var actsHtml = '<div class="activity-cards-list" style="display:flex; flex-direction:column; gap:16px; margin-top:16px; margin-bottom:16px;">';
     acts.forEach(function(act) {
       actsHtml += '' +
-        '<div class="activity-card-vertical" style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
-          '<div style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">' +
+        '<div class="activity-card-vertical" style="background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
+          '<div style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">' +
             '<span class="part-dot ' + act.dot + '"></span> ' + act.label + 
           '</div>' +
-          '<div style="font-size:1.05rem; font-weight:500; color:var(--text); margin-bottom:14px; line-height:1.5;">' +
+          '<div style="font-size:1.05rem; font-weight:500; color:var(--ink); margin-bottom:14px; line-height:1.5;">' +
             act.text +
           '</div>' +
-          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:var(--text-muted); background:var(--bg); padding:10px 12px; border-radius:8px;">' +
-            '<div style="display:flex; align-items:center; gap:4px;">📍 <span>' + act.loc + '</span></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span>' + d.weather.temp.min + '-' + d.weather.temp.max + '°C</span></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">👥 <span>' + crowdLevel + ' Crowd</span></div>' +
+          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:var(--ink-soft); background:var(--surface-mid); padding:10px 12px; border-radius:8px;">' +
+            '<div style="display:flex; align-items:center; gap:4px;">📍 <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(act.loc + ' ' + d.name) + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:600; text-decoration:underline;">' + act.loc + '</a></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span style="color:var(--ink); font-weight:500;">' + d.weather.temp.min + '-' + d.weather.temp.max + '°C</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">👥 <span style="color:var(--ink); font-weight:500;">' + crowdLevel + ' Crowd</span></div>' +
           '</div>' +
         '</div>';
     });
