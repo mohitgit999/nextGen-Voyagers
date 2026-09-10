@@ -6,6 +6,7 @@
    ============================================================ */
 
 function initScreen2() {
+  if (!document.getElementById('screen-2')) return;
   var showDestBtn  = byId('btn-show-destinations');
   var prefValidation = byId('pref-validation');
   var durationValue  = byId('duration-value');
@@ -90,9 +91,62 @@ function initScreen2() {
   showDestBtn.addEventListener('click', function() {
     state.customPerDay = null;         // reset any custom cost
     state.compareIds   = [];           // reset compare
-    computeMatches();
-    renderExplore();
-    unlockStep(3);
-    goToStep(3);
+    showDestBtn.disabled = true;
+    showDestBtn.textContent = 'Finding AI matches...';
+    prefValidation.textContent = '';
+
+    fetch(apiUrl('/api/ai/recommend-destinations'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: state.prefs.destination,
+        moods: state.prefs.moods,
+        duration: state.prefs.duration,
+        budget: state.prefs.budget,
+        group: state.prefs.group,
+        travelers: state.prefs.travelers,
+        origin: state.location.city
+      })
+    })
+      .then(function(res) {
+        if (!res.ok) throw new Error('AI recommendations unavailable');
+        return res.json();
+      })
+      .then(function(result) {
+        if (!result.destinations || !result.destinations.length) throw new Error('No AI matches found');
+        window.DESTINATIONS = result.destinations;
+        state.matches = result.destinations.map(function(dest, index) {
+          return { dest: dest, percent: dest.isPrimary || dest.isExactMatch ? 99 - index : 92 - index };
+        });
+        renderExplore(result.summary, result.mode);
+        unlockStep(3);
+        goToStep(3);
+      })
+      .catch(function(error) {
+        prefValidation.textContent = error.message + '. Add a Gemini API key to enable live AI destination search.';
+      })
+      .finally(function() {
+        showDestBtn.disabled = false;
+        showDestBtn.textContent = 'Show AI Destinations →';
+        validatePrefs();
+      });
+  });
+
+  /* ---- Mood/vibe tiles (multi-select) ---- */
+  document.querySelectorAll('#mood-tiles .mood-tile').forEach(function(tile) {
+    tile.addEventListener('click', function() {
+      var mood = tile.getAttribute('data-mood');
+      var idx = state.prefs.moods.indexOf(mood);
+      if (idx === -1) {
+        state.prefs.moods.push(mood);
+        tile.classList.add('selected');
+        tile.setAttribute('aria-pressed', 'true');
+      } else {
+        state.prefs.moods.splice(idx, 1);
+        tile.classList.remove('selected');
+        tile.setAttribute('aria-pressed', 'false');
+      }
+      validatePrefs();
+    });
   });
 }

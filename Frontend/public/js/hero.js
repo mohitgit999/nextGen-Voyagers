@@ -13,13 +13,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnNext = document.getElementById('hero-next');
 
   // Navbar scroll
-  window.addEventListener('scroll', function() {
-    if (window.scrollY > 50) {
-      nav.classList.add('scrolled');
-    } else {
-      nav.classList.remove('scrolled');
-    }
-  });
+  if (nav) {
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+      } else {
+        nav.classList.remove('scrolled');
+      }
+    });
+  }
+
+  // If hero elements don't exist (e.g. on /plan route), exit early
+  if (!heroEyebrow || !heroTitle) return;
 
   const slides = [
     { eyebrow: 'The Andaman Islands', title: 'Andaman & Nicobar', temp: '28°C', weather: 'Tropical & Warm', image: 'andaman.jpg' },

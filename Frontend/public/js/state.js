@@ -8,7 +8,7 @@ var state = {
   maxStep:     1,
   currentStep: 1,
   location:    { city: null, source: null, lat: null, lon: null },
-  prefs:       { destination: '', budget: null, duration: 4, group: null, travelers: 1 },
+  prefs:       { destination: '', budget: null, duration: 4, group: null, travelers: 1, moods: [] },
   matches:     [],
   selectedId:  null,
   compareIds:  [],           // up to 2 destination IDs for comparison
@@ -65,7 +65,7 @@ function resetPlanner() {
   state.maxStep    = 1;
   state.currentStep = 1;
   state.location   = { city: null, source: null, lat: null, lon: null };
-  state.prefs      = { destination: '', budget: null, duration: 4, group: null, travelers: 1 };
+  state.prefs      = { destination: '', budget: null, duration: 4, group: null, travelers: 1, moods: [] };
   state.matches    = [];
   state.selectedId = null;
   state.compareIds = [];

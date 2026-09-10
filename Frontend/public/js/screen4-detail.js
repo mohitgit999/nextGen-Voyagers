@@ -86,7 +86,7 @@ function renderDetail() {
 
       /* Safety panel */
       '<div class="panel">' +
-        '<h3>' + icon('shield') + ' Safety</h3>' +
+        '<h3>' + icon('shield') + ' Safety & Guidelines</h3>' +
         '<div class="safety-score-row">' +
           '<span class="safety-score-badge">' + d.safety.score.toFixed(1) + '/5 safety rating</span>' +
         '</div>' +
@@ -99,8 +99,20 @@ function renderDetail() {
 
     '</div>' + /* end panels */
 
-    /* ── Row 2: Weather · Transport · Local Emergency ── */
-    '<div class="panels" style="margin-top:18px;">' +
+    /* ── Interactive Map Section ── */
+    renderMapPanel(d) +
+
+    /* ── Live Weather & Real-time Crowd Intensity ── */
+    renderLiveWeatherCrowdPanel(d) +
+
+    /* ── Culture & Heritage Section ── */
+    renderCulturePanel(d) +
+
+    /* ── Hidden Gems Section ── */
+    renderHiddenGemsDetailPanel(d) +
+
+    /* ── Row: Best Time · Transport · Local Emergency ── */
+    '<div class="panels" style="margin-top:20px;">' +
 
       /* Weather widget */
       '<div class="panel">' +
@@ -123,20 +135,30 @@ function renderDetail() {
     '</div>' +
 
     /* Packing preview */
-    '<div class="panel" style="margin-top:18px;">' +
-      '<h3>' + icon('backpack') + ' Packing essentials</h3>' +
+    '<div class="panel" style="margin-top:20px;">' +
+      '<h3>' + icon('backpack') + ' Packing essentials preview</h3>' +
       renderPackingPreview(d) +
     '</div>' +
 
     /* CTA */
     '<div class="actions-row">' +
-      '<button class="btn btn-primary" id="btn-build-itinerary">Build my day-by-day plan ' + icon('arrow') + '</button>' +
+      '<button class="btn btn-primary" id="btn-build-itinerary">Build my AI day-by-day plan ' + icon('arrow') + '</button>' +
       (state.compareIds.length > 0
         ? '<button class="btn btn-ghost" id="btn-add-to-compare">Add to compare</button>'
         : '') +
     '</div>';
 
   byId('detail-content').innerHTML = html;
+
+  /* Initialize interactive map */
+  setTimeout(function() {
+    if (typeof renderDestinationMap === 'function') {
+      renderDestinationMap('detail-map-canvas', d, state.location.lat, state.location.lon);
+    }
+  }, 100);
+
+  /* Fetch live weather and crowd intensity */
+  loadLiveWeatherAndCrowd(d);
 
   /* Bind cost input */
   var costInput = byId('cost-per-day-input');
@@ -201,18 +223,24 @@ function renderWeatherWidget(d) {
 /* ── Transport panel ── */
 function renderTransportPanel(d) {
   var t = d.transport;
+  var train = t.train || {};
+  var flight = t.flight || {};
+  var road = t.road || {};
+  var value = function(item, key, fallback) {
+    return item[key] || fallback;
+  };
   return '<div class="transport-list">' +
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('train') + '</div>' +
-      '<div><div class="transport-label">' + t.train.label + '</div><div class="transport-detail">' + t.train.station + '</div><div class="transport-note">' + t.train.note + '</div></div>' +
+      '<div><div class="transport-label">' + value(train, 'label', 'Train details') + '</div><div class="transport-detail">' + value(train, 'station', 'Check live route options') + '</div><div class="transport-note">' + value(train, 'note', 'Live details available from the destination search') + '</div></div>' +
     '</div>' +
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('plane') + '</div>' +
-      '<div><div class="transport-label">' + t.flight.label + '</div><div class="transport-detail">' + t.flight.airport + '</div><div class="transport-note">' + t.flight.note + '</div></div>' +
+      '<div><div class="transport-label">' + value(flight, 'label', 'Flight details') + '</div><div class="transport-detail">' + value(flight, 'airport', 'Check live airport options') + '</div><div class="transport-note">' + value(flight, 'note', 'Live details available from the destination search') + '</div></div>' +
     '</div>' +
     '<div class="transport-item">' +
       '<div class="transport-icon-wrap">' + icon('car') + '</div>' +
-      '<div><div class="transport-label">' + t.road.label + '</div><div class="transport-note">' + t.road.note + '</div></div>' +
+      '<div><div class="transport-label">' + value(road, 'label', 'Road route details') + '</div><div class="transport-note">' + value(road, 'note', 'Live route details are generated for your origin') + '</div></div>' +
     '</div>' +
   '</div>';
 }
@@ -220,13 +248,16 @@ function renderTransportPanel(d) {
 /* ── Local emergency panel ── */
 function renderLocalEmergencyPanel(d) {
   var e = d.localEmergency;
+  var police = e.police || 'Live local contact unavailable';
+  var hospital = e.hospital || 'Live hospital contact unavailable';
+  var tourist = e.tourist || 'Live tourist helpline unavailable';
   return '<div class="local-emergency-list">' +
     '<div class="local-emerg-item"><span class="local-emerg-label">Local police</span>' +
-      '<a href="tel:' + e.police + '" class="local-emerg-num">' + icon('phone') + e.police + '</a></div>' +
+      '<span class="local-emerg-num">' + icon('phone') + police + '</span></div>' +
     '<div class="local-emerg-item"><span class="local-emerg-label">Hospital</span>' +
-      '<span class="local-emerg-num" style="color:var(--ink);font-size:0.82rem;font-family:var(--font-body);">' + e.hospital + '</span></div>' +
+      '<span class="local-emerg-num">' + hospital + '</span></div>' +
     '<div class="local-emerg-item"><span class="local-emerg-label">Tourism helpline</span>' +
-      '<span class="local-emerg-num" style="color:var(--forest-deep);">' + icon('phone') + e.tourist + '</span></div>' +
+      '<span class="local-emerg-num">' + icon('phone') + tourist + '</span></div>' +
   '</div>';
 }
 
@@ -245,6 +276,228 @@ function renderPackingPreview(d) {
       }).join('') +
     '</div>' +
     '<p style="font-size:0.78rem;color:var(--forest);font-weight:700;margin-top:12px;">+ ' + (BASE_PACKING.documents.length + BASE_PACKING.clothing.length + BASE_PACKING.health.length + BASE_PACKING.tech.length + BASE_PACKING.misc.length + d.packingExtras.length - all.length) + ' more items in your full itinerary checklist</p>';
+}
+
+/* ── Interactive Map Panel ── */
+function renderMapPanel(d) {
+  var attractions = (d.nearbyAttractions || []).slice(0, 6);
+  var gems = (d.hiddenGems || []).slice(0, 4);
+
+  return '' +
+    '<div class="panel map-panel-container" style="margin-top:20px;">' +
+      '<div class="map-panel-head">' +
+        '<div>' +
+          '<h3>' + icon('location') + ' Interactive Destination & Route Map</h3>' +
+          '<p class="hint-text">Explore points of interest, nearby attractions, and secret spots</p>' +
+        '</div>' +
+        '<div class="map-legend-pills">' +
+          '<span class="legend-pill pin-dest">📍 Main Area</span>' +
+          '<span class="legend-pill pin-attr">🎯 Attractions</span>' +
+          '<span class="legend-pill pin-gem">💎 Hidden Gems</span>' +
+        '</div>' +
+      '</div>' +
+      '<div id="detail-map-canvas" class="detail-map-canvas" style="height:380px;border-radius:12px;margin:14px 0;"></div>' +
+      '<div class="map-spot-chips">' +
+        attractions.map(function(a) {
+          return '<button class="spot-filter-chip" onclick="if(window.voyagerMaps && window.voyagerMaps[\'detail-map-canvas\']) { window.voyagerMaps[\'detail-map-canvas\'].setView([' + a.lat + ',' + a.lon + '], 14); }">' +
+            '🎯 ' + a.name + '</button>';
+        }).join('') +
+        gems.map(function(g) {
+          return '<button class="spot-filter-chip gem-chip" onclick="if(window.voyagerMaps && window.voyagerMaps[\'detail-map-canvas\']) { window.voyagerMaps[\'detail-map-canvas\'].setView([' + g.lat + ',' + g.lon + '], 14); }">' +
+            '💎 ' + g.name + '</button>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+}
+
+/* ── Live Weather & Real-time Crowd Intensity ── */
+function renderLiveWeatherCrowdPanel(d) {
+  return '' +
+    '<div class="panels" style="margin-top:20px;">' +
+
+      /* Live Weather */
+      '<div class="panel" id="live-weather-card">' +
+        '<h3>' + icon('sunny') + ' Live Weather Forecast</h3>' +
+        '<div id="live-weather-content">' +
+          '<div class="weather-loading-shim">Fetching real-time atmospheric data for ' + d.name + '...</div>' +
+        '</div>' +
+      '</div>' +
+
+      /* Crowd Intensity */
+      '<div class="panel" id="live-crowd-card">' +
+        '<h3><span style="font-size:1.2rem;">👥</span> Crowd Intensity & Peak Times</h3>' +
+        '<div id="live-crowd-content">' +
+          '<div class="weather-loading-shim">Analyzing crowd patterns for ' + d.name + '...</div>' +
+        '</div>' +
+      '</div>' +
+
+    '</div>';
+}
+
+function loadLiveWeatherAndCrowd(d) {
+  // Weather
+  fetch('/api/weather/' + encodeURIComponent(d.name))
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var wEl = byId('live-weather-content');
+      if (!wEl) return;
+      var cur = data.current || { temp: Math.round((d.weather.temp.min + d.weather.temp.max) / 2), condition: 'Clear', description: 'Sunny & pleasant', humidity: 55, windSpeed: 3.5 };
+      wEl.innerHTML = '' +
+        '<div class="live-weather-summary">' +
+          '<div class="live-temp-huge">' + cur.temp + '°C</div>' +
+          '<div class="live-weather-meta">' +
+            '<div class="live-cond-name">' + cur.condition + '</div>' +
+            '<div class="live-cond-desc">' + cur.description + '</div>' +
+            '<div class="live-sub-stats">' +
+              '<span>💧 Humidity: ' + cur.humidity + '%</span> · ' +
+              '<span>💨 Wind: ' + cur.windSpeed + ' m/s</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="weather-status-tag">Status: ' + (cur.temp > 32 ? '☀️ Warm day ahead' : (cur.temp < 15 ? '🧥 Cool & crisp' : '🌿 Perfect exploration climate')) + '</div>';
+    })
+    .catch(function() {
+      var wEl = byId('live-weather-content');
+      if (!wEl) return;
+      var avgTemp = Math.round((d.weather.temp.min + d.weather.temp.max) / 2);
+      wEl.innerHTML = '' +
+        '<div class="live-weather-summary">' +
+          '<div class="live-temp-huge">' + avgTemp + '°C</div>' +
+          '<div class="live-weather-meta">' +
+            '<div class="live-cond-name">Pleasant</div>' +
+            '<div class="live-cond-desc">Ideal for sightseeing</div>' +
+            '<div class="live-sub-stats">Typical range: ' + d.weather.temp.min + '°C to ' + d.weather.temp.max + '°C</div>' +
+          '</div>' +
+        '</div>';
+    });
+
+  // Crowd
+  fetch('/api/weather/' + encodeURIComponent(d.name) + '/crowd')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var cEl = byId('live-crowd-content');
+      if (!cEl) return;
+      var crowd = data.crowd || {
+        level: d.crowdPatterns ? d.crowdPatterns.generalLevel : 'Moderate',
+        score: 55,
+        peakHours: d.crowdPatterns ? d.crowdPatterns.peakHours : '11:00 AM – 4:00 PM',
+        bestHours: d.crowdPatterns ? d.crowdPatterns.bestHours : 'Early Morning (7:00 AM – 9:30 AM)',
+        tip: d.crowdPatterns ? d.crowdPatterns.visitingTip : 'Visit key attractions early in the morning.'
+      };
+      renderCrowdMeter(cEl, crowd);
+    })
+    .catch(function() {
+      var cEl = byId('live-crowd-content');
+      if (!cEl) return;
+      var cp = d.crowdPatterns || { generalLevel: 'Moderate', peakHours: '11:00 AM – 4:00 PM', bestHours: '7:00 AM – 9:30 AM', visitingTip: 'Start your tours before 10 AM to avoid peak rush.' };
+      renderCrowdMeter(cEl, {
+        level: cp.generalLevel,
+        score: cp.generalLevel === 'High' ? 78 : (cp.generalLevel === 'Low' ? 30 : 55),
+        peakHours: cp.peakHours,
+        bestHours: cp.bestHours,
+        tip: cp.visitingTip
+      });
+    });
+}
+
+function renderCrowdMeter(cEl, crowd) {
+  var levelColors = {
+    Low: '#2A9D8F',
+    Moderate: '#E9C46A',
+    High: '#F4A261',
+    Peak: '#E76F51'
+  };
+  var color = levelColors[crowd.level] || '#2A9D8F';
+
+  cEl.innerHTML = '' +
+    '<div class="crowd-meter-head">' +
+      '<span class="crowd-level-badge" style="background:' + color + '20;color:' + color + ';border:1px solid ' + color + ';">' +
+        'Intensity: ' + crowd.level +
+      '</span>' +
+      '<span class="crowd-score-num">' + crowd.score + '/100</span>' +
+    '</div>' +
+    '<div class="crowd-bar-track"><div class="crowd-bar-fill" style="width:' + crowd.score + '%;background:' + color + ';"></div></div>' +
+    '<div class="crowd-details-grid">' +
+      '<div class="crowd-detail-item"><span class="crowd-label">⏰ Peak Crowd Hours:</span> <strong class="crowd-val">' + crowd.peakHours + '</strong></div>' +
+      '<div class="crowd-detail-item"><span class="crowd-label">🌅 Best Time to Visit:</span> <strong class="crowd-val" style="color:var(--forest);">' + crowd.bestHours + '</strong></div>' +
+    '</div>' +
+    '<div class="crowd-tip-box">💡 ' + crowd.tip + '</div>';
+}
+
+/* ── Culture & Heritage Section ── */
+function renderCulturePanel(d) {
+  if (!d.culture) return '';
+  var c = d.culture;
+
+  return '' +
+    '<div class="panel" style="margin-top:20px;">' +
+      '<h3><span style="font-size:1.2rem;">🏛️</span> Culture, Heritage & Local Traditions</h3>' +
+      '<p class="hint-text" style="margin-bottom:16px;">Immerse yourself respectfully into ' + d.name + '\'s timeless living heritage</p>' +
+      '<div class="culture-grid">' +
+        '<div class="culture-card">' +
+          '<div class="culture-card-title">📜 Heritage & History</div>' +
+          '<p class="culture-card-text">' + c.heritage + '</p>' +
+        '</div>' +
+        '<div class="culture-card">' +
+          '<div class="culture-card-title">👗 Dress Code & Etiquette</div>' +
+          '<p class="culture-card-text">' + c.etiquette + '</p>' +
+        '</div>' +
+        '<div class="culture-card">' +
+          '<div class="culture-card-title">🎉 Festivals & Celebrations</div>' +
+          '<div class="culture-tags">' +
+            c.festivals.map(function(f) { return '<span class="tag-chip tag-festival">🎊 ' + f + '</span>'; }).join('') +
+          '</div>' +
+        '</div>' +
+        '<div class="culture-card">' +
+          '<div class="culture-card-title">🍲 Culinary Heritage</div>' +
+          '<div class="culture-tags">' +
+            c.culinaryHighlights.map(function(dish) { return '<span class="tag-chip tag-food">🥘 ' + dish + '</span>'; }).join('') +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      (c.languagePhrases ? '' +
+        '<div class="language-bar" style="margin-top:16px;padding:12px 16px;background:rgba(27,184,154,0.06);border-radius:10px;border:1px solid rgba(27,184,154,0.2);">' +
+          '<strong style="color:var(--forest);font-size:0.85rem;">🗣️ Useful Local Phrases: </strong>' +
+          '<span style="font-size:0.85rem;color:var(--ink);">' +
+            Object.keys(c.languagePhrases).map(function(k) { return '<strong>"' + k + '"</strong> = ' + c.languagePhrases[k]; }).join(' · ') +
+          '</span>' +
+        '</div>' : '') +
+    '</div>';
+}
+
+/* ── Hidden Gems Showcase Panel ── */
+function renderHiddenGemsDetailPanel(d) {
+  if (!d.hiddenGems || !d.hiddenGems.length) return '';
+
+  return '' +
+    '<div class="panel" style="margin-top:20px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">' +
+        '<div>' +
+          '<h3><span style="font-size:1.2rem;">💎</span> Secret Spots & Hidden Gems</h3>' +
+          '<p class="hint-text">Off-the-beaten-path locations vetted by locals & seasoned voyagers</p>' +
+        '</div>' +
+        '<span class="badge-gem-count">' + d.hiddenGems.length + ' Discovered</span>' +
+      '</div>' +
+      '<div class="hidden-gems-grid">' +
+        d.hiddenGems.map(function(gem) {
+          return '' +
+            '<div class="gem-card">' +
+              '<div class="gem-card-head">' +
+                '<div class="gem-title-wrap">' +
+                  '<span class="gem-icon">💎</span>' +
+                  '<h4>' + gem.name + '</h4>' +
+                '</div>' +
+                '<span class="gem-vibe-tag">' + gem.vibe + '</span>' +
+              '</div>' +
+              '<p class="gem-desc">' + gem.description + '</p>' +
+              '<div class="gem-meta">' +
+                '<div class="gem-meta-row"><span>🕒 Best Time:</span> <strong>' + gem.bestTime + '</strong></div>' +
+                '<div class="gem-tip-row"><span>💡 Secret Tip:</span> <em>' + gem.tip + '</em></div>' +
+              '</div>' +
+            '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
 }
 
 /* ── Compare drawer ── */
@@ -306,5 +559,6 @@ function renderCompareDrawer() {
 
 /* ── Back ── */
 function initScreen4() {
+  if (!document.getElementById('screen-4')) return;
   byId('btn-back-to-explore').addEventListener('click', function() { goToStep(3); });
 }

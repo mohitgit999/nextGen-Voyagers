@@ -127,7 +127,7 @@
 }
 
 .step-item.active .step-dot {
-  background: #fff;
+  background: #1BB89A;
   border: 3px solid #1BB89A;
   box-shadow: 0 0 16px rgba(27, 184, 154, 0.6);
   transform: scale(1.3);

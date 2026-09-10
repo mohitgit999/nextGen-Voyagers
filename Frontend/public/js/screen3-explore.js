@@ -20,13 +20,22 @@ function scoreDestination(d, prefs) {
   }
   if (d.bestFor.indexOf(prefs.group) !== -1) score += 18;
   if ((d.id === 'andaman' || d.id === 'ladakh') && prefs.duration < 5) score -= 15;
+
+  // Mood / vibe match bonus
+  if (prefs.moods && prefs.moods.length > 0) {
+    var destVibes = (d.vibes || []).concat(d.tags || []);
+    prefs.moods.forEach(function(mood) {
+      var found = destVibes.some(function(v) { return v.toLowerCase().indexOf(mood.toLowerCase()) !== -1; });
+      if (found) score += 14;
+    });
+  }
   return score;
 }
 
 function computeMatches() {
   var scored = DESTINATIONS.map(function(d) {
     var raw = scoreDestination(d, state.prefs);
-    return { dest: d, percent: clamp(Math.round(raw), 52, 98) };
+    return { dest: d, percent: clamp(Math.round(raw), 52, 99) };
   });
   scored.sort(function(a, b) { return b.percent - a.percent; });
   state.matches = scored;  // keep all 10 for filtering
@@ -37,7 +46,11 @@ function filteredAndSorted() {
   var list = state.matches.slice();
 
   // Filter
-  if (exploreCurrentFilter !== 'all') {
+  if (exploreCurrentFilter === 'hidden-gems') {
+    list = list.filter(function(m) {
+      return m.dest.hiddenGems && m.dest.hiddenGems.length > 0;
+    });
+  } else if (exploreCurrentFilter !== 'all') {
     list = list.filter(function(m) {
       return m.dest.tags.indexOf(exploreCurrentFilter) !== -1;
     });
@@ -57,12 +70,13 @@ function filteredAndSorted() {
 }
 
 /* ===================== RENDER ===================== */
-function renderExplore() {
+function renderExplore(summary, mode) {
   byId('explore-heading').textContent =
-    'Best matches for your ' + state.prefs.duration + '-day ' + (state.prefs.group || '') + ' trip';
+    mode === 'state' ? 'AI discoveries from your state search' :
+      mode === 'place' ? 'Your place, plus AI-similar locations' :
+        'AI matches for your travel vibe';
   byId('explore-sub').textContent =
-    'Ranked by fit for a ' + (BUDGET_LABEL[state.prefs.budget] || '').toLowerCase() +
-    ' budget — tap a card to deep-dive.';
+    summary || 'Ranked from live AI recommendations using your preferences and trip profile.';
 
   // Show skeletons while "loading"
   var grid = byId('explore-grid');
@@ -92,23 +106,32 @@ function renderExploreCards() {
     var d    = m.dest;
     var cost = estimateCost(d, state.prefs, null);
     var isPinned = state.compareIds.indexOf(d.id) !== -1;
+    var isTopAi  = m.percent >= 82;
+    var gemCount = d.hiddenGems ? d.hiddenGems.length : 0;
+    var liveWeather = d.liveWeather && d.liveWeather.source === 'live' ? d.liveWeather : null;
 
     return '' +
       '<button class="dest-card" data-dest-id="' + d.id + '" aria-label="View details for ' + d.name + '">' +
         '<div class="dest-card-top">' +
           '<div class="dest-icon-badge">' + icon(d.icon) + '</div>' +
-          '<span class="match-badge">' + m.percent + '% match</span>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            (isTopAi ? '<span class="ai-match-badge">⚡ AI Fit</span>' : '') +
+            '<span class="match-badge">' + m.percent + '% match</span>' +
+          '</div>' +
         '</div>' +
         '<div>' +
           '<h3 class="dest-name">' + d.name + ' ' + d.emoji + '</h3>' +
           '<span class="dest-state">' + d.state + '</span>' +
         '</div>' +
-        '<p class="dest-blurb">' + d.blurb + '</p>' +
+        '<p class="dest-blurb">' + d.blurb + (d.whyMatched ? ' ' + d.whyMatched : '') + '</p>' +
         '<div class="tag-row">' +
           d.tags.slice(0, 3).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
+          (gemCount ? '<span class="tag-chip gem-tag">💎 ' + gemCount + ' Gems</span>' : '') +
         '</div>' +
         '<div class="dest-meta-row">' +
           '<span class="rating-inline">' + icon('star') + ' ' + d.rating.toFixed(1) + '</span>' +
+          '<span class="safety-chip-mini">🛡️ ' + d.safety.score.toFixed(1) + '</span>' +
+          '<span class="weather-chip-mini">' + (liveWeather ? '🌡️ ' + liveWeather.temp + '° live' : '🌡️ Weather pending') + '</span>' +
           '<span class="price-chip">' + inr(cost.perDay) + '/day</span>' +
         '</div>' +
         '<button class="compare-btn' + (isPinned ? ' active' : '') + '" data-compare-id="' + d.id + '" aria-label="' + (isPinned ? 'Remove from' : 'Add to') + ' comparison" title="Compare">' +
@@ -218,5 +241,6 @@ function initExploreControls() {
 }
 
 function initScreen3() {
+  if (!document.getElementById('screen-3')) return;
   initExploreControls();
 }

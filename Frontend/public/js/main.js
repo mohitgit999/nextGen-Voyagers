@@ -81,48 +81,16 @@ function resetPlannerUI() {
 }
 
 function initLandingCTA() {
-  /* "Start planning" buttons and nav links restart the planner and jump to it */
-  document.querySelectorAll('[data-cta="start-planning"], a[href="#planner-section"]').forEach(function(el) {
-    el.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      /* Reset planner state and UI */
-      if (typeof resetPlanner === 'function') resetPlanner();
-      if (typeof resetPlannerUI === 'function') resetPlannerUI();
-      goToStep(1, true); // Update the active step classes
-
-      var plannerEl = byId('planner-section');
-      if (plannerEl) {
-        // Scroll exactly to the top of the planner
-        plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  });
+  /* "Start planning" buttons no longer intercepted by JS, they use standard <a> links to /plan */
 
   /* Featured destination chips on hero jump to explore */
   document.querySelectorAll('.hero-dest-chip[data-dest]').forEach(function(chip) {
     chip.addEventListener('click', function() {
-      var destId = chip.getAttribute('data-dest');
-      /* Pre-fill prefs with sensible defaults if not yet set */
-      if (!state.prefs.budget)   state.prefs.budget   = 'mid';
-      if (!state.prefs.group)    state.prefs.group     = 'couple';
-      if (!state.location.city)  state.location.city   = 'India';
-      state.prefs.duration = 4;
-      state.prefs.travelers = 2;
-
-      /* Update UI echoes */
-      var echo = byId('pref-origin-echo');
-      if (echo) echo.textContent = 'India';
-
-      computeMatches();
-      renderExplore();
-      unlockStep(3);
-
       var plannerEl = byId('planner-section');
       if (plannerEl) {
         plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-      setTimeout(function() { goToStep(3); }, 600);
+      setTimeout(function() { goToStep(2); }, 600);
     });
   });
 }

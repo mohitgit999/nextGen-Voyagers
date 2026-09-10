@@ -89,6 +89,9 @@ function updateNavAuthUI() {
   var actionsContainer = document.querySelector('.nav-actions');
   if (!actionsContainer) return;
 
+  var mobileSearchButton = actionsContainer.querySelector('.mobile-search-btn-nav');
+  var hamburgerButton = actionsContainer.querySelector('.nav-hamburger');
+
   if (authState.user && authState.token) {
     var firstName = (authState.user.name || 'Traveler').split(' ')[0];
     var initials = (authState.user.name || 'T')
@@ -124,6 +127,9 @@ function updateNavAuthUI() {
           '</button>' +
         '</div>' +
       '</div>';
+
+    if (mobileSearchButton) actionsContainer.insertBefore(mobileSearchButton, actionsContainer.firstChild);
+    if (hamburgerButton) actionsContainer.appendChild(hamburgerButton);
 
     // Bind dropdown events
     var toggleBtn = document.getElementById('nav-user-toggle');
@@ -167,9 +173,24 @@ function updateNavAuthUI() {
     }
   } else {
     // Logged-out default view
-    actionsContainer.innerHTML =
-      '<button class="nav-btn-login" id="nav-btn-login">Log in</button>' +
-      '<button class="nav-btn-signup" id="nav-btn-signup" data-cta="start-planning">Start Planning</button>';
+    if (!mobileSearchButton) {
+      mobileSearchButton = document.createElement('button');
+      mobileSearchButton.className = 'nav-search-icon mobile-search-btn-nav';
+      mobileSearchButton.id = 'nav-search-btn-mobile';
+      mobileSearchButton.setAttribute('aria-label', 'Search destinations');
+      mobileSearchButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
+      actionsContainer.insertBefore(mobileSearchButton, actionsContainer.firstChild);
+    }
+
+    if (!hamburgerButton) {
+      hamburgerButton = document.createElement('button');
+      hamburgerButton.className = 'nav-hamburger';
+      hamburgerButton.id = 'nav-hamburger';
+      hamburgerButton.setAttribute('aria-label', 'Toggle navigation menu');
+      hamburgerButton.setAttribute('aria-expanded', 'false');
+      hamburgerButton.innerHTML = '<span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span>';
+      actionsContainer.appendChild(hamburgerButton);
+    }
 
     var loginBtn = document.getElementById('nav-btn-login');
     if (loginBtn) {

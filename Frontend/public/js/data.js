@@ -467,3 +467,209 @@ var DESTINATIONS = [
     packingExtras: ['Modest clothing for temples', 'Waterproof sandals for ghats', 'Bottled water at all times', 'Ear plugs (very noisy city)', 'Small tote for ghat walks']
   }
 ];
+
+/* ===================== ENRICHMENT DATA ===================== */
+/* Coordinates, culture, hidden gems, and crowd patterns for maps & AI features */
+var DEST_ENRICHMENT = {
+  manali: {
+    coordinates: { lat: 32.2396, lon: 77.1887 },
+    culture: {
+      customs: ['Remove shoes before entering temples', 'Respect local Kullu cap tradition', 'Avoid loud music near monasteries'],
+      festivals: ['Kullu Dussehra (Oct)', 'Hadimba Devi Fair (May)', 'Winter Carnival (Jan)'],
+      heritage: ['Hadimba Temple (1553 AD)', 'Manu Temple', 'Naggar Castle', 'Great Himalayan National Park']
+    },
+    hiddenGems: [
+      { name: 'Sethan Village', description: 'Tiny hamlet at 2700m with igloo camping in winter', bestFor: 'adventure', lat: 32.28, lon: 77.14 },
+      { name: 'Jana Waterfall', description: 'Hidden waterfall only locals know, no crowds', bestFor: 'photography', lat: 32.18, lon: 77.16 },
+      { name: 'Hampta Pass basecamp', description: 'Overnight camping with Milky Way views', bestFor: 'stargazing', lat: 32.31, lon: 77.20 }
+    ],
+    nearbyAttractions: [
+      { name: 'Solang Valley', lat: 32.3137, lon: 77.1566, type: 'adventure' },
+      { name: 'Rohtang Pass', lat: 32.3716, lon: 77.2481, type: 'scenic' },
+      { name: 'Old Manali', lat: 32.2526, lon: 77.1895, type: 'culture' },
+      { name: 'Vashisht Hot Springs', lat: 32.2563, lon: 77.1798, type: 'nature' }
+    ]
+  },
+  goa: {
+    coordinates: { lat: 15.2993, lon: 74.1240 },
+    culture: {
+      customs: ['Respect church dress codes', 'Bargain politely at flea markets', 'No nudity on public beaches'],
+      festivals: ['Carnival (Feb)', 'Shigmo (Mar)', 'Feast of St. Francis Xavier (Dec)'],
+      heritage: ['Basilica of Bom Jesus (UNESCO)', 'Se Cathedral', 'Fort Aguada', 'Church of St. Cajetan']
+    },
+    hiddenGems: [
+      { name: 'Butterfly Beach', description: 'Only reachable by boat from Palolem, pristine and empty', bestFor: 'peace', lat: 15.01, lon: 73.95 },
+      { name: 'Divar Island', description: 'Untouched island with Portuguese mansions and no tourists', bestFor: 'culture', lat: 15.51, lon: 73.88 },
+      { name: 'Tambdi Surla Temple', description: '12th-century Kadamba temple deep in the jungle', bestFor: 'heritage', lat: 15.46, lon: 74.24 }
+    ],
+    nearbyAttractions: [
+      { name: 'Baga Beach', lat: 15.5558, lon: 73.7516, type: 'beach' },
+      { name: 'Basilica of Bom Jesus', lat: 15.5009, lon: 73.9116, type: 'heritage' },
+      { name: 'Dudhsagar Falls', lat: 15.3144, lon: 74.3143, type: 'nature' },
+      { name: 'Chapora Fort', lat: 15.6103, lon: 73.7394, type: 'scenic' }
+    ]
+  },
+  jaipur: {
+    coordinates: { lat: 26.9124, lon: 75.7873 },
+    culture: {
+      customs: ['Cover shoulders in temples', 'Ask permission before photographing locals', 'Remove footwear at religious sites'],
+      festivals: ['Jaipur Literature Festival (Jan)', 'Teej (Aug)', 'Gangaur (Mar-Apr)', 'Elephant Festival (Mar)'],
+      heritage: ['Amber Fort (16th century)', 'Hawa Mahal (1799)', 'City Palace', 'Jantar Mantar (UNESCO)']
+    },
+    hiddenGems: [
+      { name: 'Panna Meena ka Kund', description: 'Geometric stepwell rarely visited by tourists, incredible photos', bestFor: 'photography', lat: 26.98, lon: 75.85 },
+      { name: 'Anokhi Museum', description: 'Hand block-printing museum in a restored haveli', bestFor: 'culture', lat: 26.98, lon: 75.86 },
+      { name: 'Galtaji Monkey Temple', description: 'Hidden temple complex in the hills, sacred water tanks', bestFor: 'spiritual', lat: 26.92, lon: 75.85 }
+    ],
+    nearbyAttractions: [
+      { name: 'Amber Fort', lat: 26.9855, lon: 75.8513, type: 'heritage' },
+      { name: 'Hawa Mahal', lat: 26.9239, lon: 75.8267, type: 'heritage' },
+      { name: 'Nahargarh Fort', lat: 26.9376, lon: 75.8156, type: 'scenic' },
+      { name: 'Albert Hall Museum', lat: 26.9116, lon: 75.8077, type: 'culture' }
+    ]
+  },
+  rishikesh: {
+    coordinates: { lat: 30.0869, lon: 78.2676 },
+    culture: {
+      customs: ['No alcohol or non-veg food in many areas', 'Dress modestly at ashrams', 'Maintain silence during yoga sessions'],
+      festivals: ['International Yoga Festival (Mar)', 'Ganga Dussehra (Jun)', 'Maha Shivaratri (Feb-Mar)'],
+      heritage: ['Beatles Ashram (1968)', 'Laxman Jhula (1929)', 'Ram Jhula', 'Triveni Ghat']
+    },
+    hiddenGems: [
+      { name: 'Neer Garh Waterfall', description: 'Multi-tiered waterfall with natural pools, short trek', bestFor: 'nature', lat: 30.12, lon: 78.30 },
+      { name: 'Kunjapuri Temple', description: 'Hilltop temple with stunning sunrise views of the Himalayas', bestFor: 'spiritual', lat: 30.18, lon: 78.37 },
+      { name: 'Rajaji National Park', description: 'Tiger reserve and elephant corridors, rarely crowded', bestFor: 'wildlife', lat: 30.25, lon: 78.10 }
+    ],
+    nearbyAttractions: [
+      { name: 'Laxman Jhula', lat: 30.1243, lon: 78.3210, type: 'landmark' },
+      { name: 'Triveni Ghat', lat: 30.1050, lon: 78.2650, type: 'spiritual' },
+      { name: 'Beatles Ashram', lat: 30.1150, lon: 78.3320, type: 'heritage' },
+      { name: 'Jumpin Heights Bungee', lat: 30.1600, lon: 78.3300, type: 'adventure' }
+    ]
+  },
+  udaipur: {
+    coordinates: { lat: 24.5854, lon: 73.7125 },
+    culture: {
+      customs: ['Dress modestly at palace complexes', 'Tip boat operators fairly', 'Respect photography restrictions inside palaces'],
+      festivals: ['Mewar Festival (Mar-Apr)', 'Shilpgram Fair (Dec)', 'Gangaur (Apr)'],
+      heritage: ['City Palace (1559 AD)', 'Jag Mandir (1551 AD)', 'Jagdish Temple (1651)', 'Kumbhalgarh Fort (nearby)']
+    },
+    hiddenGems: [
+      { name: 'Badi Lake', description: 'Serene lake with zero tourists, perfect picnic spot', bestFor: 'peace', lat: 24.63, lon: 73.66 },
+      { name: 'Ambrai Ghat', description: 'Best free view of City Palace across the lake at sunset', bestFor: 'photography', lat: 24.58, lon: 73.68 },
+      { name: 'Shilpgram', description: 'Living museum of artisan village replicas from 5 states', bestFor: 'culture', lat: 24.57, lon: 73.65 }
+    ],
+    nearbyAttractions: [
+      { name: 'City Palace', lat: 24.5764, lon: 73.6845, type: 'heritage' },
+      { name: 'Lake Pichola', lat: 24.5733, lon: 73.6812, type: 'scenic' },
+      { name: 'Sajjangarh Palace', lat: 24.5802, lon: 73.6458, type: 'scenic' },
+      { name: 'Jag Mandir', lat: 24.5700, lon: 73.6800, type: 'heritage' }
+    ]
+  },
+  coorg: {
+    coordinates: { lat: 12.4244, lon: 75.7382 },
+    culture: {
+      customs: ['Respect Kodava martial traditions', 'Ask before entering private coffee estates', 'Try local Kodava cuisine — pandi curry'],
+      festivals: ['Kodava Hockey Festival (Apr)', 'Cauvery Changrandi (Oct)', 'Kailpodh (Sep)'],
+      heritage: ['Madikeri Fort', 'Omkareshwara Temple', 'Raja\'s Seat', 'Namdroling Monastery (nearby)']
+    },
+    hiddenGems: [
+      { name: 'Chelavara Falls', description: 'Hidden waterfall in dense forest, only locals visit', bestFor: 'nature', lat: 12.32, lon: 75.80 },
+      { name: 'Nishani Motte Trek', description: 'Dense jungle trek to a peak with views of Karnataka & Kerala', bestFor: 'adventure', lat: 12.40, lon: 75.72 },
+      { name: 'Iruppu Falls', description: 'Sacred waterfall near Brahmagiri Wildlife Sanctuary', bestFor: 'spiritual', lat: 12.10, lon: 75.95 }
+    ],
+    nearbyAttractions: [
+      { name: 'Abbey Falls', lat: 12.4571, lon: 75.7186, type: 'nature' },
+      { name: 'Dubare Elephant Camp', lat: 12.4833, lon: 75.8000, type: 'wildlife' },
+      { name: 'Raja\'s Seat', lat: 12.4234, lon: 75.7341, type: 'scenic' },
+      { name: 'Talakaveri', lat: 12.3215, lon: 75.4920, type: 'spiritual' }
+    ]
+  },
+  andaman: {
+    coordinates: { lat: 11.6234, lon: 92.7265 },
+    culture: {
+      customs: ['Do not collect coral or shells', 'Respect tribal zones (no entry)', 'Use reef-safe sunscreen only'],
+      festivals: ['Island Tourism Festival (Jan)', 'Subhash Mela (Jan)', 'Beach Festival (Feb)'],
+      heritage: ['Cellular Jail (1906)', 'Ross Island ruins', 'Japanese WWII bunkers', 'Anthropological Museum']
+    },
+    hiddenGems: [
+      { name: 'Long Island', description: 'Untouched beaches with no resorts, pristine jungle', bestFor: 'adventure', lat: 12.40, lon: 92.95 },
+      { name: 'North Passage Island', description: 'Secret snorkelling spot with manta rays', bestFor: 'diving', lat: 12.65, lon: 92.72 },
+      { name: 'Chidiya Tapu', description: 'Sunset point with bioluminescent plankton at night', bestFor: 'photography', lat: 11.51, lon: 92.71 }
+    ],
+    nearbyAttractions: [
+      { name: 'Cellular Jail', lat: 11.6937, lon: 92.7470, type: 'heritage' },
+      { name: 'Radhanagar Beach', lat: 11.9827, lon: 93.0100, type: 'beach' },
+      { name: 'Elephant Beach', lat: 12.0150, lon: 93.0300, type: 'nature' },
+      { name: 'Neil Island', lat: 11.8300, lon: 93.0500, type: 'island' }
+    ]
+  },
+  ladakh: {
+    coordinates: { lat: 34.1526, lon: 77.5771 },
+    culture: {
+      customs: ['Carry inner-line permits at all times', 'Do not disturb prayer wheels', 'Accept butter tea graciously — it\'s hospitality'],
+      festivals: ['Hemis Festival (Jun-Jul)', 'Ladakh Festival (Sep)', 'Losar New Year (Dec-Jan)'],
+      heritage: ['Hemis Monastery (1672)', 'Leh Palace (17th century)', 'Shanti Stupa', 'Thiksey Monastery']
+    },
+    hiddenGems: [
+      { name: 'Tso Kar Lake', description: 'Salt lake at 4500m with wild kiangs and zero tourists', bestFor: 'photography', lat: 33.30, lon: 77.98 },
+      { name: 'Liker Monastery', description: 'Ancient monastery with a giant Maitreya Buddha, rarely visited', bestFor: 'spiritual', lat: 34.07, lon: 77.36 },
+      { name: 'Hanle Village', description: 'Darkest skies in India — Indian Astronomical Observatory here', bestFor: 'stargazing', lat: 32.78, lon: 78.97 }
+    ],
+    nearbyAttractions: [
+      { name: 'Pangong Lake', lat: 33.7595, lon: 78.6567, type: 'scenic' },
+      { name: 'Nubra Valley', lat: 34.6942, lon: 77.5706, type: 'adventure' },
+      { name: 'Khardung La', lat: 34.2818, lon: 77.6026, type: 'scenic' },
+      { name: 'Magnetic Hill', lat: 34.1650, lon: 77.4700, type: 'curiosity' }
+    ]
+  },
+  munnar: {
+    coordinates: { lat: 10.0889, lon: 77.0595 },
+    culture: {
+      customs: ['Ask permission before photographing tea workers', 'Respect forest department rules on treks', 'Buy tea directly from estates to support workers'],
+      festivals: ['Neelakurinji Bloom (once in 12 years)', 'Onam (Aug-Sep)', 'Christmas markets (Dec)'],
+      heritage: ['Kanan Devan Hills Tea Museum', 'Christ Church (1910)', 'Lock Heart Gap viewpoint', 'Eravikulam National Park']
+    },
+    hiddenGems: [
+      { name: 'Kolukkumalai Tea Estate', description: 'World\'s highest tea plantation, reachable only by jeep', bestFor: 'adventure', lat: 10.08, lon: 77.18 },
+      { name: 'Chinnakanal Waterfall', description: 'Also called Power House Falls, misty and secluded', bestFor: 'nature', lat: 10.03, lon: 77.08 },
+      { name: 'Meesapulimala', description: 'Second highest peak in Western Ghats, epic sunrise trek', bestFor: 'trekking', lat: 10.10, lon: 77.12 }
+    ],
+    nearbyAttractions: [
+      { name: 'Eravikulam National Park', lat: 10.1700, lon: 77.0600, type: 'wildlife' },
+      { name: 'Mattupetty Dam', lat: 10.1200, lon: 77.1300, type: 'scenic' },
+      { name: 'Top Station', lat: 10.1300, lon: 77.2300, type: 'scenic' },
+      { name: 'Attukal Waterfall', lat: 10.0500, lon: 77.0600, type: 'nature' }
+    ]
+  },
+  varanasi: {
+    coordinates: { lat: 25.3176, lon: 83.0068 },
+    culture: {
+      customs: ['Ask permission before photographing cremation ghats', 'Dress modestly — this is India\'s holiest city', 'Don\'t point feet at temples or deities'],
+      festivals: ['Dev Deepawali (Nov)', 'Mahashivratri (Feb-Mar)', 'Ganga Mahotsav (Nov)', 'Holi (Mar)'],
+      heritage: ['Kashi Vishwanath Temple', 'Dashashwamedh Ghat', 'Sarnath (Buddhist site)', 'Ramnagar Fort (17th century)']
+    },
+    hiddenGems: [
+      { name: 'Tulsi Ghat', description: 'Quiet ghat where the Ramcharitmanas was written, no tourists', bestFor: 'peace', lat: 25.29, lon: 83.00 },
+      { name: 'Chunar Fort', description: '10th-century fort 40 km away, overlooking the Ganges', bestFor: 'history', lat: 25.13, lon: 82.88 },
+      { name: 'Blue Lassi Shop', description: 'Legendary tiny shop making lassi for 70+ years', bestFor: 'food', lat: 25.31, lon: 83.01 }
+    ],
+    nearbyAttractions: [
+      { name: 'Dashashwamedh Ghat', lat: 25.3048, lon: 83.0106, type: 'spiritual' },
+      { name: 'Sarnath', lat: 25.3814, lon: 83.0253, type: 'heritage' },
+      { name: 'Kashi Vishwanath Temple', lat: 25.3109, lon: 83.0107, type: 'spiritual' },
+      { name: 'Ramnagar Fort', lat: 25.2849, lon: 83.0327, type: 'heritage' }
+    ]
+  }
+};
+
+/* ── Apply enrichment data to each destination ── */
+DESTINATIONS.forEach(function(d) {
+  var extra = DEST_ENRICHMENT[d.id];
+  if (extra) {
+    d.coordinates      = extra.coordinates;
+    d.culture          = extra.culture;
+    d.hiddenGems       = extra.hiddenGems;
+    d.nearbyAttractions = extra.nearbyAttractions;
+  }
+});

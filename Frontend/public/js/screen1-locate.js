@@ -6,6 +6,7 @@
    ============================================================ */
 
 function initScreen1() {
+  if (!document.getElementById('screen-1')) return;
   var locateStatus      = byId('locate-status');
   var locateStatusText  = byId('locate-status-text');
   var continueLocateBtn = byId('btn-continue-locate');

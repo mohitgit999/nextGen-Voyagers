@@ -1,5 +1,7 @@
 // server/controllers/tripController.js
 const Trip = require('../models/Trip');
+const { sendEmail } = require('../utils/emailService');
+const { getItineraryEmailTemplate } = require('../utils/emailTemplates');
 
 // @desc    Create new trip (or upsert if sessionId matches)
 // @route   POST /api/trips
@@ -29,6 +31,17 @@ const createTrip = async (req, res) => {
 
     const trip = new Trip(tripData);
     const createdTrip = await trip.save();
+
+    // Send Itinerary Confirmation Email if user is authenticated
+    if (req.user && req.user.email) {
+      sendEmail({
+        to: req.user.email,
+        subject: `Your NextGen Voyagers Itinerary: ${createdTrip.destination || 'Upcoming Trip'}`,
+        text: `Hi ${req.user.name},\nYour itinerary for ${createdTrip.destination} has been saved.`,
+        html: getItineraryEmailTemplate(req.user.name, createdTrip)
+      }).catch(err => console.error('Failed to send itinerary email:', err));
+    }
+
     res.status(201).json(createdTrip);
   } catch (error) {
     console.error(`Error creating trip: ${error.message}`);

@@ -1,6 +1,8 @@
 // server/controllers/authController.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { sendEmail } = require('../utils/emailService');
+const { getWelcomeEmailTemplate, getLoginAlertTemplate } = require('../utils/emailTemplates');
 
 const JWT_SECRET = process.env.SESSION_SECRET || 'voyager-super-secret-key-2026';
 
@@ -37,6 +39,14 @@ const registerUser = async (req, res) => {
       preferences: preferences || {},
     });
 
+    // Send Welcome Email (non-blocking)
+    sendEmail({
+      to: user.email,
+      subject: 'Welcome to NextGen Voyagers! 🌍',
+      text: `Welcome aboard, ${user.name}! Your journey towards safer, smarter travel begins here.`,
+      html: getWelcomeEmailTemplate(user.name)
+    }).catch(err => console.error('Failed to send welcome email:', err));
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -67,6 +77,15 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
 
     if (user && (await user.matchPassword(password))) {
+      // Send Login Alert (non-blocking)
+      const loginTime = new Date().toLocaleString();
+      sendEmail({
+        to: user.email,
+        subject: 'Security Alert: New Login Detected',
+        text: `Hi ${user.name},\nWe noticed a new login to your account at ${loginTime}. If this wasn't you, please contact support immediately.`,
+        html: getLoginAlertTemplate(user.name, loginTime)
+      }).catch(err => console.error('Failed to send login alert:', err));
+
       res.json({
         _id: user._id,
         name: user.name,

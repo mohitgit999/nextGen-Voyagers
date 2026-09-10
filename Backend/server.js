@@ -30,6 +30,8 @@ app.use('/api/auth', require('./server/routes/auth'));
 app.use('/api/destinations', require('./server/routes/destinations'));
 app.use('/api/trips', require('./server/routes/trips'));
 app.use('/api/contact', require('./server/routes/contact'));
+app.use('/api/ai', require('./server/routes/ai'));
+app.use('/api/weather', require('./server/routes/weather'));
 
 // Fallback to index.html for unknown local GET routes.
 if (!process.env.VERCEL) {

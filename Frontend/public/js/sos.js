@@ -11,11 +11,13 @@ function initSOS() {
   function openSOS() { sosModal.classList.remove('hidden'); }
   function closeSOS() { sosModal.classList.add('hidden'); }
 
-  byId('sos-fab').addEventListener('click', openSOS);
-  byId('sos-close').addEventListener('click', closeSOS);
-  sosModal.addEventListener('click', function(e) {
-    if (e.target === sosModal) closeSOS();
-  });
+  if (byId('sos-fab')) byId('sos-fab').addEventListener('click', openSOS);
+  if (byId('sos-close')) byId('sos-close').addEventListener('click', closeSOS);
+  if (sosModal) {
+    sosModal.addEventListener('click', function(e) {
+      if (e.target === sosModal) closeSOS();
+    });
+  }
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeSOS();
   });
