@@ -154,12 +154,16 @@ function renderDayMap(containerId, dest, dayActivities) {
     .bindPopup('<strong>' + dest.name + '</strong>');
 
   // If we have nearby attractions, place some contextual ones
-  if (dest.nearbyAttractions) {
-    dest.nearbyAttractions.forEach(function(a) {
-      L.marker([a.lat, a.lon], {
-        icon: getMarkerIcon(a.type)
-      }).addTo(map)
-        .bindPopup('<strong>' + a.name + '</strong><br><em>' + a.type + '</em>');
+  if (dest.nearbyAttractions && Array.isArray(dest.nearbyAttractions)) {
+    dest.nearbyAttractions.forEach(function(a, idx) {
+      var aLat = (typeof a.lat === 'number') ? a.lat : (dest.coordinates ? dest.coordinates.lat + ((idx + 1) * 0.008 * (idx % 2 === 0 ? 1 : -1)) : null);
+      var aLon = (typeof a.lon === 'number') ? a.lon : (dest.coordinates ? dest.coordinates.lon + ((idx + 1) * 0.008 * (idx % 3 === 0 ? 1 : -1)) : null);
+      if (aLat !== null && aLon !== null) {
+        L.marker([aLat, aLon], {
+          icon: getMarkerIcon(a.type || 'activity')
+        }).addTo(map)
+          .bindPopup('<strong>' + a.name + '</strong>' + (a.type ? '<br><em>' + a.type + '</em>' : ''));
+      }
     });
   }
 
