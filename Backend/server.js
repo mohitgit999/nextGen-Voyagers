@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-const path = require('path');
 const connectDB = require('./server/config/db');
 
 // Connect to MongoDB
@@ -11,21 +10,40 @@ connectDB();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// ── CORS — allow the deployed frontend + localhost for dev ──
+const allowedOrigins = [
+  'http://localhost:5173',   // Vite dev server
+  'http://localhost:5000',   // Local combined server
+];
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL.replace(/\/+$/, ''));
+}
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+}));
+
 app.use(helmet({
-  contentSecurityPolicy: false, // For serving local frontend without strict CSP blocking
+  contentSecurityPolicy: false,
 }));
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve the frontend only when running the combined local server.
-if (!process.env.VERCEL) {
-  app.use(express.static(path.join(__dirname, '../Frontend')));
-}
+// ── Health-check route (Render pings this to keep the service alive) ──
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'NextGen Voyagers API' });
+});
 
-// API Routes
+// ── API Routes ──
 app.use('/api/auth', require('./server/routes/auth'));
 app.use('/api/destinations', require('./server/routes/destinations'));
 app.use('/api/trips', require('./server/routes/trips'));
@@ -33,28 +51,17 @@ app.use('/api/contact', require('./server/routes/contact'));
 app.use('/api/ai', require('./server/routes/ai'));
 app.use('/api/weather', require('./server/routes/weather'));
 
-// Fallback to index.html for unknown local GET routes.
-if (!process.env.VERCEL) {
-  app.use((req, res, next) => {
-    if (req.method === 'GET' && !req.path.startsWith('/api')) {
-      return res.sendFile(path.join(__dirname, '../Frontend', 'index.html'));
-    }
-    next();
-  });
-}
-
-// Error handling middleware
+// ── Error handling middleware ──
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Server Error', message: err.message });
 });
 
+// ── Start server (Render injects PORT automatically) ──
 const PORT = process.env.PORT || 5000;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+});
 
 module.exports = app;
