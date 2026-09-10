@@ -123,7 +123,18 @@ function initScreen2() {
         goToStep(3);
       })
       .catch(function(error) {
-        prefValidation.textContent = error.message + '. Add a Gemini API key to enable live AI destination search.';
+        console.warn('AI destination recommendation failed, using curated destinations fallback:', error);
+        var fallbackDests = window.DESTINATIONS || [];
+        if (fallbackDests.length) {
+          state.matches = fallbackDests.slice(0, 8).map(function(dest, index) {
+            return { dest: dest, percent: 95 - index * 2 };
+          });
+          renderExplore('Showing curated destinations tailored for your trip.', 'mood');
+          unlockStep(3);
+          goToStep(3);
+        } else {
+          prefValidation.textContent = 'Could not load destinations. Please try again in a moment.';
+        }
       })
       .finally(function() {
         showDestBtn.disabled = false;

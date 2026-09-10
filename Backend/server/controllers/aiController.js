@@ -4,7 +4,6 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const axios = require('axios');
 
 let genAI = null;
-let model = null;
 
 function initGemini() {
   if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
@@ -13,9 +12,36 @@ function initGemini() {
   }
   if (!genAI) {
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    model = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL || 'gemini-1.5-flash' });
   }
   return true;
+}
+
+async function generateWithFallback(prompt) {
+  if (!initGemini()) {
+    throw new Error('GEMINI_API_KEY is not configured');
+  }
+
+  const candidateModels = [
+    process.env.GEMINI_MODEL,
+    'gemini-flash-lite-latest',
+    'gemini-3.1-flash-lite',
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-flash-latest'
+  ].filter(Boolean);
+
+  let lastError = null;
+  for (const modelName of candidateModels) {
+    try {
+      const generativeModel = genAI.getGenerativeModel({ model: modelName });
+      const result = await generativeModel.generateContent(prompt);
+      return result.response.text();
+    } catch (err) {
+      console.warn(`Gemini model ${modelName} failed:`, err.message);
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('All candidate Gemini models failed to generate content');
 }
 
 // @desc    Generate AI-powered day-by-day itinerary
@@ -87,8 +113,7 @@ IMPORTANT RULES:
 - For food mood: include local food walks, street food spots, authentic restaurants
 - Return ONLY the JSON, no markdown formatting or code blocks`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await generateWithFallback(prompt);
 
     // Parse JSON from response (handle markdown code blocks)
     let jsonStr = responseText;
@@ -151,8 +176,7 @@ Return ONLY a JSON array:
 
 Return ONLY the JSON, no markdown.`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await generateWithFallback(prompt);
 
     let jsonStr = responseText;
     const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -189,8 +213,7 @@ Rank the destinations from best to worst match. Return ONLY a JSON array of dest
 
 Return ONLY the JSON, no markdown.`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await generateWithFallback(prompt);
 
     let jsonStr = responseText;
     const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -265,8 +288,7 @@ Return ONLY valid JSON in this exact shape:
   ]
 }`;
 
-    const result = await model.generateContent(prompt);
-    const responseText = result.response.text();
+    const responseText = await generateWithFallback(prompt);
     const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
     const jsonStr = (jsonMatch ? jsonMatch[1] : responseText).trim();
     const parsed = JSON.parse(jsonStr);
