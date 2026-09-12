@@ -44,6 +44,136 @@ async function generateWithFallback(prompt) {
   throw lastError || new Error('All candidate Gemini models failed to generate content');
 }
 
+// In-memory cache for fast repeat lookups of cloud images
+const cloudImageCache = new Map();
+
+// 100% verified categorized fallback images (Rivers, Beaches, Mountains, Heritage, Spiritual, Nature, General)
+// Notice: ZERO Taj Mahal unless the city is explicitly Agra!
+const CATEGORY_BACKUPS = {
+  rivers: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80', // Emerald river & alpine lake
+  beaches: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', // Tropical beach & waves
+  mountains: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80', // High mountain peaks & snow ridges
+  heritage: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80', // Historic sandstone royal fort / palace
+  spiritual: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', // Mountain monastery with prayer flags
+  nature: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80', // Lush green forest & wilderness
+  general: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80' // Scenic road through hills
+};
+
+function getCategoryBackup(name, state = '', tags = [], vibes = []) {
+  const combined = [name, state, ...(tags || []), ...(vibes || [])].join(' ').toLowerCase();
+
+  // Special case: ONLY Agra shows Taj Mahal
+  if (combined.includes('agra') || combined.includes('taj mahal')) {
+    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80';
+  }
+
+  // 1. Beaches / Coastal / Islands
+  if (combined.includes('beach') || combined.includes('coast') || combined.includes('island') || combined.includes('sea') || combined.includes('ocean') || combined.includes('sand') || combined.includes('reef') || combined.includes('scuba') || combined.includes('surf') || combined.includes('atoll')) {
+    return CATEGORY_BACKUPS.beaches;
+  }
+
+  // 2. Rivers / Lakes / Waterfalls / Waters
+  if (combined.includes('river') || combined.includes('lake') || combined.includes('waterfall') || combined.includes('falls') || combined.includes('stream') || combined.includes('ghat') || combined.includes('water') || combined.includes('boat') || combined.includes('rapid') || combined.includes('rafting')) {
+    return CATEGORY_BACKUPS.rivers;
+  }
+
+  // 3. Mountains / High Altitude / Snow / Passes / Valleys / Trek
+  if (combined.includes('mountain') || combined.includes('snow') || combined.includes('altitude') || combined.includes('himalaya') || combined.includes('valley') || combined.includes('pass') || combined.includes('trek') || combined.includes('hill') || combined.includes('peak') || combined.includes('spiti') || combined.includes('lahaul') || combined.includes('ladakh') || combined.includes('himachal') || combined.includes('kashmir') || combined.includes('glacier')) {
+    return CATEGORY_BACKUPS.mountains;
+  }
+
+  // 4. Spiritual / Temples / Monasteries
+  if (combined.includes('temple') || combined.includes('monastery') || combined.includes('gompa') || combined.includes('stupa') || combined.includes('spiritual') || combined.includes('sacred') || combined.includes('yoga') || combined.includes('meditation') || combined.includes('aarti') || combined.includes('ashram')) {
+    return CATEGORY_BACKUPS.spiritual;
+  }
+
+  // 5. Heritage / History / Forts / Palaces
+  if (combined.includes('heritage') || combined.includes('history') || combined.includes('historic') || combined.includes('fort') || combined.includes('palace') || combined.includes('royal') || combined.includes('monument') || combined.includes('architecture') || combined.includes('haveli') || combined.includes('rajasthan')) {
+    return CATEGORY_BACKUPS.heritage;
+  }
+
+  // 6. Nature / Forests / Tea / Plantations
+  if (combined.includes('nature') || combined.includes('forest') || combined.includes('wildlife') || combined.includes('jungle') || combined.includes('green') || combined.includes('tea') || combined.includes('coffee') || combined.includes('plantation') || combined.includes('sanctuary')) {
+    return CATEGORY_BACKUPS.nature;
+  }
+
+  // 7. General scenic fallback (Neutral landscape - NOT Taj Mahal!)
+  return CATEGORY_BACKUPS.general;
+}
+
+async function fetchCloudDestinationImage(name, state = '', tags = [], vibes = []) {
+  if (!name) return getCategoryBackup(name, state, tags, vibes);
+
+  // Check 10 core destinations first for local high-res verified photo
+  const n = name.toLowerCase().trim();
+  const localMap = {
+    'manali': '/img/manali.jpg',
+    'goa': '/img/goa.jpg',
+    'rishikesh': '/img/rishikesh.jpg',
+    'jaipur': '/img/jaipur.jpg',
+    'munnar': '/img/munnar.jpg',
+    'ladakh': '/img/ladakh.jpg',
+    'varanasi': '/img/varanasi.jpg',
+    'andaman': '/img/andaman.jpg',
+    'coorg': '/img/coorg.jpg',
+    'udaipur': '/img/udaipur.jpg'
+  };
+  for (const [k, v] of Object.entries(localMap)) {
+    if (n === k || n.includes(k)) return v;
+  }
+
+  const cacheKey = `${name}_${state}`.toLowerCase().trim();
+  if (cloudImageCache.has(cacheKey)) {
+    return cloudImageCache.get(cacheKey);
+  }
+
+  // Live Cloud Fetching from Wikipedia / Wikimedia Commons API
+  const queries = [
+    `${name} ${state}`.trim(),
+    name.trim(),
+    `${name} district ${state}`.trim()
+  ].filter(Boolean);
+
+  for (const q of queries) {
+    try {
+      // 1. Direct page title lookup
+      const directUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(q)}&prop=pageimages&format=json&pithumbsize=1200&origin=*`;
+      const dRes = await axios.get(directUrl, { timeout: 2500, headers: { 'User-Agent': 'NextGenVoyagersApp/1.0' } });
+      const pages = dRes.data && dRes.data.query && dRes.data.query.pages;
+      if (pages) {
+        for (const k of Object.keys(pages)) {
+          const src = pages[k] && pages[k].thumbnail && pages[k].thumbnail.source;
+          if (src && !src.endsWith('.svg') && !src.toLowerCase().includes('flag') && !src.toLowerCase().includes('map') && !src.toLowerCase().includes('emblem')) {
+            cloudImageCache.set(cacheKey, src);
+            return src;
+          }
+        }
+      }
+
+      // 2. Generator search for best matching page
+      const sUrl = `https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q)}&prop=pageimages&format=json&pithumbsize=1200&origin=*`;
+      const sRes = await axios.get(sUrl, { timeout: 2500, headers: { 'User-Agent': 'NextGenVoyagersApp/1.0' } });
+      const sPages = sRes.data && sRes.data.query && sRes.data.query.pages;
+      if (sPages) {
+        for (const k of Object.keys(sPages)) {
+          const src = sPages[k] && sPages[k].thumbnail && sPages[k].thumbnail.source;
+          if (src && !src.endsWith('.svg') && !src.toLowerCase().includes('flag') && !src.toLowerCase().includes('map') && !src.toLowerCase().includes('emblem')) {
+            cloudImageCache.set(cacheKey, src);
+            return src;
+          }
+        }
+      }
+    } catch (err) {
+      // Continue to next query
+    }
+  }
+
+  // Backup fallback categorized image
+  const fallbackUrl = getCategoryBackup(name, state, tags, vibes);
+  cloudImageCache.set(cacheKey, fallbackUrl);
+  return fallbackUrl;
+}
+
 // @desc    Generate AI-powered day-by-day itinerary
 // @route   POST /api/ai/generate-itinerary
 // @access  Public
@@ -317,50 +447,6 @@ Return ONLY valid JSON in this exact shape:
       return res.status(502).json({ message: 'AI returned no destinations' });
     }
 
-function resolveAiDestinationImage(name, tags, vibes) {
-  const n = (name || '').toLowerCase();
-  const curated = {
-    gokarna: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80',
-    varkala: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
-    pondicherry: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
-    puducherry: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
-    alibaug: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
-    kasol: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
-    manali: '/img/manali.jpg',
-    goa: '/img/goa.jpg',
-    rishikesh: '/img/rishikesh.jpg',
-    jaipur: '/img/jaipur.jpg',
-    munnar: '/img/munnar.jpg',
-    kerala: '/img/munnar.jpg',
-    ladakh: '/img/ladakh.jpg',
-    varanasi: '/img/varanasi.jpg',
-    andaman: '/img/andaman.jpg',
-    coorg: '/img/coorg.jpg',
-    udaipur: '/img/udaipur.jpg',
-    shimla: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=800&q=80',
-    ooty: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80',
-    darjeeling: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
-    hampi: 'https://images.unsplash.com/photo-1600100397608-f010f443b749?auto=format&fit=crop&w=800&q=80',
-    agra: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
-    amritsar: 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?auto=format&fit=crop&w=800&q=80',
-    jaisalmer: 'https://images.unsplash.com/photo-1572979268688-6625895e6389?auto=format&fit=crop&w=800&q=80'
-  };
-  for (const [k, v] of Object.entries(curated)) {
-    if (n.includes(k)) return v;
-  }
-  const all = (tags || []).concat(vibes || []).map(t => String(t).toLowerCase());
-  if (all.some(t => t.includes('beach') || t.includes('coast'))) {
-    return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
-  }
-  if (all.some(t => t.includes('mountain') || t.includes('snow') || t.includes('trek'))) {
-    return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
-  }
-  if (all.some(t => t.includes('heritage') || t.includes('history') || t.includes('temple'))) {
-    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80';
-  }
-  return 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
-}
-
     const destinations = await Promise.all(parsed.destinations.slice(0, 8).map(async (item, index) => {
       const name = String(item.name || '').trim();
       const weather = await fetchLiveWeather(item.liveDataQuery || name);
@@ -369,7 +455,7 @@ function resolveAiDestinationImage(name, tags, vibes) {
       const max = Number(item.weather && item.weather.max) || 0;
       const liveMin = weather.source === 'live' ? weather.temp : min;
       const liveMax = weather.source === 'live' ? weather.temp : max;
-      const heroImage = resolveAiDestinationImage(name, item.tags, item.vibes);
+      const heroImage = await fetchCloudDestinationImage(name, item.state, item.tags, item.vibes);
       return {
         id: `ai-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${index}`,
         name,
@@ -456,9 +542,25 @@ async function fetchLiveWeather(city) {
   }
 }
 
+const getDestinationPhoto = async (req, res) => {
+  try {
+    const { query, state, tags } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: 'Missing query parameter' });
+    }
+    const tagsArr = tags ? String(tags).split(',') : [];
+    const imageUrl = await fetchCloudDestinationImage(query, state || '', tagsArr, []);
+    return res.json({ query, imageUrl });
+  } catch (err) {
+    return res.json({ query: req.query.query, imageUrl: getCategoryBackup(req.query.query, req.query.state) });
+  }
+};
+
 module.exports = {
   generateItinerary,
   suggestHiddenGems,
   moodMatch,
-  recommendDestinations
+  recommendDestinations,
+  getDestinationPhoto
 };
+

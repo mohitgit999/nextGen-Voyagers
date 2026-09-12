@@ -87,11 +87,67 @@ function renderExplore(summary, mode) {
   }, 420);
 }
 
+/* ===================== CATEGORIZED BACKUP IMAGES ===================== */
+// Verified categorized backup images (Rivers, Beaches, Mountains, Heritage, Spiritual, Nature, General)
+// Notice: ZERO Taj Mahal unless the city is explicitly Agra!
+var CATEGORY_BACKUPS = {
+  rivers: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80', // Emerald river & lake valley
+  beaches: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', // Tropical beach & waves
+  mountains: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80', // Snow peaks & alpine ridges
+  heritage: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80', // Historic sandstone royal fort
+  spiritual: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', // Mountain monastery with prayer flags
+  nature: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1200&q=80', // Lush green forest
+  general: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1200&q=80' // Scenic road through hills
+};
+
+function getCategoryBackupImage(d) {
+  if (!d) return CATEGORY_BACKUPS.general;
+  var name = (d.name || '').toLowerCase();
+  var stateStr = (d.state || '').toLowerCase();
+  var tags = (d.tags || []).concat(d.vibes || []).map(function(t) { return String(t).toLowerCase(); });
+  var combined = [name, stateStr].concat(tags).join(' ');
+
+  // ONLY Agra shows Taj Mahal
+  if (combined.indexOf('agra') !== -1 || combined.indexOf('taj mahal') !== -1) {
+    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80';
+  }
+
+  // 1. Beaches / Coastal / Islands
+  if (combined.indexOf('beach') !== -1 || combined.indexOf('coast') !== -1 || combined.indexOf('island') !== -1 || combined.indexOf('sea') !== -1 || combined.indexOf('ocean') !== -1 || combined.indexOf('sand') !== -1 || combined.indexOf('reef') !== -1 || combined.indexOf('scuba') !== -1 || combined.indexOf('surf') !== -1) {
+    return CATEGORY_BACKUPS.beaches;
+  }
+
+  // 2. Rivers / Lakes / Waterfalls
+  if (combined.indexOf('river') !== -1 || combined.indexOf('lake') !== -1 || combined.indexOf('waterfall') !== -1 || combined.indexOf('falls') !== -1 || combined.indexOf('stream') !== -1 || combined.indexOf('ghat') !== -1 || combined.indexOf('water') !== -1 || combined.indexOf('boat') !== -1 || combined.indexOf('rapid') !== -1 || combined.indexOf('rafting') !== -1) {
+    return CATEGORY_BACKUPS.rivers;
+  }
+
+  // 3. Mountains / High Altitude / Snow / Valley / Pass / Trek
+  if (combined.indexOf('mountain') !== -1 || combined.indexOf('snow') !== -1 || combined.indexOf('altitude') !== -1 || combined.indexOf('himalaya') !== -1 || combined.indexOf('valley') !== -1 || combined.indexOf('pass') !== -1 || combined.indexOf('trek') !== -1 || combined.indexOf('hill') !== -1 || combined.indexOf('peak') !== -1 || combined.indexOf('spiti') !== -1 || combined.indexOf('lahaul') !== -1 || combined.indexOf('ladakh') !== -1 || combined.indexOf('himachal') !== -1 || combined.indexOf('kashmir') !== -1 || combined.indexOf('glacier') !== -1) {
+    return CATEGORY_BACKUPS.mountains;
+  }
+
+  // 4. Spiritual / Temples / Monasteries
+  if (combined.indexOf('temple') !== -1 || combined.indexOf('monastery') !== -1 || combined.indexOf('gompa') !== -1 || combined.indexOf('stupa') !== -1 || combined.indexOf('spiritual') !== -1 || combined.indexOf('sacred') !== -1 || combined.indexOf('yoga') !== -1 || combined.indexOf('meditation') !== -1 || combined.indexOf('aarti') !== -1 || combined.indexOf('ashram') !== -1) {
+    return CATEGORY_BACKUPS.spiritual;
+  }
+
+  // 5. Heritage / History / Forts / Palaces
+  if (combined.indexOf('heritage') !== -1 || combined.indexOf('history') !== -1 || combined.indexOf('historic') !== -1 || combined.indexOf('fort') !== -1 || combined.indexOf('palace') !== -1 || combined.indexOf('royal') !== -1 || combined.indexOf('monument') !== -1 || combined.indexOf('architecture') !== -1 || combined.indexOf('haveli') !== -1 || combined.indexOf('rajasthan') !== -1) {
+    return CATEGORY_BACKUPS.heritage;
+  }
+
+  // 6. Nature / Forests / Tea / Greenery
+  if (combined.indexOf('nature') !== -1 || combined.indexOf('forest') !== -1 || combined.indexOf('wildlife') !== -1 || combined.indexOf('jungle') !== -1 || combined.indexOf('green') !== -1 || combined.indexOf('tea') !== -1 || combined.indexOf('coffee') !== -1 || combined.indexOf('plantation') !== -1 || combined.indexOf('sanctuary') !== -1) {
+    return CATEGORY_BACKUPS.nature;
+  }
+
+  return CATEGORY_BACKUPS.general;
+}
+
 /* ===================== DESTINATION IMAGES ===================== */
 function getDestinationImage(d) {
-  if (!d) return '/img/goa.jpg';
-  if (d.heroImage) return d.heroImage;
-  if (d.image) return d.image;
+  if (!d) return CATEGORY_BACKUPS.general;
 
   var id = (d.id || '').toLowerCase();
   var name = (d.name || '').toLowerCase().trim();
@@ -113,12 +169,21 @@ function getDestinationImage(d) {
   };
 
   for (var key in localMap) {
-    if (id.indexOf(key) !== -1 || name.indexOf(key) !== -1) {
+    if (id === key || name === key || (key.length > 3 && (id.indexOf(key) !== -1 || name.indexOf(key) !== -1))) {
       return localMap[key];
     }
   }
 
-  // Curated high-resolution Unsplash photos for famous Indian destinations
+  // Check if d already has a valid cloud image (filter out any legacy Taj Mahal fallback URLs for non-Agra places)
+  var candidate = d.heroImage || d.image;
+  if (candidate && typeof candidate === 'string') {
+    var isLegacyTaj = (candidate.indexOf('photo-1524492412937-b28074a5d7da') !== -1 || candidate.indexOf('photo-1564507592333-c60657eea523') !== -1);
+    if (!isLegacyTaj || name.indexOf('agra') !== -1) {
+      return candidate;
+    }
+  }
+
+  // Curated high-resolution photos for famous Indian destinations
   var curatedPhotos = {
     'gokarna': 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80',
     'varkala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
@@ -157,22 +222,8 @@ function getDestinationImage(d) {
     }
   }
 
-  // Tag / vibe based thematic fallbacks
-  var allTags = (d.tags || []).concat(d.vibes || []).map(function(t) { return t.toLowerCase(); });
-  if (allTags.some(function(t) { return t.indexOf('beach') !== -1 || t.indexOf('coast') !== -1 || t.indexOf('island') !== -1; })) {
-    return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
-  }
-  if (allTags.some(function(t) { return t.indexOf('mountain') !== -1 || t.indexOf('snow') !== -1 || t.indexOf('trek') !== -1 || t.indexOf('hill') !== -1; })) {
-    return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
-  }
-  if (allTags.some(function(t) { return t.indexOf('heritage') !== -1 || t.indexOf('history') !== -1 || t.indexOf('temple') !== -1 || t.indexOf('fort') !== -1 || t.indexOf('spiritual') !== -1; })) {
-    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80';
-  }
-  if (allTags.some(function(t) { return t.indexOf('nature') !== -1 || t.indexOf('forest') !== -1 || t.indexOf('river') !== -1; })) {
-    return 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80';
-  }
-
-  return 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
+  // Fall back to category-based backup image
+  return getCategoryBackupImage(d);
 }
 
 function renderExploreCards() {
@@ -249,6 +300,38 @@ function renderExploreCards() {
       toggleCompare(id);
     });
   });
+
+  // Asynchronously resolve live cloud images for AI destinations or offbeat places
+  setTimeout(function() {
+    list.forEach(function(m) {
+      var d = m.dest;
+      if (!d) return;
+      var card = grid.querySelector('.dest-card[data-dest-id="' + d.id + '"]');
+      if (!card) return;
+      var bg = card.querySelector('.dest-card-bg');
+      if (!bg) return;
+
+      // If already a local image or Wikimedia cloud image, it is already verified
+      if (d.heroImage && (d.heroImage.indexOf('/img/') !== -1 || d.heroImage.indexOf('wikimedia') !== -1)) {
+        return;
+      }
+
+      // Fetch live cloud photo
+      var apiUrl = '/api/ai/destination-photo?query=' + encodeURIComponent(d.name) + 
+                   '&state=' + encodeURIComponent(d.state || '') + 
+                   '&tags=' + encodeURIComponent((d.tags || []).join(','));
+      fetch(apiUrl)
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+          if (data && data.imageUrl) {
+            bg.style.backgroundImage = 'url("' + data.imageUrl + '")';
+            d.heroImage = data.imageUrl;
+            d.image = data.imageUrl;
+          }
+        })
+        .catch(function() {});
+    });
+  }, 100);
 
   updateCompareBar();
 }
