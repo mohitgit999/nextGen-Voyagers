@@ -109,20 +109,13 @@ function initFeaturedScroll() {
     scroll.scrollLeft = scrollLeft - (e.pageX - scroll.offsetLeft - startX);
   });
 
-  /* Featured card clicks */
+  /* Featured card clicks — navigate to destination details page */
   document.querySelectorAll('.featured-card[data-dest]').forEach(function(card) {
-    card.addEventListener('click', function() {
+    card.addEventListener('click', function(e) {
       var destId = card.getAttribute('data-dest');
-      if (!state.prefs.budget)  state.prefs.budget  = 'mid';
-      if (!state.prefs.group)   state.prefs.group   = 'couple';
-      if (!state.location.city) state.location.city = 'India';
-      state.prefs.duration  = 4;
-      state.prefs.travelers = 2;
-      computeMatches();
-      unlockStep(3);
-      selectDestination(destId);
-      var plannerEl = byId('planner-section');
-      if (plannerEl) plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (destId && !card.closest('a') && card.tagName !== 'A') {
+        window.location.href = '/destination/' + destId;
+      }
     });
   });
 }

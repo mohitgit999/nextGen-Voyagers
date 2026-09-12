@@ -50,6 +50,7 @@ app.use('/api/trips', require('./server/routes/trips'));
 app.use('/api/contact', require('./server/routes/contact'));
 app.use('/api/ai', require('./server/routes/ai'));
 app.use('/api/weather', require('./server/routes/weather'));
+app.use('/api/location', require('./server/routes/location'));
 
 // ── Error handling middleware ──
 app.use((err, req, res, next) => {

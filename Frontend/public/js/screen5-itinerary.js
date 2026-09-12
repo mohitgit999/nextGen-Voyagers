@@ -151,11 +151,11 @@ function renderDayCardsHtml(d, duration, cost) {
 
   if (isGeneratingAi && (!currentAiPlan || !currentAiPlan.days)) {
     return '' +
-      '<div class="ai-generating-loader" style="text-align:center; padding:48px 24px; background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:16px; margin:24px 0; box-shadow:0 4px 20px rgba(0,0,0,0.05);">' +
+      '<div class="ai-generating-loader" style="text-align:center; padding:48px 24px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.14); border-radius:16px; margin:24px 0; box-shadow:0 8px 30px rgba(0,0,0,0.4);">' +
         '<div style="font-size:2.5rem; margin-bottom:12px; display:inline-block;">⚡</div>' +
-        '<h3 style="font-size:1.3rem; font-weight:700; color:var(--ink); margin-bottom:8px;">Crafting Personalized AI Itinerary for ' + d.name + '...</h3>' +
-        '<p style="color:var(--ink-muted); font-size:0.95rem; max-width:520px; margin:0 auto 16px;">NextGen Gemini AI is discovering authentic local attractions, scenic viewpoints, dining spots, and crowd-optimized routing.</p>' +
-        '<div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(27,184,154,0.1); color:var(--teal); font-weight:600; font-size:0.85rem;">' +
+        '<h3 style="font-size:1.3rem; font-weight:700; color:#FFFFFF; margin-bottom:8px;">Crafting Personalized AI Itinerary for ' + d.name + '...</h3>' +
+        '<p style="color:#CBD5E1; font-size:0.95rem; max-width:520px; margin:0 auto 16px;">NextGen Gemini AI is discovering authentic local attractions, scenic viewpoints, dining spots, and crowd-optimized routing.</p>' +
+        '<div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#FFFFFF; font-weight:600; font-size:0.85rem;">' +
           '<span>✨ Live AI Generation in Progress</span>' +
         '</div>' +
       '</div>';
@@ -207,17 +207,17 @@ function renderDayCardsHtml(d, duration, cost) {
     var actsHtml = '<div class="activity-cards-list" style="display:flex; flex-direction:column; gap:16px; margin-top:16px; margin-bottom:16px;">';
     acts.forEach(function(act) {
       actsHtml += '' +
-        '<div class="activity-card-vertical" style="background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.05);">' +
-          '<div style="font-size:0.85rem; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:var(--ink-muted); margin-bottom:8px; display:flex; align-items:center; gap:6px;">' +
+        '<div class="activity-card-vertical" style="background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">' +
+          '<div style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#E2E8F0; margin-bottom:8px; display:flex; align-items:center; gap:6px;">' +
             '<span class="part-dot ' + act.dot + '"></span> ' + act.label + 
           '</div>' +
-          '<div style="font-size:1.05rem; font-weight:500; color:var(--ink); margin-bottom:14px; line-height:1.5;">' +
+          '<div style="font-size:1.02rem; font-weight:600; color:#FFFFFF; margin-bottom:14px; line-height:1.55;">' +
             act.text +
           '</div>' +
-          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:var(--ink-soft); background:var(--surface-mid); padding:10px 12px; border-radius:8px;">' +
-            '<div style="display:flex; align-items:center; gap:4px;">📍 <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(act.loc + ', ' + d.name + (d.state ? ', ' + d.state : '')) + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:600; text-decoration:underline;">' + act.loc + '</a></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span style="color:var(--ink); font-weight:500;">' + dayWeather + '</span></div>' +
-            '<div style="display:flex; align-items:center; gap:4px;">👥 <span style="color:var(--ink); font-weight:500;">' + dayCrowd + (String(dayCrowd).toLowerCase().indexOf('crowd') === -1 ? ' Crowd' : '') + '</span></div>' +
+          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.85rem; color:#CBD5E1; background:rgba(255,255,255,0.05); padding:10px 12px; border-radius:8px;">' +
+            '<div style="display:flex; align-items:center; gap:4px;">📍 <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(act.loc + ', ' + d.name + (d.state ? ', ' + d.state : '')) + '" target="_blank" rel="noopener noreferrer" style="color:#FFFFFF; font-weight:700; text-decoration:underline;">' + act.loc + '</a></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">☀️ <span style="color:#FFFFFF; font-weight:600;">' + dayWeather + '</span></div>' +
+            '<div style="display:flex; align-items:center; gap:4px;">👥 <span style="color:#FFFFFF; font-weight:600;">' + dayCrowd + (String(dayCrowd).toLowerCase().indexOf('crowd') === -1 ? ' Crowd' : '') + '</span></div>' +
           '</div>' +
         '</div>';
     });
@@ -265,44 +265,37 @@ function renderDayCardsHtml(d, duration, cost) {
           name: parts[0].trim(),
           location: parts[0].trim() + ', ' + d.name,
           description: parts[1] ? parts[1].trim() : rawGem,
-          bestTime: 'Early morning or golden hour',
-          tip: 'Ask locals for trail guidance.'
-        };
-      }
-    }
-
-    var gemHtml = '';
-    if (gemObj) {
+          bestTime: 'Early morning or gold    if (gemObj) {
       var gemMapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(gemObj.location + ', ' + d.name + (d.state ? ', ' + d.state : ''));
       gemHtml = '' +
-        '<div class="day-gem-featured-card" style="margin-top:16px; padding:16px; background:linear-gradient(135deg, rgba(27,184,154,0.08) 0%, rgba(59,130,246,0.06) 100%); border:1px solid rgba(27,184,154,0.3); border-radius:12px;">' +
+        '<div class="day-gem-featured-card" style="margin-top:16px; padding:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.18); border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">' +
           '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px; flex-wrap:wrap;">' +
             '<div style="display:flex; align-items:center; gap:8px;">' +
               '<span style="font-size:1.3rem;">💎</span>' +
               '<div>' +
-                '<h4 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--ink);">' + gemObj.name + '</h4>' +
-                '<span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--teal); font-weight:700;">Day ' + j + ' Secret Spot</span>' +
+                '<h4 style="margin:0; font-size:1.05rem; font-weight:700; color:#FFFFFF;">' + gemObj.name + '</h4>' +
+                '<span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.5px; color:#E2E8F0; font-weight:700;">Day ' + j + ' Secret Spot</span>' +
               '</div>' +
             '</div>' +
-            '<a href="' + gemMapsUrl + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:4px; padding:6px 12px; background:var(--teal); color:#fff; border-radius:6px; font-size:0.8rem; font-weight:600; text-decoration:none; box-shadow:0 2px 6px rgba(27,184,154,0.3);">' +
-              '📍 View Location on Maps' +
+            '<a href="' + gemMapsUrl + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:4px; padding:6px 14px; background:#FFFFFF; color:#0A0D12; border-radius:999px; font-size:0.8rem; font-weight:700; text-decoration:none; box-shadow:0 2px 10px rgba(255,255,255,0.25);">' +
+              '📍 View on Maps' +
             '</a>' +
           '</div>' +
-          '<p style="font-size:0.92rem; color:var(--ink); margin:8px 0 10px; line-height:1.5;">' + gemObj.description + '</p>' +
-          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.82rem; color:var(--ink-soft); background:var(--surface); padding:8px 12px; border-radius:8px; border:1px solid var(--border, var(--line));">' +
-            '<div>📍 <strong>Location:</strong> ' + gemObj.location + '</div>' +
-            '<div>⏰ <strong>Best Time:</strong> ' + gemObj.bestTime + '</div>' +
-            '<div>🤫 <strong>Secret Tip:</strong> ' + gemObj.tip + '</div>' +
+          '<p style="font-size:0.92rem; color:#CBD5E1; margin:8px 0 10px; line-height:1.5;">' + gemObj.description + '</p>' +
+          '<div style="display:flex; gap:12px; flex-wrap:wrap; font-size:0.82rem; color:#E2E8F0; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">' +
+            '<div>📍 <strong>Location:</strong> <span style="color:#FFFFFF;">' + gemObj.location + '</span></div>' +
+            '<div>⏰ <strong>Best Time:</strong> <span style="color:#FFFFFF;">' + gemObj.bestTime + '</span></div>' +
+            '<div>🤫 <strong>Secret Tip:</strong> <span style="color:#FFFFFF;">' + gemObj.tip + '</span></div>' +
           '</div>' +
         '</div>';
     }
 
     days += '' +
       gemHtml +
-      '<div class="cultural-tip-row" style="margin-top:12px; font-size:0.88rem; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">' +
-        '<strong>🏛️ Cultural Etiquette:</strong> <span>' + ((aiDay && aiDay.culturalNote) || (d.culture ? d.culture.etiquette : 'Respect local traditions and photography rules.')) + '</span>' +
+      '<div class="cultural-tip-row" style="margin-top:12px; font-size:0.88rem; color:#CBD5E1; display:flex; align-items:center; gap:6px;">' +
+        '<strong style="color:#FFFFFF;">🏛️ Cultural Etiquette:</strong> <span>' + ((aiDay && aiDay.culturalNote) || (d.culture ? d.culture.etiquette : 'Respect local traditions and photography rules.')) + '</span>' +
       '</div>' +
-      '<div class="safety-note" style="margin-top:8px; font-size:0.88rem; color:var(--ink-soft); display:flex; align-items:center; gap:6px;">' +
+      '<div class="safety-note" style="margin-top:8px; font-size:0.88rem; color:#CBD5E1; display:flex; align-items:center; gap:6px;">' +
         icon('shield') + '<span>' + ((aiDay && aiDay.safetyTip) || (d.safety && d.safety.points && d.safety.points[0]) || 'Stay on marked trails and keep emergency numbers handy.') + '</span>' +
       '</div>' +
     '</div>';
@@ -350,26 +343,26 @@ function renderItineraryHiddenGemsPanel(d, plan) {
     var mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(loc + ', ' + d.name + (d.state ? ', ' + d.state : ''));
 
     return '' +
-      '<div class="itinerary-gem-card" style="background:var(--surface); border:1px solid var(--border, var(--line)); border-radius:14px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05); display:flex; flex-direction:column; justify-content:space-between; gap:12px;">' +
+      '<div class="itinerary-gem-card" style="background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; justify-content:space-between; gap:12px;">' +
         '<div>' +
           '<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; gap:8px;">' +
             '<div style="display:flex; align-items:center; gap:8px;">' +
               '<span style="font-size:1.4rem;">💎</span>' +
-              '<h4 style="margin:0; font-size:1.1rem; font-weight:700; color:var(--ink);">' + name + '</h4>' +
+              '<h4 style="margin:0; font-size:1.1rem; font-weight:700; color:#FFFFFF;">' + name + '</h4>' +
             '</div>' +
-            '<span style="font-size:0.75rem; padding:4px 8px; border-radius:12px; background:rgba(27,184,154,0.12); color:var(--teal); font-weight:700; text-transform:uppercase;">' + bestFor + '</span>' +
+            '<span style="font-size:0.75rem; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:#FFFFFF; font-weight:700; text-transform:uppercase;">' + bestFor + '</span>' +
           '</div>' +
-          '<p style="font-size:0.92rem; color:var(--ink); line-height:1.55; margin:8px 0 14px;">' + desc + '</p>' +
+          '<p style="font-size:0.92rem; color:#CBD5E1; line-height:1.55; margin:8px 0 14px;">' + desc + '</p>' +
         '</div>' +
-        '<div style="background:var(--surface-mid); padding:12px 14px; border-radius:10px; font-size:0.85rem; color:var(--ink-soft); display:flex; flex-direction:column; gap:6px;">' +
+        '<div style="background:rgba(255,255,255,0.04); padding:12px 14px; border-radius:10px; font-size:0.85rem; color:#CBD5E1; display:flex; flex-direction:column; gap:6px;">' +
           '<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">' +
-            '<span>📍 <strong>Location:</strong> ' + loc + '</span>' +
-            '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" style="color:var(--teal); font-weight:700; text-decoration:underline; display:inline-flex; align-items:center; gap:3px;">' +
+            '<span>📍 <strong>Location:</strong> <span style="color:#FFFFFF;">' + loc + '</span></span>' +
+            '<a href="' + mapsUrl + '" target="_blank" rel="noopener noreferrer" style="color:#FFFFFF; font-weight:700; text-decoration:underline; display:inline-flex; align-items:center; gap:3px;">' +
               'Open in Google Maps ↗' +
             '</a>' +
           '</div>' +
-          '<div>⏰ <strong>Best Time:</strong> ' + bestTime + '</div>' +
-          '<div>💡 <strong>Secret Tip:</strong> ' + secretTip + '</div>' +
+          '<div>⏰ <strong>Best Time:</strong> <span style="color:#FFFFFF;">' + bestTime + '</span></div>' +
+          '<div>💡 <strong>Secret Tip:</strong> <span style="color:#FFFFFF;">' + secretTip + '</span></div>' +
         '</div>' +
       '</div>';
   }).join('');
@@ -378,12 +371,12 @@ function renderItineraryHiddenGemsPanel(d, plan) {
     '<div class="panel itinerary-gems-panel" style="margin-top:24px; margin-bottom:24px;">' +
       '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">' +
         '<div>' +
-          '<h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px; font-size:1.3rem; font-weight:800; color:var(--ink);">' +
+          '<h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px; font-size:1.3rem; font-weight:800; color:#FFFFFF;">' +
             '<span>💎</span> Secret Spots & Hidden Gems of ' + d.name +
           '</h3>' +
-          '<p class="hint-text" style="margin:0; font-size:0.9rem; color:var(--ink-muted);">Vetted offbeat locations, secret viewpoints, and secluded nature trails away from tourist crowds.</p>' +
+          '<p class="hint-text" style="margin:0; font-size:0.9rem; color:#CBD5E1;">Vetted offbeat locations, secret viewpoints, and secluded nature trails away from tourist crowds.</p>' +
         '</div>' +
-        '<span style="padding:4px 12px; border-radius:20px; background:linear-gradient(135deg,#1BB89A,#3B82F6); color:#fff; font-size:0.8rem; font-weight:700;">' +
+        '<span style="padding:5px 14px; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.22); color:#FFFFFF; font-size:0.82rem; font-weight:700;">' +
           gems.length + ' Secret Spots Discovered' +
         '</span>' +
       '</div>' +
@@ -872,16 +865,22 @@ function bindPackingChecklist(d) {
 function renderSharePanel(d) {
   return '' +
     '<div class="share-panel">' +
-      '<h3>' + icon('share') + ' Save & share your itinerary</h3>' +
+      '<h3>' + icon('share') + ' <span>Save & share your itinerary</span></h3>' +
       '<div class="share-actions">' +
         '<button class="btn btn-save-cloud btn-sm" id="btn-save-cloud">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>' +
           '<span>Save Trip to Cloud</span>' +
         '</button>' +
-        '<button class="btn btn-ghost btn-sm" id="btn-copy-link">' + icon('share') + ' Copy summary</button>' +
-        '<button class="btn btn-ghost btn-sm" id="btn-print-plan">' + icon('print') + ' Print / Save PDF</button>' +
+        '<button class="btn btn-ghost btn-sm" id="btn-copy-link">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+          '<span>Copy summary</span>' +
+        '</button>' +
+        '<button class="btn btn-ghost btn-sm" id="btn-print-plan">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;flex-shrink:0"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>' +
+          '<span>Print / Save PDF</span>' +
+        '</button>' +
       '</div>' +
-      '<div class="share-success" id="share-success">' + icon('check') + 'Link copied to clipboard!</div>' +
+      '<div class="share-success" id="share-success">' + icon('check') + ' <span>Link copied to clipboard!</span></div>' +
     '</div>';
 }
 
@@ -1001,36 +1000,38 @@ function showItinerarySavedPopup() {
     '@keyframes itinCheckBounce{0%{transform:scale(0)}60%{transform:scale(1.25)}80%{transform:scale(0.9)}100%{transform:scale(1)}}',
     '@keyframes itinConfetti{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(-80px) rotate(360deg);opacity:0}}',
     '#itinerary-saved-popup{',
-      'background:linear-gradient(145deg,#0f1923 0%,#13243a 60%,#0d1f2d 100%);',
-      'border:1px solid rgba(27,184,154,0.35);',
+      'background:rgba(18, 22, 29, 0.96);',
+      'border:1px solid rgba(255,255,255,0.2);',
       'border-radius:24px;',
       'padding:48px 40px 40px;',
       'text-align:center;',
       'max-width:420px;',
       'width:90%;',
-      'box-shadow:0 32px 80px rgba(0,0,0,0.6),0 0 0 1px rgba(27,184,154,0.15),inset 0 1px 0 rgba(255,255,255,0.06);',
+      'box-shadow:0 32px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.15);',
+      'backdrop-filter:blur(24px);',
+      '-webkit-backdrop-filter:blur(24px);',
       'animation:itinPopupIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;',
       'position:relative;overflow:hidden;',
     '}',
-    '#itinerary-saved-popup::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(27,184,154,0.12) 0%,transparent 65%);pointer-events:none;}',
-    '.itin-check-ring{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(27,184,154,0.2),rgba(59,130,246,0.15));border:2px solid rgba(27,184,154,0.5);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:itinCheckBounce 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;box-shadow:0 0 30px rgba(27,184,154,0.3);}',
+    '#itinerary-saved-popup::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(255,255,255,0.08) 0%,transparent 65%);pointer-events:none;}',
+    '.itin-check-ring{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.6);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:itinCheckBounce 0.6s 0.3s cubic-bezier(0.34,1.56,0.64,1) both;box-shadow:0 0 30px rgba(255,255,255,0.2);}',
     '.itin-check-svg{width:38px;height:38px;}',
     '.itin-saved-title{font-size:1.55rem;font-weight:800;color:#fff;margin:0 0 8px;letter-spacing:-0.3px;line-height:1.25;}',
-    '.itin-saved-sub{font-size:0.95rem;color:rgba(255,255,255,0.55);margin:0 0 28px;line-height:1.5;}',
-    '.itin-saved-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;background:linear-gradient(135deg,#1BB89A,#3B82F6);color:#fff;font-size:0.85rem;font-weight:700;margin-bottom:28px;box-shadow:0 4px 16px rgba(27,184,154,0.35);letter-spacing:0.2px;}',
-    '.itin-saved-dismiss{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#1BB89A,#16a085);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 16px rgba(27,184,154,0.4);letter-spacing:0.2px;}',
-    '.itin-saved-dismiss:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(27,184,154,0.5);}',
+    '.itin-saved-sub{font-size:0.95rem;color:rgba(255,255,255,0.65);margin:0 0 28px;line-height:1.5;}',
+    '.itin-saved-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:50px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.22);color:#fff;font-size:0.85rem;font-weight:700;margin-bottom:28px;box-shadow:0 4px 16px rgba(0,0,0,0.3);letter-spacing:0.2px;}',
+    '.itin-saved-dismiss{width:100%;padding:13px;border-radius:12px;border:none;background:#FFFFFF;color:#0A0D12;font-size:1rem;font-weight:800;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 20px rgba(255,255,255,0.25);letter-spacing:0.2px;}',
+    '.itin-saved-dismiss:hover{transform:translateY(-2px);background:#F1F5F9;box-shadow:0 8px 24px rgba(255,255,255,0.35);}',
     '.itin-confetti-dot{position:absolute;width:8px;height:8px;border-radius:50%;animation:itinConfetti 1.2s ease forwards;}',
     '</style>',
     '<div id="itinerary-saved-popup">',
-      '<span class="itin-confetti-dot" style="top:20%;left:15%;background:#1BB89A;animation-delay:0.1s;"></span>',
-      '<span class="itin-confetti-dot" style="top:15%;left:70%;background:#3B82F6;animation-delay:0.2s;"></span>',
-      '<span class="itin-confetti-dot" style="top:25%;left:85%;background:#F59E0B;animation-delay:0.05s;width:6px;height:6px;"></span>',
-      '<span class="itin-confetti-dot" style="top:30%;left:8%;background:#EC4899;animation-delay:0.15s;width:5px;height:5px;"></span>',
+      '<span class="itin-confetti-dot" style="top:20%;left:15%;background:#FFFFFF;animation-delay:0.1s;"></span>',
+      '<span class="itin-confetti-dot" style="top:15%;left:70%;background:#94A3B8;animation-delay:0.2s;"></span>',
+      '<span class="itin-confetti-dot" style="top:25%;left:85%;background:#E2E8F0;animation-delay:0.05s;width:6px;height:6px;"></span>',
+      '<span class="itin-confetti-dot" style="top:30%;left:8%;background:#CBD5E1;animation-delay:0.15s;width:5px;height:5px;"></span>',
       '<div class="itin-check-ring">',
         '<svg class="itin-check-svg" viewBox="0 0 24 24" fill="none">',
-          '<circle cx="12" cy="12" r="11" stroke="#1BB89A" stroke-width="1.5" opacity="0.4"/>',
-          '<path d="M7 12.5l3.5 3.5 6.5-7" stroke="#1BB89A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>',
+          '<circle cx="12" cy="12" r="11" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" opacity="0.4"/>',
+          '<path d="M7 12.5l3.5 3.5 6.5-7" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>',
         '</svg>',
       '</div>',
       '<h2 class="itin-saved-title">Itinerary Saved! 🎒</h2>',

@@ -87,8 +87,8 @@ function filterSearchResults(query) {
 function selectAndExploreDestination(destId) {
   closeSearchModal();
 
-  // Set default prefs if not already chosen
-  if (typeof state !== 'undefined') {
+  var plannerEl = document.getElementById('planner-section');
+  if (plannerEl && typeof state !== 'undefined' && typeof selectDestination === 'function') {
     if (!state.prefs.budget) state.prefs.budget = 'mid';
     if (!state.prefs.group) state.prefs.group = 'couple';
     if (!state.location.city) state.location.city = 'India';
@@ -100,14 +100,10 @@ function selectAndExploreDestination(destId) {
       unlockStep(2);
       unlockStep(3);
     }
-    if (typeof selectDestination === 'function') {
-      selectDestination(destId);
-    }
-
-    var plannerEl = document.getElementById('planner-section');
-    if (plannerEl) {
-      plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    selectDestination(destId);
+    plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    window.location.href = '/destination/' + destId;
   }
 }
 

@@ -75,11 +75,16 @@ const HomePage = () => {
     <div className="section-head reveal">
       <span className="section-label">Explore India</span>
       <h2>10 incredible destinations</h2>
-      <p>From snow-capped Himalayan passes to sun-drenched beaches — each carefully rated for safety, value and experience.</p>
+      <p>From snow-capped Himalayan passes to sun-drenched beaches — each carefully rated for safety, value and experience. Click any card to explore photos, culture, and travel guides.</p>
+      <div style={{ marginTop: '14px' }}>
+        <Link to="/destinations" className="btn btn-secondary btn-sm" style={{ textDecoration: 'none', borderRadius: '999px', fontSize: '0.86rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <span>🗺️ View All 10 Destination Guides →</span>
+        </Link>
+      </div>
     </div>
 
     <div className="featured-scroll" role="list" aria-label="Featured destinations">
-      <div className="featured-card reveal" data-dest="manali" role="listitem" tabIndex="0" aria-label="Manali, Himachal Pradesh">
+      <Link to="/destination/manali" className="featured-card reveal" data-dest="manali" role="listitem" tabIndex="0" aria-label="Manali, Himachal Pradesh" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/manali.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.8rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.5</div>
@@ -91,8 +96,8 @@ const HomePage = () => {
             <span className="tag-chip">mountain</span><span className="tag-chip">adventure</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="goa" role="listitem" tabIndex="0" aria-label="Goa">
+      </Link>
+      <Link to="/destination/goa" className="featured-card reveal" data-dest="goa" role="listitem" tabIndex="0" aria-label="Goa" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/goa.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.8rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.3</div>
@@ -104,8 +109,8 @@ const HomePage = () => {
             <span className="tag-chip">beach</span><span className="tag-chip">coastal</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="jaipur" role="listitem" tabIndex="0" aria-label="Jaipur, Rajasthan">
+      </Link>
+      <Link to="/destination/jaipur" className="featured-card reveal" data-dest="jaipur" role="listitem" tabIndex="0" aria-label="Jaipur, Rajasthan" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/jaipur.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.8rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.6</div>
@@ -117,8 +122,8 @@ const HomePage = () => {
             <span className="tag-chip">heritage</span><span className="tag-chip">culture</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="rishikesh" role="listitem" tabIndex="0" aria-label="Rishikesh, Uttarakhand">
+      </Link>
+      <Link to="/destination/rishikesh" className="featured-card reveal" data-dest="rishikesh" role="listitem" tabIndex="0" aria-label="Rishikesh, Uttarakhand" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/rishikesh.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.8rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.5</div>
@@ -130,8 +135,8 @@ const HomePage = () => {
             <span className="tag-chip">spiritual</span><span className="tag-chip">adventure</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="udaipur" role="listitem" tabIndex="0" aria-label="Udaipur, Rajasthan">
+      </Link>
+      <Link to="/destination/udaipur" className="featured-card reveal" data-dest="udaipur" role="listitem" tabIndex="0" aria-label="Udaipur, Rajasthan" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/udaipur.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.7</div>
@@ -143,8 +148,8 @@ const HomePage = () => {
             <span className="tag-chip">romantic</span><span className="tag-chip">lake</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="ladakh" role="listitem" tabIndex="0" aria-label="Ladakh">
+      </Link>
+      <Link to="/destination/ladakh" className="featured-card reveal" data-dest="ladakh" role="listitem" tabIndex="0" aria-label="Ladakh" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/ladakh.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.8</div>
@@ -156,8 +161,8 @@ const HomePage = () => {
             <span className="tag-chip">mountain</span><span className="tag-chip">offbeat</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="andaman" role="listitem" tabIndex="0" aria-label="Andaman Islands">
+      </Link>
+      <Link to="/destination/andaman" className="featured-card reveal" data-dest="andaman" role="listitem" tabIndex="0" aria-label="Andaman Islands" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/andaman.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.7</div>
@@ -169,8 +174,8 @@ const HomePage = () => {
             <span className="tag-chip">island</span><span className="tag-chip">diving</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="coorg" role="listitem" tabIndex="0" aria-label="Coorg, Karnataka">
+      </Link>
+      <Link to="/destination/coorg" className="featured-card reveal" data-dest="coorg" role="listitem" tabIndex="0" aria-label="Coorg, Karnataka" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/coorg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.4</div>
@@ -182,8 +187,8 @@ const HomePage = () => {
             <span className="tag-chip">hill</span><span className="tag-chip">coffee</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="munnar" role="listitem" tabIndex="0" aria-label="Munnar, Kerala">
+      </Link>
+      <Link to="/destination/munnar" className="featured-card reveal" data-dest="munnar" role="listitem" tabIndex="0" aria-label="Munnar, Kerala" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/munnar.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.5</div>
@@ -195,8 +200,8 @@ const HomePage = () => {
             <span className="tag-chip">tea</span><span className="tag-chip">nature</span>
           </div>
         </div>
-      </div>
-      <div className="featured-card reveal" data-dest="varanasi" role="listitem" tabIndex="0" aria-label="Varanasi, Uttar Pradesh">
+      </Link>
+      <Link to="/destination/varanasi" className="featured-card reveal" data-dest="varanasi" role="listitem" tabIndex="0" aria-label="Varanasi, Uttar Pradesh" style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="featured-card-img-wrap">
           <div style={{width: '100%', height: '160px', backgroundImage: 'url(img/varanasi.jpg)', backgroundSize: 'cover', backgroundPosition: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '3.5rem', opacity: '0.9'}}></div>
           <div className="featured-card-badge">⭐ 4.4</div>
@@ -208,7 +213,7 @@ const HomePage = () => {
             <span className="tag-chip">spiritual</span><span className="tag-chip">heritage</span>
           </div>
         </div>
-      </div>
+      </Link>
     </div>
   </div>
 </div>

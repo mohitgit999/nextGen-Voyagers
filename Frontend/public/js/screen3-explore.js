@@ -92,7 +92,7 @@ function renderExploreCards() {
   var list = filteredAndSorted();
 
   if (!list.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink-faint);">No destinations match this filter. <button class="btn-text" id="clear-filter-btn">Clear filter</button></div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#CBD5E1;">No destinations match this filter. <button class="btn-text" id="clear-filter-btn" style="color:#FFFFFF;font-weight:700;">Clear filter</button></div>';
     byId('clear-filter-btn').addEventListener('click', function() {
       exploreCurrentFilter = 'all';
       document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });

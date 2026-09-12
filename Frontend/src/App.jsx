@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PlannerPage from './pages/PlannerPage';
+import DestinationsPage from './pages/DestinationsPage';
+import DestinationDetailPage from './pages/DestinationDetailPage';
 import AppLayout from './components/AppLayout';
 
 function App() {
@@ -67,6 +69,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/plan" element={<PlannerPage />} />
+        <Route path="/destinations" element={<DestinationsPage />} />
+        <Route path="/destination/:id" element={<DestinationDetailPage />} />
       </Routes>
     </AppLayout>
   );

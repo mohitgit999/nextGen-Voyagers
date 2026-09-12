@@ -42,6 +42,11 @@ function renderDetail() {
         '<div class="tag-row">' +
           d.tags.map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
         '</div>' +
+        '<div style="margin-top:10px;">' +
+          '<a href="/destination/' + d.id + '" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;padding:6px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.22);color:#FFFFFF;text-decoration:none;background:rgba(255,255,255,0.06);">' +
+            '📖 View Full Culture, Photo & Travel Guide ↗' +
+          '</a>' +
+        '</div>' +
       '</div>' +
       '<div class="detail-rating-pill">' +
         icon('star') +
@@ -78,7 +83,7 @@ function renderDetail() {
           return '<div class="cost-row"><span>' + s.label + '</span><span>' + inr(s.amount) + '</span></div>';
         }).join('') +
         '<div style="margin-top:16px;">' +
-          '<label style="font-size:0.8rem;font-weight:700;color:var(--ink-faint);display:block;margin-bottom:6px;">Adjust daily spend (₹):</label>' +
+          '<label style="font-size:0.8rem;font-weight:700;color:#E2E8F0;display:block;margin-bottom:6px;">Adjust daily spend (₹):</label>' +
           '<input type="number" class="cost-edit-input" id="cost-per-day-input" min="200" max="50000" step="100" value="' + cost.perDay + '" aria-label="Cost per person per day">' +
           '<p class="cost-note">Changes update the total above and your itinerary estimate.</p>' +
         '</div>' +
@@ -314,10 +319,10 @@ function renderLocalEmergencyPanel(d) {
     phoneRow('Local Police', police) +
     phoneRow('Hospital', hospital) +
     phoneRow('Tourism Helpline', tourist) +
-    '<div style="margin-top:14px;padding:10px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;font-size:0.82rem;color:var(--ink-soft);">' +
-      '🚨 <strong>National Emergency:</strong> <a href="tel:112" style="color:#ef4444;font-weight:700;text-decoration:none;">112</a> &nbsp;|&nbsp; ' +
-      '🏥 <strong>Ambulance:</strong> <a href="tel:108" style="color:#ef4444;font-weight:700;text-decoration:none;">108</a> &nbsp;|&nbsp; ' +
-      '👮 <strong>Police:</strong> <a href="tel:100" style="color:#ef4444;font-weight:700;text-decoration:none;">100</a>' +
+    '<div style="margin-top:14px;padding:10px 12px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;font-size:0.82rem;color:#FFFFFF;">' +
+      '🚨 <strong>National Emergency:</strong> <a href="tel:112" style="color:#FCA5A5;font-weight:700;text-decoration:none;">112</a> &nbsp;|&nbsp; ' +
+      '🏥 <strong>Ambulance:</strong> <a href="tel:108" style="color:#FCA5A5;font-weight:700;text-decoration:none;">108</a> &nbsp;|&nbsp; ' +
+      '👮 <strong>Police:</strong> <a href="tel:100" style="color:#FCA5A5;font-weight:700;text-decoration:none;">100</a>' +
     '</div>' +
   '</div>';
 }
@@ -330,13 +335,13 @@ function renderPackingPreview(d) {
   all = all.concat(d.packingExtras.slice(0, 4));
   all = all.concat(BASE_PACKING.health.slice(0, 2));
 
-  return '<p style="font-size:0.82rem;color:var(--ink-faint);margin-bottom:14px;">Key items for this trip — full checklist in your itinerary.</p>' +
+  return '<p style="font-size:0.82rem;color:#CBD5E1;margin-bottom:14px;">Key items for this trip — full checklist in your itinerary.</p>' +
     '<div style="display:flex;flex-wrap:wrap;gap:7px;">' +
       all.map(function(item) {
         return '<span class="tag-chip" style="font-size:0.78rem;">✓ ' + item + '</span>';
       }).join('') +
     '</div>' +
-    '<p style="font-size:0.78rem;color:var(--forest);font-weight:700;margin-top:12px;">+ ' + (BASE_PACKING.documents.length + BASE_PACKING.clothing.length + BASE_PACKING.health.length + BASE_PACKING.tech.length + BASE_PACKING.misc.length + d.packingExtras.length - all.length) + ' more items in your full itinerary checklist</p>';
+    '<p style="font-size:0.78rem;color:#FFFFFF;font-weight:700;margin-top:12px;">+ ' + (BASE_PACKING.documents.length + BASE_PACKING.clothing.length + BASE_PACKING.health.length + BASE_PACKING.tech.length + BASE_PACKING.misc.length + d.packingExtras.length - all.length) + ' more items in your full itinerary checklist</p>';
 }
 
 /* ── Interactive Map Panel ── */
@@ -517,9 +522,9 @@ function renderCulturePanel(d) {
         '</div>' +
       '</div>' +
       (c.languagePhrases ? '' +
-        '<div class="language-bar" style="margin-top:16px;padding:12px 16px;background:rgba(27,184,154,0.06);border-radius:10px;border:1px solid rgba(27,184,154,0.2);">' +
-          '<strong style="color:var(--forest);font-size:0.85rem;">🗣️ Useful Local Phrases: </strong>' +
-          '<span style="font-size:0.85rem;color:var(--ink);">' +
+        '<div class="language-bar" style="margin-top:16px;padding:12px 16px;background:rgba(255,255,255,0.05);border-radius:10px;border:1px solid rgba(255,255,255,0.14);">' +
+          '<strong style="color:#FFFFFF;font-size:0.85rem;">🗣️ Useful Local Phrases: </strong>' +
+          '<span style="font-size:0.85rem;color:#E2E8F0;">' +
             Object.keys(c.languagePhrases).map(function(k) { return '<strong>"' + k + '"</strong> = ' + c.languagePhrases[k]; }).join(' · ') +
           '</span>' +
         '</div>' : '') +

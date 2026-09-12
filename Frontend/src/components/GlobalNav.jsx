@@ -29,11 +29,11 @@ const GlobalNav = () => {
             </li>
             <li><span className="nav-dot" aria-hidden="true"></span></li>
             <li>
-              <a href="/#destinations-section">Destinations</a>
+              <Link to="/destinations">Destinations</Link>
             </li>
             <li><span className="nav-dot" aria-hidden="true"></span></li>
             <li>
-              <Link to="/plan" className={isPlanner ? 'nav-link-active' : ''} style={isPlanner ? { color: 'var(--teal, #1BB89A)', fontWeight: 700 } : {}}>
+              <Link to="/plan" className={isPlanner ? 'nav-link-active' : ''} style={isPlanner ? { color: '#FFFFFF', fontWeight: 700 } : {}}>
                 ✨ AI Trip Planner
               </Link>
             </li>
@@ -103,14 +103,14 @@ const GlobalNav = () => {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
             Home
           </Link>
-          <Link to="/plan" className="mobile-nav-link" onClick={closeMobileMenu} style={isPlanner ? { color: 'var(--teal, #1BB89A)', fontWeight: 700 } : {}}>
+          <Link to="/plan" className="mobile-nav-link" onClick={closeMobileMenu} style={isPlanner ? { color: '#FFFFFF', fontWeight: 700 } : {}}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></svg>
             AI Trip Planner
           </Link>
-          <a href="/#destinations-section" className="mobile-nav-link" id="mobile-link-destinations" onClick={closeMobileMenu}>
+          <Link to="/destinations" className="mobile-nav-link" id="mobile-link-destinations" onClick={closeMobileMenu}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg>
             Destinations
-          </a>
+          </Link>
           <a href="/#features-section" className="mobile-nav-link" id="mobile-link-features" onClick={closeMobileMenu}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
             Features

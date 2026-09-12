@@ -67,35 +67,53 @@ const PlannerPage = () => {
             <div className="locate-grid">
               {/* Option A: GPS Auto-Detect */}
               <div className="locate-method-box">
-                <div className="locate-icon-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '28px', height: '28px' }}>
-                    <circle cx="12" cy="12" r="7" />
-                    <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
-                    <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-                  </svg>
+                <div className="locate-method-content">
+                  <div className="locate-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '28px', height: '28px' }}>
+                      <circle cx="12" cy="12" r="7" />
+                      <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+                      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <h3>Automatic GPS Detection</h3>
+                  <p>One-tap detection using your browser location. Fast, accurate, and completely private.</p>
                 </div>
-                <h3>Automatic GPS Detection</h3>
-                <p>One-tap detection using your browser location. Fast, accurate, and completely private.</p>
-                <button className="btn btn-primary" id="btn-use-location">
-                  <span>📍 Auto-Detect My City</span>
-                </button>
+                <div className="locate-method-action">
+                  <button className="btn btn-primary" id="btn-use-location">
+                    <span>📍 Auto-Detect My City</span>
+                  </button>
+                  <p className="ai-location-note" style={{ opacity: 0, pointerEvents: 'none' }} aria-hidden="true">Spacer for symmetrical baseline alignment</p>
+                </div>
               </div>
 
               {/* Option B: Manual City Input */}
               <div className="locate-method-box">
-                <div className="locate-icon-wrap secondary">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '28px', height: '28px' }}>
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                  </svg>
+                <div className="locate-method-content">
+                  <div className="locate-icon-wrap secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '28px', height: '28px' }}>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                  </div>
+                  <h3>Type Departure City</h3>
+                  <p>Or manually search any city, town, or state across India.</p>
                 </div>
-                <h3>Type Departure City</h3>
-                <p>Or manually search any city, town, or state across India.</p>
-                <div className="manual-row">
-                  <input type="text" id="manual-city-input" placeholder="Enter your departure city or area" aria-label="Your city or starting location" />
-                  <button className="btn btn-ghost" id="btn-set-manual">Set City</button>
+                <div className="locate-method-action">
+                  <div className="manual-input-wrapper" style={{ position: 'relative', width: '100%' }}>
+                    <div className="manual-row">
+                      <input
+                        type="text"
+                        id="manual-city-input"
+                        placeholder="Search your departure city or town..."
+                        aria-label="Your city or starting location"
+                        autoComplete="off"
+                      />
+                      <button className="btn btn-ghost" id="btn-set-manual">Set City</button>
+                    </div>
+                    <div id="manual-location-suggestions" className="location-suggestions-dropdown" style={{ display: 'none' }}></div>
+                  </div>
+                  <p className="ai-location-note">Your personalized destination suggestions will appear after you share your travel preferences.</p>
                 </div>
-                <p className="ai-location-note">Your personalized destination suggestions will appear after you share your travel preferences.</p>
               </div>
             </div>
 
@@ -122,7 +140,7 @@ const PlannerPage = () => {
           <div className="screen-head">
             <h2 id="screen2-heading">Personalize Your Journey</h2>
             <p className="eyebrow-note">
-              Starting from <strong id="pref-origin-echo" style={{ color: 'var(--teal, #1BB89A)' }}>your location</strong>. Tune your parameters so our AI recommends destinations with the ideal vibe and budget fit.
+              Starting from <strong id="pref-origin-echo" style={{ color: 'var(--accent-white, #FFFFFF)', fontWeight: 700 }}>your location</strong>. Tune your parameters so our AI recommends destinations with the ideal vibe and budget fit.
             </p>
           </div>
 
