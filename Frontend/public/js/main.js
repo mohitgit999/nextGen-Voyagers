@@ -30,26 +30,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function initApp() {
     /* Navigation (step routing) */
-    initNavigation();
+    if (typeof initNavigation === 'function') initNavigation();
 
     /* Planner screens */
-    initScreen1();
-    initScreen2();
-    initScreen3();
-    initScreen4();
-    initScreen5();
+    if (typeof initScreen1 === 'function') initScreen1();
+    if (typeof initScreen2 === 'function') initScreen2();
+    if (typeof initScreen3 === 'function') initScreen3();
+    if (typeof initScreen4 === 'function') initScreen4();
+    if (typeof initScreen5 === 'function') initScreen5();
 
     /* SOS modal */
-    initSOS();
+    if (typeof initSOS === 'function') initSOS();
 
     /* Landing page enhancements */
-    initScrollReveal();
-    initCounters();
-    initFeaturedScroll();
-    initLandingCTA();
+    if (typeof initScrollReveal === 'function') initScrollReveal();
+    if (typeof initCounters === 'function') initCounters();
+    if (typeof initFeaturedScroll === 'function') initFeaturedScroll();
+    if (typeof initLandingCTA === 'function') initLandingCTA();
 
-    /* Start on step 1 */
-    goToStep(1, true);
+    /* Start on step 1 if planner exists */
+    if (byId('screen-1') && typeof goToStep === 'function') {
+      goToStep(1, true);
+    }
   }
 });
 

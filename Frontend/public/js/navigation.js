@@ -110,3 +110,7 @@ function initNavigation() {
     });
   }
 }
+
+window.initNavigation = initNavigation;
+window.goToStep = goToStep;
+window.unlockStep = unlockStep;

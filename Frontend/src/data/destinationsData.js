@@ -20,10 +20,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/manali.jpg', caption: 'Snow-clad Pir Panjal peaks rising over the Solang Valley', tag: 'Landscape' },
-      { url: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80', caption: 'Ancient wooden architecture of Hidimba Devi Temple amid sacred deodar groves', tag: 'Heritage' },
-      { url: 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=1200&q=80', caption: 'Scenic wooden river chalets and cedar forests of Old Manali', tag: 'Architecture' },
-      { url: 'https://images.unsplash.com/photo-1579618218290-24a26f634568?auto=format&fit=crop&w=1200&q=80', caption: 'White-water rapids rushing along the pristine Beas riverbed', tag: 'Adventure' },
-      { url: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=1200&q=80', caption: 'Rohtang Pass high alpine vistas shrouded in morning mist', tag: 'Panoramas' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Manali_City.jpg/1280px-Manali_City.jpg', caption: 'Manali town nestled in the cedar-clad Himalayan valley below snow peaks', tag: 'Panorama' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Hidimba_Devi_Temple_-_North-east_View_-_Manali_2014-05-11_2648-2649.TIF/lossy-page1-1280px-Hidimba_Devi_Temple_-_North-east_View_-_Manali_2014-05-11_2648-2649.TIF.jpg', caption: 'Historic wooden multi-tiered pagoda of Hidimba Devi Temple in Dhungri forest', tag: 'Heritage' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/Solang_Valley_%2CManali%2C_Himachal_Pardes%2C_India.JPG/1280px-Solang_Valley_%2CManali%2C_Himachal_Pardes%2C_India.JPG', caption: 'Lush green slopes and paragliding valley at Solang near Manali', tag: 'Adventure' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a2/Kullu_Valley_from_Rohtang_Pass%2C_India.jpg/1280px-Kullu_Valley_from_Rohtang_Pass%2C_India.jpg', caption: 'Dramatic high-altitude road over Rohtang Pass overlooking the valley', tag: 'Alpine' }
     ],
 
     whyVisit: [
@@ -149,10 +149,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/goa.jpg', caption: 'Golden crescent sands of Palolem Beach framed by tropical palms', tag: 'Beach' },
-      { url: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80', caption: 'Sunset silhouettes over Vagator cliffs and rocky Arabian tide pools', tag: 'Coast' },
-      { url: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1200&q=80', caption: 'Historic Portuguese colonial facades and pastel villas of Fontainhas, Panaji', tag: 'Heritage' },
-      { url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80', caption: 'Crystal turquoise waters and scuba diving reef sites near Grand Island', tag: 'Marine' },
-      { url: 'https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=1200&q=80', caption: 'Spectacular tiered torrents of Dudhsagar Waterfall crashing through the jungle', tag: 'Nature' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Palolem_Beach%2C_South_Goa.jpg/1280px-Palolem_Beach%2C_South_Goa.jpg', caption: 'Tranquil turquoise curve and wooden beach shacks of Palolem Beach, South Goa', tag: 'Coast' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Anjuna_Beach%2C_Goa%2C_India%2C_Legendary_Curlies_beach_shack.jpg/1280px-Anjuna_Beach%2C_Goa%2C_India%2C_Legendary_Curlies_beach_shack.jpg', caption: 'Rocky shores and iconic beach shacks along Anjuna Beach, North Goa', tag: 'Vibe' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9e/Front_Elevation_of_Basilica_of_Bom_Jesus.jpg/1280px-Front_Elevation_of_Basilica_of_Bom_Jesus.jpg', caption: 'Baroque laterite facade of UNESCO-listed Basilica of Bom Jesus, Old Goa', tag: 'Heritage' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Doodhsagar_Fall.jpg/1280px-Doodhsagar_Fall.jpg', caption: 'Majestic four-tiered Dudhsagar Waterfall cascading down the Western Ghats jungle', tag: 'Nature' }
     ],
 
     whyVisit: [
@@ -278,10 +278,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/jaipur.jpg', caption: 'The honeycomb facade of Hawa Mahal (Palace of Winds) bathed in morning light', tag: 'Architecture' },
-      { url: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=80', caption: 'Amber Fort’s massive sandstone ramparts reflected in Maota Lake', tag: 'Forts' },
-      { url: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80', caption: 'Intricate peacock gate carvings inside the royal courtyards of City Palace', tag: 'Heritage' },
-      { url: 'https://images.unsplash.com/photo-1509299349698-dd22323b5963?auto=format&fit=crop&w=1200&q=80', caption: 'Sunset views over the Pink City skyline from the heights of Nahargarh Fort', tag: 'Panoramas' },
-      { url: 'https://images.unsplash.com/photo-1600100397608-f402c4cb185b?auto=format&fit=crop&w=1200&q=80', caption: 'Handmade lac bangles and colorful block-print textiles in Johari Bazaar', tag: 'Culture' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/20191219_Fort_Amber%2C_Amer%2C_Jaipur_0955_9481.jpg/1280px-20191219_Fort_Amber%2C_Amer%2C_Jaipur_0955_9481.jpg', caption: 'Massive honey-colored ramparts and courtyards of Amber Fort high above Amer valley', tag: 'Forts' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Chandra_Mahal%2C_City_Palace%2C_Jaipur%2C_20191218_0951_9043.jpg/1280px-Chandra_Mahal%2C_City_Palace%2C_Jaipur%2C_20191218_0951_9043.jpg', caption: 'Intricate royal architecture of Chandra Mahal at City Palace, Jaipur', tag: 'Heritage' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/ff/Jaipur_03-2016_39_Jal_Mahal_-_Water_Palace.jpg/1280px-Jaipur_03-2016_39_Jal_Mahal_-_Water_Palace.jpg', caption: 'Jal Mahal (Water Palace) floating serenely in the middle of Man Sagar Lake', tag: 'Palace' },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/4/47/Nahargarh_13.jpg', caption: 'Dramatic stone ramparts of Nahargarh Fort looking over the Pink City expanse', tag: 'Panoramas' }
     ],
 
     whyVisit: [
@@ -407,10 +407,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/rishikesh.jpg', caption: 'Laxman Jhula suspension bridge over the emerald Ganges at twilight', tag: 'River' },
-      { url: 'https://images.unsplash.com/photo-1599827552599-eeddd3065a6e?auto=format&fit=crop&w=1200&q=80', caption: 'Mesmerizing evening Ganga Aarti ceremony at Parmarth Niketan Ghat', tag: 'Spiritual' },
-      { url: 'https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=1200&q=80', caption: 'Thrilling white-water rafting through the rapids of Shivpuri', tag: 'Adventure' },
-      { url: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=1200&q=80', caption: 'Sunrise meditation session overlooking the misty Shivalik mountain ridges', tag: 'Yoga' },
-      { url: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=1200&q=80', caption: 'Graffiti-covered meditation domes at the Beatles Ashram (Chaurasi Kutia)', tag: 'Heritage' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Rishikesh-Lakshman_Jhula_by_Kaustubh_Nayyar.jpg/1280px-Rishikesh-Lakshman_Jhula_by_Kaustubh_Nayyar.jpg', caption: 'Historic Lakshman Jhula cable suspension bridge spanning the sacred river', tag: 'Bridge' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Trayambakeshwar_Temple_VK.jpg/1280px-Trayambakeshwar_Temple_VK.jpg', caption: 'The iconic 13-tiered pagoda of Trayambakeshwar Temple towering at Laxman Jhula', tag: 'Spiritual' },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/1/11/Ramjhula_-_bridge_over_the_Ganga.jpg', caption: 'Ram Jhula pedestrian bridge bustling with sadhus and yoga pilgrims', tag: 'Yoga' },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/0/08/Triveni_Ghat_Krishna_Arjun_Rath.jpg', caption: 'The sacred riverbank of Triveni Ghat where the evening Maha Aarti takes place', tag: 'Ghats' }
     ],
 
     whyVisit: [
@@ -536,10 +536,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/udaipur.jpg', caption: 'The majestic City Palace complex towering over the waters of Lake Pichola', tag: 'Architecture' },
-      { url: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1200&q=80', caption: 'Taj Lake Palace illuminated like a floating pearl on Lake Pichola at dusk', tag: 'Heritage' },
-      { url: 'https://images.unsplash.com/photo-1609137144822-0d1275bb27d4?auto=format&fit=crop&w=1200&q=80', caption: 'Classic Mewari carved marble balconies overlooking the lake ghats', tag: 'Details' },
-      { url: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80', caption: 'Sunset view from the Monsoon Palace (Sajjangarh) across the Aravallis', tag: 'Sunset' },
-      { url: 'https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=1200&q=80', caption: 'Folk dancers spinning with brass fire pots at Bagore ki Haveli cultural show', tag: 'Culture' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/3/32/Udaipur_Lake_Palace.jpg/1280px-Udaipur_Lake_Palace.jpg', caption: 'White marble Lake Palace floating like a dream island on Lake Pichola', tag: 'Heritage' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Udaipur_City_Palace.jpg/1280px-Udaipur_City_Palace.jpg', caption: 'Lakeside courtyards and domed cupolas of the massive Udaipur City Palace', tag: 'Palace' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d2/Udaipur_Lake_India.JPG/1280px-Udaipur_Lake_India.JPG', caption: 'Serene panorama of Lake Pichola waters framed by the surrounding Aravalli hills', tag: 'Lake' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/84/Saheliyon-ki-Bari_Fountain.JPG/1280px-Saheliyon-ki-Bari_Fountain.JPG', caption: 'Carved marble elephant fountains and royal lotus pools of Saheliyon-ki-Bari', tag: 'Gardens' }
     ],
 
     whyVisit: [
@@ -665,10 +665,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/ladakh.jpg', caption: 'The shifting turquoise and cobalt hues of Pangong Tso lake at 4,350m', tag: 'Lake' },
-      { url: 'https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1200&q=80', caption: 'Thiksey Monastery perched majestically on a hill like a mini Potala Palace', tag: 'Monastery' },
-      { url: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=80', caption: 'Double-humped Bactrian camels grazing on the white sand dunes of Nubra Valley', tag: 'Desert' },
-      { url: 'https://images.unsplash.com/photo-1506197603052-3cc9c3a201bd?auto=format&fit=crop&w=1200&q=80', caption: 'Dramatic winding roads crossing Khardung La, one of the highest motorable passes', tag: 'Pass' },
-      { url: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80', caption: 'Stupa prayer flags fluttering against the deep indigo Himalayan sky', tag: 'Culture' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Pangong_Tso%2C_Ladakh.jpg/1280px-Pangong_Tso%2C_Ladakh.jpg', caption: 'Crystal azure waters and jagged bare mountain ridges along Pangong Tso shore', tag: 'Landscape' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Thikse_Monastery_.jpg/1280px-Thikse_Monastery_.jpg', caption: 'The whitewashed Tibetan terraces and red chapels of Thiksey Monastery', tag: 'Monastery' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/5_Nubra_valley.jpg/1280px-5_Nubra_valley.jpg', caption: 'Cold desert sands and towering snow-capped Karakoram peaks in Nubra Valley', tag: 'Valley' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/8/81/Leh%2C_Shanti_Stupa%2C_Ladakh%2C_India.jpg/1280px-Leh%2C_Shanti_Stupa%2C_Ladakh%2C_India.jpg', caption: 'White-domed Shanti Stupa with colorful prayer flags overlooking the town of Leh', tag: 'Culture' }
     ],
 
     whyVisit: [
@@ -794,10 +794,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/andaman.jpg', caption: 'White silica sands and turquoise waters of Radhanagar Beach on Havelock Island', tag: 'Beach' },
-      { url: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80', caption: 'Scuba diver exploring kaleidoscopic coral reefs at Elephant Beach', tag: 'Diving' },
-      { url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80', caption: 'Natural limestone bridge formation sculpted by ocean tides on Neil Island', tag: 'Geology' },
-      { url: 'https://images.unsplash.com/photo-1589556264800-08ae9e129a8c?auto=format&fit=crop&w=1200&q=80', caption: 'Historical wings of Cellular Jail (Kala Pani) standing in solemn memory', tag: 'Heritage' },
-      { url: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80', caption: 'Tropical sunset casting pink reflections over Kalapathar Beach driftwood', tag: 'Sunset' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg/1280px-Radha_Nagar_beach%2C_Havelock_Island%2C_Andamn%2C_India-_Sun_set_view.jpg', caption: 'Sunset hues washing over Radhanagar Beach on Havelock Island (Swaraj Dweep)', tag: 'Sunset' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2f/The_Coral_Reef_at_the_Andaman_Islands.jpg/1280px-The_Coral_Reef_at_the_Andaman_Islands.jpg', caption: 'Vibrant living coral reefs and marine life off the Andaman coastal shelves', tag: 'Marine' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fe/Front_View_of_Cellular_Jail%2C_Port_Blair.JPG/1280px-Front_View_of_Cellular_Jail%2C_Port_Blair.JPG', caption: 'Historic red-brick wings and central watchtower of Cellular Jail, Port Blair', tag: 'Heritage' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Keshet_neal_island_india.jpg/1280px-Keshet_neal_island_india.jpg', caption: 'Pristine coastal reef flats and natural rock bridge formations on Neil Island', tag: 'Coast' }
     ],
 
     whyVisit: [
@@ -922,10 +922,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/coorg.jpg', caption: 'Lush green mist rolling across coffee plantations in Madikeri', tag: 'Plantations' },
-      { url: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80', caption: 'The gushing torrent of Abbey Falls surrounded by spice groves', tag: 'Waterfalls' },
-      { url: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?auto=format&fit=crop&w=1200&q=80', caption: 'Golden statues inside the majestic Namdroling Tibetan Monastery (Golden Temple)', tag: 'Spiritual' },
-      { url: 'https://images.unsplash.com/photo-1588714477688-cf28a50e94f7?auto=format&fit=crop&w=1200&q=80', caption: 'Elephants bathing in the sacred Kaveri River at Dubare Elephant Camp', tag: 'Wildlife' },
-      { url: 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=1200&q=80', caption: 'Sunset vistas from Raja’s Seat overlooking the rolling Western Ghat valleys', tag: 'Viewpoints' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Abbey_Falls_New.jpg/1280px-Abbey_Falls_New.jpg', caption: 'The roaring white cascade of Abbey Falls deep in the Coorg coffee hills', tag: 'Waterfalls' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Namrodoling_Monastery_Bylakuppe2.jpg/1280px-Namrodoling_Monastery_Bylakuppe2.jpg', caption: 'Towering golden Buddha statues inside Namdroling Monastery (Golden Temple) near Kushalnagar', tag: 'Spiritual' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Kaveri_by_Dubare_Forest.jpg/1280px-Kaveri_by_Dubare_Forest.jpg', caption: 'Lush banks of the Kaveri River flowing past Dubare forest elephant reserve', tag: 'Nature' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Tadiandamol_Valley%2C_Western_Ghats.jpg/1280px-Tadiandamol_Valley%2C_Western_Ghats.jpg', caption: 'Trekking trails through the high Shola grasslands and mist valleys of Tadiandamol', tag: 'Trekking' }
     ],
 
     whyVisit: [
@@ -1050,11 +1050,11 @@ export const DESTINATIONS_DATA = {
     overview: 'Perched at 1,600 meters at the confluence of three mountain streams (Mudhirapuzha, Nallathanni, and Kundaly), Munnar is the crown jewel of God’s Own Country. Celebrated worldwide for its endlessly rolling manicured tea carpets, colonial estates, endangered Nilgiri Tahr mountain goats, and the rare Neelakurinji flower that blooms once every 12 years.',
     
     gallery: [
-      { url: '/img/munnar.jpg', caption: 'Rolling velvet-green tea plantation hills under morning mountain mist', tag: 'Tea' },
-      { url: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=1200&q=80', caption: 'The endangered Nilgiri Tahr mountain goat on the granite crags of Eravikulam', tag: 'Wildlife' },
-      { url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80', caption: 'Reflection of mist and pine trees on the still waters of Mattupetty Dam', tag: 'Lakes' },
-      { url: 'https://images.unsplash.com/photo-1596402184320-417e7178b2cd?auto=format&fit=crop&w=1200&q=80', caption: 'Traditional tea plucker carrying fresh green leaves in woven baskets', tag: 'Culture' },
-      { url: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80', caption: 'Sunset silhouettes over Kolukkumalai, the highest organic tea estate in the world', tag: 'Sunset' }
+      { url: '/img/munnar.jpg', caption: 'Rolling velvet-green tea plantation hills under morning mountain mist in Munnar', tag: 'Tea' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/Munnar_Overview.jpg/1280px-Munnar_Overview.jpg', caption: 'Panoramic overview of Munnar valley blanketed in lush green tea estates', tag: 'Overview' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/6/60/Eravikulam_National_Park_%2849444006652%29.jpg/1280px-Eravikulam_National_Park_%2849444006652%29.jpg', caption: 'Eravikulam National Park rolling alpine grasslands and sanctuary of the Nilgiri Tahr', tag: 'Wildlife' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fa/Mattupetty_Dam.jpg/1280px-Mattupetty_Dam.jpg', caption: 'Scenic waters of Mattupetty Dam surrounded by tea hills and shola forests', tag: 'Dam & Lake' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/AnaimudiPeak_DSC_4834.jpg/1280px-AnaimudiPeak_DSC_4834.jpg', caption: 'Anamudi Peak (2,695m), the highest peak in South India rising above Munnar', tag: 'Anamudi' }
     ],
 
     whyVisit: [
@@ -1180,10 +1180,10 @@ export const DESTINATIONS_DATA = {
     
     gallery: [
       { url: '/img/varanasi.jpg', caption: 'The grand stone ghats of Varanasi lining the sacred crescent curve of the River Ganges', tag: 'Ghats' },
-      { url: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=1200&q=80', caption: 'The mesmerizing Dashashwamedh Ghat Maha Aarti held every evening at twilight', tag: 'Aarti' },
-      { url: 'https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=1200&q=80', caption: 'Sunrise rowing boat glide along the morning mist of the holy Ganges', tag: 'River' },
-      { url: 'https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80', caption: 'Ancient stone alleys and silk weavers of the labyrinthine Old Banaras galis', tag: 'Alleys' },
-      { url: 'https://images.unsplash.com/photo-1609137144822-0d1275bb27d4?auto=format&fit=crop&w=1200&q=80', caption: 'The peaceful stupa and deer park of Sarnath where Buddha gave his first sermon', tag: 'Sarnath' }
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Dasaswamedh_ghat-varanasi_india-andres_larin.jpg/1280px-Dasaswamedh_ghat-varanasi_india-andres_larin.jpg', caption: 'Dashashwamedh Ghat stone stairs and boats on the holy Ganges in Varanasi', tag: 'Dashashwamedh' },
+      { url: 'https://upload.wikimedia.org/wikipedia/commons/c/c2/Assi_Ghat_Varanasi_morning_Aarti.jpg', caption: 'Morning Subah-e-Banaras Aarti ceremony along the riverfront at Assi Ghat', tag: 'Assi Ghat' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Ahilya_Ghat_by_the_Ganges%2C_Varanasi.jpg/1280px-Ahilya_Ghat_by_the_Ganges%2C_Varanasi.jpg', caption: 'Historic stone palaces and riverfront along Ahilya Ghat on the Ganges', tag: 'Riverfront' },
+      { url: 'https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Dhamek_Stupa%2C_Sarnath.jpg/1280px-Dhamek_Stupa%2C_Sarnath.jpg', caption: 'Ancient 5th-century Dhamek Stupa at Sarnath, where Buddha gave his first sermon', tag: 'Sarnath' }
     ],
 
     whyVisit: [

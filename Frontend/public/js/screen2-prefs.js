@@ -144,20 +144,28 @@ function initScreen2() {
   });
 
   /* ---- Mood/vibe tiles (multi-select) ---- */
-  document.querySelectorAll('#mood-tiles .mood-tile').forEach(function(tile) {
-    tile.addEventListener('click', function() {
-      var mood = tile.getAttribute('data-mood');
-      var idx = state.prefs.moods.indexOf(mood);
-      if (idx === -1) {
-        state.prefs.moods.push(mood);
-        tile.classList.add('selected');
-        tile.setAttribute('aria-pressed', 'true');
-      } else {
-        state.prefs.moods.splice(idx, 1);
-        tile.classList.remove('selected');
-        tile.setAttribute('aria-pressed', 'false');
-      }
-      validatePrefs();
+  var moodContainer = byId('mood-tiles');
+  if (moodContainer) {
+    moodContainer.querySelectorAll('.mood-tile').forEach(function(tile) {
+      tile.addEventListener('click', function(e) {
+        e.preventDefault();
+        var mood = tile.getAttribute('data-mood');
+        if (!mood) return;
+        if (!Array.isArray(state.prefs.moods)) state.prefs.moods = [];
+        var idx = state.prefs.moods.indexOf(mood);
+        if (idx === -1) {
+          state.prefs.moods.push(mood);
+          tile.classList.add('selected', 'active');
+          tile.setAttribute('aria-pressed', 'true');
+        } else {
+          state.prefs.moods.splice(idx, 1);
+          tile.classList.remove('selected', 'active');
+          tile.setAttribute('aria-pressed', 'false');
+        }
+        validatePrefs();
+      });
     });
-  });
+  }
 }
+
+window.initScreen2 = initScreen2;

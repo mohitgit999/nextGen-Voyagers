@@ -628,3 +628,7 @@ function initScreen4() {
   if (!document.getElementById('screen-4')) return;
   byId('btn-back-to-explore').addEventListener('click', function() { goToStep(3); });
 }
+
+window.initScreen4 = initScreen4;
+window.selectDestination = selectDestination;
+window.renderDetail = renderDetail;

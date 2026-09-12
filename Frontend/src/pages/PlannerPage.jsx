@@ -1,7 +1,72 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import '../assets/css/planner.css';
 
 const PlannerPage = () => {
+  const [selectedMoods, setSelectedMoods] = useState([]);
+  const [selectedBudget, setSelectedBudget] = useState(null);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (typeof window.initNavigation === 'function') window.initNavigation();
+      if (typeof window.initScreen1 === 'function') window.initScreen1();
+      if (typeof window.initScreen2 === 'function') window.initScreen2();
+      if (typeof window.initScreen3 === 'function') window.initScreen3();
+      if (typeof window.initScreen4 === 'function') window.initScreen4();
+      if (typeof window.initScreen5 === 'function') window.initScreen5();
+    }, 60);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const moodOptions = [
+    { key: 'heritage', emoji: '🏛️', label: 'Heritage & History' },
+    { key: 'hidden-gems', emoji: '💎', label: 'Secret Hidden Gems' },
+    { key: 'beach', emoji: '🏖️', label: 'Beach & Coastal' },
+    { key: 'adventure', emoji: '🏔️', label: 'Mountain Adventure' },
+    { key: 'spiritual', emoji: '🙏', label: 'Peace & Spiritual' },
+    { key: 'nightlife', emoji: '🎉', label: 'Nightlife & Cafes' },
+    { key: 'food', emoji: '🍽️', label: 'Food & Culinary' },
+    { key: 'photography', emoji: '📸', label: 'Scenic Photography' }
+  ];
+
+  const toggleMood = (moodKey) => {
+    setSelectedMoods((prev) => {
+      const exists = prev.includes(moodKey);
+      const next = exists ? prev.filter((m) => m !== moodKey) : [...prev, moodKey];
+      if (window.state && window.state.prefs) {
+        window.state.prefs.moods = next;
+      }
+      return next;
+    });
+  };
+
+  const handleBudgetSelect = (tier) => {
+    setSelectedBudget(tier);
+    if (window.state && window.state.prefs) {
+      window.state.prefs.budget = tier;
+      const ok = !!tier && !!window.state.prefs.group;
+      const showDestBtn = document.getElementById('btn-show-destinations');
+      const prefValidation = document.getElementById('pref-validation');
+      if (showDestBtn) showDestBtn.disabled = !ok;
+      if (prefValidation) prefValidation.textContent = ok ? '' : "Pick a budget and who you're travelling with to continue.";
+    }
+  };
+
+  const handleGroupSelect = (grp, defTravelers) => {
+    setSelectedGroup(grp);
+    if (window.state && window.state.prefs) {
+      window.state.prefs.group = grp;
+      window.state.prefs.travelers = defTravelers;
+      const travelersValue = document.getElementById('travelers-value');
+      if (travelersValue) travelersValue.textContent = defTravelers;
+      const ok = !!window.state.prefs.budget && !!grp;
+      const showDestBtn = document.getElementById('btn-show-destinations');
+      const prefValidation = document.getElementById('pref-validation');
+      if (showDestBtn) showDestBtn.disabled = !ok;
+      if (prefValidation) prefValidation.textContent = ok ? '' : "Pick a budget and who you're travelling with to continue.";
+    }
+  };
   return (
     <div id="planner-section" className="planner-page-container">
       {/* Background overlay */}
@@ -225,19 +290,37 @@ const PlannerPage = () => {
               </div>
 
               <div className="tile-row modern-tiles-row" id="budget-tiles" role="group" aria-label="Budget options">
-                <button className="tile modern-tier-tile" data-budget="budget" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`tile modern-tier-tile ${selectedBudget === 'budget' ? 'selected active' : ''}`}
+                  data-budget="budget"
+                  aria-pressed={selectedBudget === 'budget'}
+                  onClick={() => handleBudgetSelect('budget')}
+                >
                   <span className="tile-badge">₹</span>
                   <span className="tile-title">Budget Friendly</span>
                   <span className="tile-sub">Around ₹1,000–1,500 / day</span>
                   <span className="tile-desc">Hostels, local trains, scenic walks &amp; authentic street dining.</span>
                 </button>
-                <button className="tile modern-tier-tile" data-budget="mid" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`tile modern-tier-tile ${selectedBudget === 'mid' ? 'selected active' : ''}`}
+                  data-budget="mid"
+                  aria-pressed={selectedBudget === 'mid'}
+                  onClick={() => handleBudgetSelect('mid')}
+                >
                   <span className="tile-badge">₹₹</span>
                   <span className="tile-title">Comfort / Balanced</span>
                   <span className="tile-sub">Around ₹2,500–4,000 / day</span>
                   <span className="tile-desc">Boutique hotels, private cabs, guided visits &amp; great dining.</span>
                 </button>
-                <button className="tile modern-tier-tile" data-budget="luxury" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`tile modern-tier-tile ${selectedBudget === 'luxury' ? 'selected active' : ''}`}
+                  data-budget="luxury"
+                  aria-pressed={selectedBudget === 'luxury'}
+                  onClick={() => handleBudgetSelect('luxury')}
+                >
                   <span className="tile-badge">₹₹₹</span>
                   <span className="tile-title">Luxury &amp; Heritage</span>
                   <span className="tile-sub">₹6,000+ / day</span>
@@ -257,19 +340,47 @@ const PlannerPage = () => {
               </div>
 
               <div className="tile-row modern-tiles-row" id="group-tiles" role="group" aria-label="Group type">
-                <button className="group-tile modern-group-tile" data-group="solo" data-default-travelers="1" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`group-tile modern-group-tile ${selectedGroup === 'solo' ? 'selected active' : ''}`}
+                  data-group="solo"
+                  data-default-travelers="1"
+                  aria-pressed={selectedGroup === 'solo'}
+                  onClick={() => handleGroupSelect('solo', 1)}
+                >
                   <span className="group-emoji">🎒</span>
                   <span className="group-name">Solo Explorer</span>
                 </button>
-                <button className="group-tile modern-group-tile" data-group="couple" data-default-travelers="2" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`group-tile modern-group-tile ${selectedGroup === 'couple' ? 'selected active' : ''}`}
+                  data-group="couple"
+                  data-default-travelers="2"
+                  aria-pressed={selectedGroup === 'couple'}
+                  onClick={() => handleGroupSelect('couple', 2)}
+                >
                   <span className="group-emoji">💑</span>
                   <span className="group-name">Couple Getaway</span>
                 </button>
-                <button className="group-tile modern-group-tile" data-group="friends" data-default-travelers="4" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`group-tile modern-group-tile ${selectedGroup === 'friends' ? 'selected active' : ''}`}
+                  data-group="friends"
+                  data-default-travelers="4"
+                  aria-pressed={selectedGroup === 'friends'}
+                  onClick={() => handleGroupSelect('friends', 4)}
+                >
                   <span className="group-emoji">👥</span>
                   <span className="group-name">Friends Group</span>
                 </button>
-                <button className="group-tile modern-group-tile" data-group="family" data-default-travelers="4" aria-pressed="false">
+                <button
+                  type="button"
+                  className={`group-tile modern-group-tile ${selectedGroup === 'family' ? 'selected active' : ''}`}
+                  data-group="family"
+                  data-default-travelers="4"
+                  aria-pressed={selectedGroup === 'family'}
+                  onClick={() => handleGroupSelect('family', 4)}
+                >
                   <span className="group-emoji">👨‍👩‍👧‍👦</span>
                   <span className="group-name">Family Holiday</span>
                 </button>
@@ -278,11 +389,11 @@ const PlannerPage = () => {
               <div className="travelers-inline modern-counter-row" style={{ marginTop: '16px' }}>
                 <span className="counter-label">Number of Travelers:</span>
                 <div className="stepper-control">
-                  <button className="num-btn" id="travelers-minus" aria-label="Decrease travellers">
+                  <button type="button" className="num-btn" id="travelers-minus" aria-label="Decrease travellers">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14" /></svg>
                   </button>
                   <div className="num-display" id="travelers-value">1</div>
-                  <button className="num-btn" id="travelers-plus" aria-label="Increase travellers">
+                  <button type="button" className="num-btn" id="travelers-plus" aria-label="Increase travellers">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14" /></svg>
                   </button>
                 </div>
@@ -301,38 +412,23 @@ const PlannerPage = () => {
               </div>
 
               <div className="mood-tiles-grid" id="mood-tiles" role="group" aria-label="Trip mood selection">
-                <button className="mood-tile" data-mood="heritage" aria-pressed="false">
-                  <span className="mood-emoji">🏛️</span>
-                  <span className="mood-label">Heritage &amp; History</span>
-                </button>
-                <button className="mood-tile" data-mood="hidden-gems" aria-pressed="false">
-                  <span className="mood-emoji">💎</span>
-                  <span className="mood-label">Secret Hidden Gems</span>
-                </button>
-                <button className="mood-tile" data-mood="beach" aria-pressed="false">
-                  <span className="mood-emoji">🏖️</span>
-                  <span className="mood-label">Beach &amp; Coastal</span>
-                </button>
-                <button className="mood-tile" data-mood="adventure" aria-pressed="false">
-                  <span className="mood-emoji">🏔️</span>
-                  <span className="mood-label">Mountain Adventure</span>
-                </button>
-                <button className="mood-tile" data-mood="spiritual" aria-pressed="false">
-                  <span className="mood-emoji">🙏</span>
-                  <span className="mood-label">Peace &amp; Spiritual</span>
-                </button>
-                <button className="mood-tile" data-mood="nightlife" aria-pressed="false">
-                  <span className="mood-emoji">🎉</span>
-                  <span className="mood-label">Nightlife &amp; Cafes</span>
-                </button>
-                <button className="mood-tile" data-mood="food" aria-pressed="false">
-                  <span className="mood-emoji">🍽️</span>
-                  <span className="mood-label">Food &amp; Culinary</span>
-                </button>
-                <button className="mood-tile" data-mood="photography" aria-pressed="false">
-                  <span className="mood-emoji">📸</span>
-                  <span className="mood-label">Scenic Photography</span>
-                </button>
+                {moodOptions.map((m) => {
+                  const isSelected = selectedMoods.includes(m.key);
+                  return (
+                    <button
+                      key={m.key}
+                      type="button"
+                      className={`mood-tile ${isSelected ? 'selected active' : ''}`}
+                      data-mood={m.key}
+                      aria-pressed={isSelected}
+                      onClick={() => toggleMood(m.key)}
+                    >
+                      <span className="mood-emoji">{m.emoji}</span>
+                      <span className="mood-label">{m.label}</span>
+                      {isSelected && <span className="mood-selected-indicator">✓</span>}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

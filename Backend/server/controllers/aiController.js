@@ -317,6 +317,50 @@ Return ONLY valid JSON in this exact shape:
       return res.status(502).json({ message: 'AI returned no destinations' });
     }
 
+function resolveAiDestinationImage(name, tags, vibes) {
+  const n = (name || '').toLowerCase();
+  const curated = {
+    gokarna: 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80',
+    varkala: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
+    pondicherry: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
+    puducherry: 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
+    alibaug: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    kasol: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
+    manali: '/img/manali.jpg',
+    goa: '/img/goa.jpg',
+    rishikesh: '/img/rishikesh.jpg',
+    jaipur: '/img/jaipur.jpg',
+    munnar: '/img/munnar.jpg',
+    kerala: '/img/munnar.jpg',
+    ladakh: '/img/ladakh.jpg',
+    varanasi: '/img/varanasi.jpg',
+    andaman: '/img/andaman.jpg',
+    coorg: '/img/coorg.jpg',
+    udaipur: '/img/udaipur.jpg',
+    shimla: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=800&q=80',
+    ooty: 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80',
+    darjeeling: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
+    hampi: 'https://images.unsplash.com/photo-1600100397608-f010f443b749?auto=format&fit=crop&w=800&q=80',
+    agra: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
+    amritsar: 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?auto=format&fit=crop&w=800&q=80',
+    jaisalmer: 'https://images.unsplash.com/photo-1572979268688-6625895e6389?auto=format&fit=crop&w=800&q=80'
+  };
+  for (const [k, v] of Object.entries(curated)) {
+    if (n.includes(k)) return v;
+  }
+  const all = (tags || []).concat(vibes || []).map(t => String(t).toLowerCase());
+  if (all.some(t => t.includes('beach') || t.includes('coast'))) {
+    return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
+  }
+  if (all.some(t => t.includes('mountain') || t.includes('snow') || t.includes('trek'))) {
+    return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
+  }
+  if (all.some(t => t.includes('heritage') || t.includes('history') || t.includes('temple'))) {
+    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80';
+  }
+  return 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
+}
+
     const destinations = await Promise.all(parsed.destinations.slice(0, 8).map(async (item, index) => {
       const name = String(item.name || '').trim();
       const weather = await fetchLiveWeather(item.liveDataQuery || name);
@@ -325,10 +369,13 @@ Return ONLY valid JSON in this exact shape:
       const max = Number(item.weather && item.weather.max) || 0;
       const liveMin = weather.source === 'live' ? weather.temp : min;
       const liveMax = weather.source === 'live' ? weather.temp : max;
+      const heroImage = resolveAiDestinationImage(name, item.tags, item.vibes);
       return {
         id: `ai-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-${index}`,
         name,
         state: String(item.state || 'India'),
+        heroImage: heroImage,
+        image: heroImage,
         tags: Array.isArray(item.tags) ? item.tags.slice(0, 5) : [],
         vibes: Array.isArray(item.vibes) ? item.vibes.slice(0, 6) : [],
         icon: 'map',

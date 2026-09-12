@@ -1149,3 +1149,5 @@ function initScreen5() {
     if (plannerEl) plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 }
+
+window.initScreen5 = initScreen5;

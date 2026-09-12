@@ -463,3 +463,5 @@ function initScreen1() {
     setLocation(savedLoc.city, savedLoc.source || 'persisted', savedLoc.lat, savedLoc.lon);
   }
 }
+
+window.initScreen1 = initScreen1;

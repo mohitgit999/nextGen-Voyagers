@@ -87,6 +87,94 @@ function renderExplore(summary, mode) {
   }, 420);
 }
 
+/* ===================== DESTINATION IMAGES ===================== */
+function getDestinationImage(d) {
+  if (!d) return '/img/goa.jpg';
+  if (d.heroImage) return d.heroImage;
+  if (d.image) return d.image;
+
+  var id = (d.id || '').toLowerCase();
+  var name = (d.name || '').toLowerCase().trim();
+
+  // Core 10 destinations
+  var localMap = {
+    'manali': '/img/manali.jpg',
+    'goa': '/img/goa.jpg',
+    'rishikesh': '/img/rishikesh.jpg',
+    'jaipur': '/img/jaipur.jpg',
+    'munnar': '/img/munnar.jpg',
+    'kerala': '/img/munnar.jpg',
+    'ladakh': '/img/ladakh.jpg',
+    'leh': '/img/ladakh.jpg',
+    'varanasi': '/img/varanasi.jpg',
+    'andaman': '/img/andaman.jpg',
+    'coorg': '/img/coorg.jpg',
+    'udaipur': '/img/udaipur.jpg'
+  };
+
+  for (var key in localMap) {
+    if (id.indexOf(key) !== -1 || name.indexOf(key) !== -1) {
+      return localMap[key];
+    }
+  }
+
+  // Curated high-resolution Unsplash photos for famous Indian destinations
+  var curatedPhotos = {
+    'gokarna': 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80',
+    'varkala': 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=800&q=80',
+    'pondicherry': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
+    'puducherry': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
+    'alibaug': 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    'kasol': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
+    'shimla': 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=800&q=80',
+    'ooty': 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80',
+    'darjeeling': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=800&q=80',
+    'hampi': 'https://images.unsplash.com/photo-1600100397608-f010f443b749?auto=format&fit=crop&w=800&q=80',
+    'agra': 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80',
+    'amritsar': 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?auto=format&fit=crop&w=800&q=80',
+    'jaisalmer': 'https://images.unsplash.com/photo-1572979268688-6625895e6389?auto=format&fit=crop&w=800&q=80',
+    'jodhpur': 'https://images.unsplash.com/photo-1572979268688-6625895e6389?auto=format&fit=crop&w=800&q=80',
+    'alleppey': 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=800&q=80',
+    'alappuzha': 'https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=800&q=80',
+    'shillong': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80',
+    'meghalaya': 'https://images.unsplash.com/photo-1596176530529-78163a4f7af2?auto=format&fit=crop&w=800&q=80',
+    'chikmagalur': 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80',
+    'wayanad': 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80',
+    'spiti': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    'mysore': 'https://images.unsplash.com/photo-1600100397608-f010f443b749?auto=format&fit=crop&w=800&q=80',
+    'mysuru': 'https://images.unsplash.com/photo-1600100397608-f010f443b749?auto=format&fit=crop&w=800&q=80',
+    'pushkar': 'https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80',
+    'mahabaleshwar': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    'dharamshala': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
+    'mcleodganj': 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
+    'kodaikanal': 'https://images.unsplash.com/photo-1589182373726-e4f658ab50f0?auto=format&fit=crop&w=800&q=80',
+    'nainital': 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=800&q=80'
+  };
+
+  for (var city in curatedPhotos) {
+    if (name.indexOf(city) !== -1 || id.indexOf(city) !== -1) {
+      return curatedPhotos[city];
+    }
+  }
+
+  // Tag / vibe based thematic fallbacks
+  var allTags = (d.tags || []).concat(d.vibes || []).map(function(t) { return t.toLowerCase(); });
+  if (allTags.some(function(t) { return t.indexOf('beach') !== -1 || t.indexOf('coast') !== -1 || t.indexOf('island') !== -1; })) {
+    return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80';
+  }
+  if (allTags.some(function(t) { return t.indexOf('mountain') !== -1 || t.indexOf('snow') !== -1 || t.indexOf('trek') !== -1 || t.indexOf('hill') !== -1; })) {
+    return 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
+  }
+  if (allTags.some(function(t) { return t.indexOf('heritage') !== -1 || t.indexOf('history') !== -1 || t.indexOf('temple') !== -1 || t.indexOf('fort') !== -1 || t.indexOf('spiritual') !== -1; })) {
+    return 'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=800&q=80';
+  }
+  if (allTags.some(function(t) { return t.indexOf('nature') !== -1 || t.indexOf('forest') !== -1 || t.indexOf('river') !== -1; })) {
+    return 'https://images.unsplash.com/photo-1511497584788-87676104235f?auto=format&fit=crop&w=800&q=80';
+  }
+
+  return 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80';
+}
+
 function renderExploreCards() {
   var grid = byId('explore-grid');
   var list = filteredAndSorted();
@@ -103,36 +191,41 @@ function renderExploreCards() {
   }
 
   grid.innerHTML = list.map(function(m) {
-    var d    = m.dest;
-    var cost = estimateCost(d, state.prefs, null);
+    var d        = m.dest;
+    var cost     = estimateCost(d, state.prefs, null);
     var isPinned = state.compareIds.indexOf(d.id) !== -1;
     var isTopAi  = m.percent >= 82;
     var gemCount = d.hiddenGems ? d.hiddenGems.length : 0;
     var liveWeather = d.liveWeather && d.liveWeather.source === 'live' ? d.liveWeather : null;
+    var destImg  = getDestinationImage(d);
 
     return '' +
       '<button class="dest-card" data-dest-id="' + d.id + '" aria-label="View details for ' + d.name + '">' +
-        '<div class="dest-card-top">' +
-          '<div class="dest-icon-badge">' + icon(d.icon) + '</div>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            (isTopAi ? '<span class="ai-match-badge">⚡ AI Fit</span>' : '') +
-            '<span class="match-badge">' + m.percent + '% match</span>' +
+        '<div class="dest-card-bg" style="background-image: url(\'' + destImg + '\');"></div>' +
+        '<div class="dest-card-gradient"></div>' +
+        '<div class="dest-card-inner">' +
+          '<div class="dest-card-top">' +
+            '<div class="dest-icon-badge">' + icon(d.icon) + '</div>' +
+            '<div style="display:flex;gap:6px;align-items:center;">' +
+              (isTopAi ? '<span class="ai-match-badge">⚡ AI Fit</span>' : '') +
+              '<span class="match-badge">' + m.percent + '% match</span>' +
+            '</div>' +
           '</div>' +
-        '</div>' +
-        '<div>' +
-          '<h3 class="dest-name">' + d.name + ' ' + d.emoji + '</h3>' +
-          '<span class="dest-state">' + d.state + '</span>' +
-        '</div>' +
-        '<p class="dest-blurb">' + d.blurb + (d.whyMatched ? ' ' + d.whyMatched : '') + '</p>' +
-        '<div class="tag-row">' +
-          d.tags.slice(0, 3).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
-          (gemCount ? '<span class="tag-chip gem-tag">💎 ' + gemCount + ' Gems</span>' : '') +
-        '</div>' +
-        '<div class="dest-meta-row">' +
-          '<span class="rating-inline">' + icon('star') + ' ' + d.rating.toFixed(1) + '</span>' +
-          '<span class="safety-chip-mini">🛡️ ' + d.safety.score.toFixed(1) + '</span>' +
-          '<span class="weather-chip-mini">' + (liveWeather ? '🌡️ ' + liveWeather.temp + '° live' : '🌡️ Weather pending') + '</span>' +
-          '<span class="price-chip">' + inr(cost.perDay) + '/day</span>' +
+          '<div class="dest-title-wrap">' +
+            '<h3 class="dest-name">' + d.name + ' ' + d.emoji + '</h3>' +
+            '<span class="dest-state">' + d.state + '</span>' +
+          '</div>' +
+          '<p class="dest-blurb">' + d.blurb + (d.whyMatched ? ' ' + d.whyMatched : '') + '</p>' +
+          '<div class="tag-row">' +
+            d.tags.slice(0, 3).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
+            (gemCount ? '<span class="tag-chip gem-tag">💎 ' + gemCount + ' Gems</span>' : '') +
+          '</div>' +
+          '<div class="dest-meta-row">' +
+            '<span class="rating-inline">' + icon('star') + ' ' + d.rating.toFixed(1) + '</span>' +
+            '<span class="safety-chip-mini">🛡️ ' + d.safety.score.toFixed(1) + '</span>' +
+            '<span class="weather-chip-mini">' + (liveWeather ? '🌡️ ' + liveWeather.temp + '° live' : '🌡️ Weather pending') + '</span>' +
+            '<span class="price-chip">' + inr(cost.perDay) + '/day</span>' +
+          '</div>' +
         '</div>' +
         '<button class="compare-btn' + (isPinned ? ' active' : '') + '" data-compare-id="' + d.id + '" aria-label="' + (isPinned ? 'Remove from' : 'Add to') + ' comparison" title="Compare">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4M9 3h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>' +
@@ -244,3 +337,8 @@ function initScreen3() {
   if (!document.getElementById('screen-3')) return;
   initExploreControls();
 }
+
+window.initScreen3 = initScreen3;
+window.renderExploreCards = renderExploreCards;
+window.renderExplore = renderExplore;
+window.getDestinationImage = getDestinationImage;
