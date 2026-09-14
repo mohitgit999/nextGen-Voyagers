@@ -613,14 +613,18 @@ function renderDayMap(containerId, dest, dayActivities) {
   return map;
 }
 
-// Window resize listener to keep Leaflet maps responsive
+// Window resize listener to keep Leaflet maps responsive (debounced with passive: true)
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+  var mapResizeTimer = null;
   window.addEventListener('resize', function() {
-    for (var k in voyagerMaps) {
-      if (voyagerMaps[k] && typeof voyagerMaps[k].invalidateSize === 'function') {
-        voyagerMaps[k].invalidateSize();
+    clearTimeout(mapResizeTimer);
+    mapResizeTimer = setTimeout(function() {
+      for (var k in voyagerMaps) {
+        if (voyagerMaps[k] && typeof voyagerMaps[k].invalidateSize === 'function') {
+          voyagerMaps[k].invalidateSize();
+        }
       }
-    }
-  });
+    }, 150);
+  }, { passive: true });
 }
 

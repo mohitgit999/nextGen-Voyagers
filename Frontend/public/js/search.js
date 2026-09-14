@@ -128,8 +128,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var searchInput = document.getElementById('search-dest-input');
   if (searchInput) {
+    var searchDebounceTimer = null;
     searchInput.addEventListener('input', function () {
-      filterSearchResults(searchInput.value);
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(function () {
+        filterSearchResults(searchInput.value);
+      }, 120);
     });
   }
 

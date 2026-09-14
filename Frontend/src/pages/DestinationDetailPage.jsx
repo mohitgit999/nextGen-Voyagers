@@ -131,7 +131,13 @@ const DestinationDetailPage = () => {
       {/* ── Hero Banner ── */}
       <section className="dest-hero-section">
         <div className="dest-hero-card">
-          <img src={dest.heroImage} alt={dest.name} className="dest-hero-img" />
+          <img 
+            src={dest.heroImage} 
+            alt={dest.name} 
+            className="dest-hero-img" 
+            decoding="async"
+            fetchPriority="high"
+          />
           <div className="dest-hero-overlay">
             <div className="dest-badges-row">
               <span className="dest-badge badge-safety">
@@ -236,7 +242,13 @@ const DestinationDetailPage = () => {
                   role="button"
                   aria-label={`View full photo: ${photo.caption}`}
                 >
-                  <img src={photo.url} alt={photo.caption} loading="lazy" />
+                  <img 
+                    src={photo.url} 
+                    alt={photo.caption} 
+                    loading="lazy" 
+                    decoding="async"
+                    onError={(e) => { e.currentTarget.src = dest.heroImage; }}
+                  />
                   <div className="gallery-item-overlay">
                     <span className="gallery-caption">{photo.caption}</span>
                   </div>
@@ -641,7 +653,7 @@ const DestinationDetailPage = () => {
           {relatedDests.map(item => (
             <Link key={item.id} to={`/destination/${item.id}`} className="dest-catalog-card">
               <div className="catalog-img-wrap">
-                <img src={item.heroImage} alt={item.name} className="catalog-img" loading="lazy" />
+                <img src={item.heroImage} alt={item.name} className="catalog-img" loading="lazy" decoding="async" />
                 <div className="catalog-badge-rating">⭐ {item.rating}</div>
               </div>
               <div className="catalog-body">

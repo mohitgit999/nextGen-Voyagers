@@ -12,15 +12,22 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnPrev = document.getElementById('hero-prev');
   const btnNext = document.getElementById('hero-next');
 
-  // Navbar scroll
+  // Navbar scroll (rAF-throttled with passive: true for 60/120fps performance)
   if (nav) {
+    let ticking = false;
     window.addEventListener('scroll', function() {
-      if (window.scrollY > 50) {
-        nav.classList.add('scrolled');
-      } else {
-        nav.classList.remove('scrolled');
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+          } else {
+            nav.classList.remove('scrolled');
+          }
+          ticking = false;
+        });
+        ticking = true;
       }
-    });
+    }, { passive: true });
   }
 
   // If hero elements don't exist (e.g. on /plan route), exit early

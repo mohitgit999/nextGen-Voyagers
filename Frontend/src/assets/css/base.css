@@ -39,6 +39,35 @@ button { font-family: inherit; }
   color: var(--teal-dark);
 }
 
+/* GPU Acceleration & Performance Optimizations */
+.gpu-accel {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Below-the-fold content visibility for instant page loads */
+.landing-footer,
+.safety-promise,
+.how-it-works-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 400px;
+}
+
+/* Aspect ratio stability to guarantee zero Cumulative Layout Shift (CLS = 0) */
+.dest-hero-card {
+  aspect-ratio: 16 / 7;
+}
+
+.catalog-img-wrap {
+  aspect-ratio: 16 / 10;
+}
+
+.gallery-item {
+  aspect-ratio: 4 / 3;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -49,6 +78,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   line-height: 1.2;
   letter-spacing: -0.01em;
+  text-rendering: optimizeLegibility;
 }
 
 /* App/planner section global overrides */

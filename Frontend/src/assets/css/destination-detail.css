@@ -1313,3 +1313,24 @@
     height: 200px;
   }
 }
+
+@media (max-width: 480px) {
+  .dest-breadcrumb {
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+    gap: 6px;
+  }
+
+  .dest-top-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .btn-dest-share {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+}
+

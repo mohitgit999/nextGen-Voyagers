@@ -2,11 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>NextGen Voyagers — Plan Your Trip, Travel Safe</title>
   <meta name="description" content="NextGen Voyagers is India's safety-first travel planner. Get personalised destination matches, day-by-day itineraries, cost breakdowns, weather insights and emergency contacts for 10 iconic Indian destinations.">
   <meta name="theme-color" content="#1BB89A">
   <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+
+  <!-- Preconnect & DNS-Prefetch for Speed -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://thumb.wikimedia.org">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://thumb.wikimedia.org" crossorigin>
 
   <!-- Open Graph -->
   <meta property="og:title" content="NextGen Voyagers — Plan Your Trip, Travel Safe">
@@ -14,14 +23,12 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_IN">
 
-  <!-- Google Fonts — Plus Jakarta Sans + Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Google Fonts — Plus Jakarta Sans + Inter with display=swap -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Leaflet.js for interactive maps -->
+  <!-- Leaflet.js for interactive maps (deferred for fast LCP) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
 
   <style>
     @media print {

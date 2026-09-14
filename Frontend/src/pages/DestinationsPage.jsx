@@ -86,7 +86,14 @@ const DestinationsPage = () => {
         {filteredDestinations.map(item => (
           <Link key={item.id} to={`/destination/${item.id}`} className="dest-catalog-card">
             <div className="catalog-img-wrap">
-              <img src={item.heroImage} alt={item.name} className="catalog-img" loading="lazy" />
+              <img 
+                src={item.heroImage} 
+                alt={item.name} 
+                className="catalog-img" 
+                loading="lazy" 
+                decoding="async" 
+                onError={(e) => { e.currentTarget.src = '/img/andaman.jpg'; }}
+              />
               <div className="catalog-badge-rating">⭐ {item.rating}</div>
             </div>
             <div className="catalog-body">

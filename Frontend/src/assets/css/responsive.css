@@ -995,3 +995,80 @@ body,
   box-sizing: border-box;
 }
 
+/* ============================================================
+   SUPER-RESPONSIVE HARDENING (DVH, SAFE-AREAS & TOUCH ERGONOMICS)
+   ============================================================ */
+
+/* Modern dynamic viewport height support with fallback for expanding mobile URL bars */
+@supports (height: 100dvh) {
+  .landing-hero {
+    min-height: 100dvh !important;
+  }
+
+  .mobile-nav-drawer {
+    max-height: calc(100dvh - 68px) !important;
+  }
+
+  .modal-box,
+  .app-modal-card {
+    max-height: calc(100dvh - 32px) !important;
+  }
+
+  .dest-page-wrapper {
+    min-height: 100dvh;
+  }
+}
+
+/* Edge-to-Edge Notch & Island Safe-Area Inset Support */
+.global-nav {
+  padding-top: max(0px, env(safe-area-inset-top)) !important;
+  padding-left: max(16px, env(safe-area-inset-left)) !important;
+  padding-right: max(16px, env(safe-area-inset-right)) !important;
+}
+
+.mobile-nav-drawer {
+  padding-left: max(20px, env(safe-area-inset-left)) !important;
+  padding-right: max(20px, env(safe-area-inset-right)) !important;
+  padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+}
+
+.landing-footer {
+  padding-bottom: max(32px, env(safe-area-inset-bottom)) !important;
+}
+
+.compare-bar,
+.actions-row {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+.sos-fab {
+  right: max(16px, env(safe-area-inset-right)) !important;
+  bottom: max(16px, env(safe-area-inset-bottom)) !important;
+}
+
+/* Touch screen interaction speed: eliminates 300ms tap delay and guarantees 44x44px target */
+@media (pointer: coarse) {
+  button,
+  .btn,
+  .filter-btn,
+  .hero-arrow,
+  .weather-slider-btn,
+  .catalog-cta-arrow,
+  .gallery-item {
+    touch-action: manipulation;
+  }
+
+  .btn,
+  button:not(.hero-indicator) {
+    min-height: 44px;
+  }
+
+  /* Instant tap feedback */
+  button:active,
+  .btn:active,
+  .month-safety-card:active {
+    transform: scale(0.97);
+  }
+}
+
+

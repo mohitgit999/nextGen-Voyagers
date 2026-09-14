@@ -31,34 +31,51 @@ function App() {
         '/js/main.js'
       ];
 
-      const loadScript = (index) => {
-        if (index >= scripts.length) {
-          // Dispatch DOMContentLoaded to trigger vanilla JS initialization
-          window.document.dispatchEvent(new Event('DOMContentLoaded', {
-            bubbles: true,
-            cancelable: true
-          }));
-          setTimeout(() => {
-            if (typeof window.initScrollReveal === 'function') {
-              window.initScrollReveal();
-            }
-          }, 150);
-          return;
-        }
+      const scriptVersion = '?v=2.3.0';
+      let loadedCount = 0;
+      const totalScripts = scripts.length;
 
-        const scriptUrl = scripts[index] + '?v=2.2.0';
+      const onAllScriptsReady = () => {
+        // Dispatch DOMContentLoaded to trigger vanilla JS initialization
+        window.document.dispatchEvent(new Event('DOMContentLoaded', {
+          bubbles: true,
+          cancelable: true
+        }));
+        setTimeout(() => {
+          if (typeof window.initScrollReveal === 'function') {
+            window.initScrollReveal();
+          }
+        }, 120);
+      };
+
+      scripts.forEach((src) => {
+        const scriptUrl = src + scriptVersion;
         if (document.querySelector(`script[src="${scriptUrl}"]`)) {
-          loadScript(index + 1);
+          loadedCount++;
+          if (loadedCount === totalScripts) {
+            onAllScriptsReady();
+          }
           return;
         }
 
         const script = document.createElement('script');
         script.src = scriptUrl;
-        script.onload = () => loadScript(index + 1);
+        // Setting async = false guarantees strict FIFO execution order while downloading concurrently in parallel!
+        script.async = false;
+        script.onload = () => {
+          loadedCount++;
+          if (loadedCount === totalScripts) {
+            onAllScriptsReady();
+          }
+        };
+        script.onerror = () => {
+          loadedCount++;
+          if (loadedCount === totalScripts) {
+            onAllScriptsReady();
+          }
+        };
         document.body.appendChild(script);
-      };
-
-      loadScript(0);
+      });
     };
 
     loadScripts();

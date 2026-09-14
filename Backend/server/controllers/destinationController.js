@@ -6,6 +6,7 @@ const Destination = require('../models/Destination');
 const getDestinations = async (req, res) => {
   try {
     const destinations = await Destination.find({});
+    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
     res.json(destinations);
   } catch (error) {
     console.error(`Error fetching destinations: ${error.message}`);
@@ -22,6 +23,7 @@ const getDestinationById = async (req, res) => {
     const destination = await Destination.findOne({ id: req.params.id });
     
     if (destination) {
+      res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
       res.json(destination);
     } else {
       res.status(404).json({ message: 'Destination not found' });
