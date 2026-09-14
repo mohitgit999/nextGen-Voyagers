@@ -39,10 +39,10 @@
   --paper-deep: rgba(255, 255, 255, 0.12);
   --border: rgba(255, 255, 255, 0.12);
   --line: rgba(255, 255, 255, 0.12);
-  --forest: #FFFFFF;
-  --forest-deep: #F1F5F9;
-  --teal: #FFFFFF;
-  --teal-dark: #F1F5F9;
+  --forest: #10B981;
+  --forest-deep: #064E3B;
+  --teal: #10B981;
+  --teal-dark: #059669;
 
   --btn-primary-bg: #FFFFFF;
   --btn-primary-text: #090B0E;
@@ -1809,30 +1809,42 @@
 
 /* ---------- SCREEN 5: AI ITINERARY & SMART SUITE ---------- */
 .itinerary-header-hero {
-  background: var(--glass-surface);
-  border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  padding: 30px;
-  margin-bottom: 20px;
-  text-align: center;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: var(--glass-specular), 0 12px 32px rgba(0, 0, 0, 0.35);
+  background: linear-gradient(135deg, rgba(20, 26, 38, 0.95) 0%, rgba(13, 17, 26, 0.98) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 20px !important;
+  padding: 32px 24px !important;
+  margin-bottom: 24px !important;
+  text-align: center !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
-.itinerary-header-hero h2 {
-  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif);
-  font-size: clamp(1.8rem, 3.2vw, 2.4rem);
-  font-weight: 800;
-  color: var(--accent-white);
-  margin-bottom: 6px;
-  letter-spacing: -0.02em;
+.itinerary-header-hero::before {
+  display: none !important;
 }
 
-.itinerary-header-hero p {
-  font-size: 0.95rem;
-  color: var(--accent-muted);
-  margin: 0;
+.itinerary-hero-text {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.itinerary-header-hero h2,
+.itinerary-hero-text h2 {
+  font-family: var(--font-display, 'Plus Jakarta Sans', sans-serif) !important;
+  font-size: clamp(1.8rem, 3.2vw, 2.4rem) !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  margin-bottom: 8px !important;
+  letter-spacing: -0.02em !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+.itinerary-header-hero p,
+.itinerary-hero-text p {
+  font-size: 0.95rem !important;
+  color: #CBD5E1 !important;
+  margin: 0 !important;
 }
 
 .itinerary-recap {
