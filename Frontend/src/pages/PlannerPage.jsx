@@ -7,6 +7,12 @@ const PlannerPage = () => {
   const [selectedGroup, setSelectedGroup] = useState(null);
 
   useEffect(() => {
+    // Only re-initialize planner screens when navigating to /plan
+    // AFTER scripts are already loaded by App.jsx (i.e. subsequent visits).
+    // On first load, App.jsx's DOMContentLoaded dispatch handles this.
+    // We use a short delay so the DOM is fully painted before JS runs.
+    if (!window.__VOYAGER_SCRIPTS_LOADED__) return; // scripts still loading, DOMContentLoaded will handle it
+
     const timer = setTimeout(() => {
       if (typeof window.initNavigation === 'function') window.initNavigation();
       if (typeof window.initScreen1 === 'function') window.initScreen1();
@@ -14,10 +20,23 @@ const PlannerPage = () => {
       if (typeof window.initScreen3 === 'function') window.initScreen3();
       if (typeof window.initScreen4 === 'function') window.initScreen4();
       if (typeof window.initScreen5 === 'function') window.initScreen5();
-    }, 60);
+
+      // Auto-resume a trip redirected from Home/Dashboard (sessionStorage handoff)
+      try {
+        var pendingTrip = sessionStorage.getItem('voyager_resume_trip');
+        if (pendingTrip && document.getElementById('screen-5')) {
+          sessionStorage.removeItem('voyager_resume_trip');
+          var tripData = JSON.parse(pendingTrip);
+          setTimeout(function() {
+            if (typeof window.resumeTrip === 'function') window.resumeTrip(tripData);
+          }, 300);
+        }
+      } catch(e) {}
+    }, 80);
 
     return () => clearTimeout(timer);
   }, []);
+
 
   const moodOptions = [
     { key: 'heritage', emoji: '🏛️', label: 'Heritage & History' },

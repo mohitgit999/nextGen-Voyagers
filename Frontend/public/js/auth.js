@@ -327,10 +327,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Demo Login Buttons
+  // Demo Login Buttons (kept for backward compat but buttons are removed from UI)
   document.querySelectorAll('.btn-demo-quick').forEach(function (btn) {
     btn.addEventListener('click', function () {
       demoLogin();
     });
   });
 });
+
+/* Expose on window so React components can call these without import coupling */
+window.openAuthModal  = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+

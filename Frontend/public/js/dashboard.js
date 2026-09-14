@@ -389,3 +389,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 });
+
+/* Expose on window so React components can call these without import coupling */
+window.resumeTrip         = resumeTrip;
+window.openDashboardModal = openDashboardModal;
+window.closeDashboardModal = closeDashboardModal;
+
