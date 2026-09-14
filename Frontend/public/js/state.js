@@ -27,8 +27,19 @@ function byId(id) {
 }
 
 function findDest(id) {
-  for (var i = 0; i < DESTINATIONS.length; i++) {
-    if (DESTINATIONS[i].id === id) return DESTINATIONS[i];
+  if (!id) return null;
+  var list = (typeof window !== 'undefined' && window.DESTINATIONS && Array.isArray(window.DESTINATIONS))
+    ? window.DESTINATIONS
+    : (typeof DESTINATIONS !== 'undefined' && Array.isArray(DESTINATIONS) ? DESTINATIONS : []);
+  for (var i = 0; i < list.length; i++) {
+    if (list[i] && list[i].id === id) return list[i];
+  }
+  if (typeof state !== 'undefined' && state && state.matches && Array.isArray(state.matches)) {
+    for (var j = 0; j < state.matches.length; j++) {
+      if (state.matches[j] && state.matches[j].dest && state.matches[j].dest.id === id) {
+        return state.matches[j].dest;
+      }
+    }
   }
   return null;
 }
@@ -89,10 +100,15 @@ function clearPersistedState() {
 
 /* ===================== COST ESTIMATE ===================== */
 function estimateCost(d, prefs, customPerDay) {
-  var perDay = customPerDay !== null && customPerDay !== undefined
-    ? customPerDay
-    : d.cost[prefs.budget];
-  var total = perDay * prefs.duration * prefs.travelers;
+  if (!d) return { perDay: 2500, total: 2500, slices: [] };
+  var pBudget = (prefs && prefs.budget) ? prefs.budget : 'mid';
+  var pDuration = (prefs && prefs.duration && !isNaN(prefs.duration)) ? Number(prefs.duration) : 4;
+  var pTravelers = (prefs && prefs.travelers && !isNaN(prefs.travelers)) ? Number(prefs.travelers) : 1;
+  var costObj = d.cost || { budget: 1500, mid: 3000, luxury: 7000 };
+  var perDay = (customPerDay !== null && customPerDay !== undefined && !isNaN(customPerDay))
+    ? Number(customPerDay)
+    : (costObj[pBudget] || costObj.mid || costObj.budget || 2500);
+  var total = perDay * pDuration * pTravelers;
   var slices = [
     { label: 'Stay',                 pct: 0.35 },
     { label: 'Food & drinks',        pct: 0.25 },

@@ -46,14 +46,14 @@ function App() {
           return;
         }
 
-        // Prevent duplicate script loading in development strict mode
-        if (document.querySelector(`script[src="${scripts[index]}"]`)) {
+        const scriptUrl = scripts[index] + '?v=2.2.0';
+        if (document.querySelector(`script[src="${scriptUrl}"]`)) {
           loadScript(index + 1);
           return;
         }
 
         const script = document.createElement('script');
-        script.src = scripts[index];
+        script.src = scriptUrl;
         script.onload = () => loadScript(index + 1);
         document.body.appendChild(script);
       };

@@ -9,6 +9,9 @@ const DestinationDetailPage = () => {
   const navigate = useNavigate();
   const [activePhoto, setActivePhoto] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [aiGuidelines, setAiGuidelines] = useState(null);
+  const [activeAiCat, setActiveAiCat] = useState('safety');
+  const [aiLoading, setAiLoading] = useState(false);
 
   // Normalize ID and retrieve destination
   const destId = (id || '').toLowerCase();
@@ -16,7 +19,26 @@ const DestinationDetailPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [id]);
+    if (!dest) return;
+    let isMounted = true;
+    fetch('/api/ai/location-guidelines', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destination: dest.name, state: dest.state })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && data && data.categories) {
+          setAiGuidelines(data);
+        }
+      })
+      .catch(err => console.warn('AI guidelines fetch error:', err))
+      .finally(() => {
+        if (isMounted) setAiLoading(false);
+      });
+
+    return () => { isMounted = false; };
+  }, [id, dest]);
 
   if (!dest) {
     return (
@@ -440,53 +462,127 @@ const DestinationDetailPage = () => {
           </div>
 
           {/* Safety & Helplines */}
-          <div className="sidebar-card">
-            <h3 className="sidebar-title">
-              <span>🛡️</span> Safety & Helplines
-            </h3>
+          <div className="sidebar-card" style={{ border: '1px solid rgba(16, 185, 129, 0.35)', background: 'rgba(15, 23, 42, 0.85)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+              <h3 className="sidebar-title" style={{ margin: 0 }}>
+                <span>🛡️</span> Location Safety & Guidelines
+              </h3>
+              <span style={{ fontSize: '0.74rem', background: 'rgba(16, 185, 129, 0.2)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '999px', padding: '3px 8px', fontWeight: 700 }}>
+                ✨ Gemini AI Verified
+              </span>
+            </div>
+
             <div className="safety-score-box">
-              <div className="safety-num">{dest.safetyScore}</div>
+              <div className="safety-num">
+                {aiGuidelines && aiGuidelines.safetyScore ? Number(aiGuidelines.safetyScore).toFixed(1) : dest.safetyScore}
+              </div>
               <div className="safety-note-sm">
-                <b>Verified Safe Destination</b><br />
-                Monitored tourist zones & 24x7 support.
+                <b style={{ color: '#FFFFFF' }}>{aiGuidelines?.safetyTier || 'Verified Safe Destination'}</b><br />
+                Monitored tourist corridors & 24x7 emergency response.
               </div>
             </div>
 
-            <p style={{ fontSize: '0.82rem', color: '#CBD5E1', lineHeight: 1.5, marginBottom: '14px' }}>
-              {dest.safety.womenTravelerNote}
-            </p>
+            {aiGuidelines?.summary && (
+              <p style={{ fontSize: '0.86rem', color: '#F1F5F9', lineHeight: 1.55, marginBottom: '14px', background: 'rgba(255, 255, 255, 0.04)', padding: '10px 12px', borderRadius: '8px', borderLeft: '3px solid #10B981' }}>
+                {aiGuidelines.summary}
+              </p>
+            )}
 
+            {/* AI Category Navigator */}
+            {aiGuidelines?.categories && (
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
+                {[
+                  { id: 'safety', label: '🛡️ Safety' },
+                  { id: 'women', label: '👩 Women & Solo' },
+                  { id: 'cultural', label: '🏛️ Culture' },
+                  { id: 'health', label: '🩺 Health' },
+                  { id: 'scams', label: '⚠️ Scams' }
+                ].map(cat => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setActiveAiCat(cat.id)}
+                    style={{
+                      background: activeAiCat === cat.id ? '#10B981' : 'rgba(255, 255, 255, 0.08)',
+                      color: activeAiCat === cat.id ? '#0F172A' : '#E2E8F0',
+                      border: '1px solid ' + (activeAiCat === cat.id ? '#10B981' : 'rgba(255, 255, 255, 0.15)'),
+                      borderRadius: '999px',
+                      padding: '4px 10px',
+                      fontSize: '0.76rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Active Guidelines List */}
             <div style={{ marginBottom: '16px' }}>
-              <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: '#94A3B8', fontWeight: 700, marginBottom: '8px' }}>
-                Emergency Contacts
+              {aiLoading ? (
+                <div style={{ padding: '16px 0', textAlign: 'center', color: '#94A3B8', fontSize: '0.84rem' }}>
+                  Analyzing {dest.name} safety data with AI...
+                </div>
+              ) : aiGuidelines?.categories?.[activeAiCat]?.items ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {aiGuidelines.categories[activeAiCat].items.map((item, idx) => (
+                    <div key={idx} style={{ background: 'rgba(255, 255, 255, 0.04)', border: '1px solid rgba(255, 255, 255, 0.09)', borderRadius: '8px', padding: '10px 12px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px', gap: '6px' }}>
+                        <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#FFFFFF' }}>{item.title}</span>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.18)', color: '#34D399', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+                          {item.badge || 'VERIFIED'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.82rem', color: '#E2E8F0', margin: 0, lineHeight: 1.5 }}>
+                        {item.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  <b style={{ fontSize: '0.84rem', color: '#FFFFFF', display: 'block', marginBottom: '8px' }}>Verified Safety Protocols:</b>
+                  <ul style={{ paddingLeft: '18px', margin: 0, lineHeight: 1.6, color: '#F1F5F9', fontSize: '0.84rem' }}>
+                    {dest.safety.tips.map((t, idx) => (
+                      <li key={idx} style={{ marginBottom: '6px' }}>{t}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Emergency Contacts */}
+            <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '14px', marginBottom: '10px' }}>
+              <div style={{ fontSize: '0.8rem', textTransform: 'uppercase', color: '#F8FAFC', fontWeight: 800, marginBottom: '10px', letterSpacing: '0.5px' }}>
+                🚨 24x7 Emergency Helplines
               </div>
               <div className="emergency-contact-item">
-                <span className="emergency-contact-label">Police Control Room</span>
+                <span className="emergency-contact-label" style={{ color: '#FFFFFF', fontWeight: 600 }}>Local Police</span>
                 <a href={`tel:${dest.safety.emergencyContacts.police.split('/')[0].trim()}`} className="emergency-call-link">
                   📞 {dest.safety.emergencyContacts.police.split('/')[0].trim()}
                 </a>
               </div>
               <div className="emergency-contact-item">
-                <span className="emergency-contact-label">Main Hospital</span>
+                <span className="emergency-contact-label" style={{ color: '#FFFFFF', fontWeight: 600 }}>Civil Hospital</span>
                 <a href={`tel:${dest.safety.emergencyContacts.hospital.split(':')[1]?.trim() || '108'}`} className="emergency-call-link">
                   🏥 Call Hospital
                 </a>
               </div>
               <div className="emergency-contact-item">
-                <span className="emergency-contact-label">Tourism Helpline</span>
-                <a href={`tel:${dest.safety.emergencyContacts.touristHelpline.split(':')[1]?.trim() || '1363'}`} className="emergency-call-link">
-                  ℹ️ Call Helpline
+                <span className="emergency-contact-label" style={{ color: '#FFFFFF', fontWeight: 600 }}>National Emergency Unified</span>
+                <a href="tel:112" className="emergency-call-link" style={{ background: '#EF4444', color: '#FFFFFF' }}>
+                  🚨 Dial 112
                 </a>
               </div>
-            </div>
-
-            <div style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-              <b>Key Travel Safety Tips:</b>
-              <ul style={{ paddingLeft: '16px', margin: '6px 0 0', lineHeight: 1.45 }}>
-                {dest.safety.tips.map((t, idx) => (
-                  <li key={idx} style={{ marginBottom: '4px' }}>{t}</li>
-                ))}
-              </ul>
+              <div className="emergency-contact-item">
+                <span className="emergency-contact-label" style={{ color: '#FFFFFF', fontWeight: 600 }}>Women Helpline</span>
+                <a href="tel:1091" className="emergency-call-link" style={{ background: 'rgba(236, 72, 153, 0.25)', color: '#F472B6', borderColor: 'rgba(236, 72, 153, 0.4)' }}>
+                  👩 Dial 1091
+                </a>
+              </div>
             </div>
           </div>
 

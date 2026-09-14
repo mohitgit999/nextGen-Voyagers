@@ -786,3 +786,212 @@ canvas {
     bottom: max(8px, env(safe-area-inset-bottom)) !important;
   }
 }
+
+/* ============================================================
+   WEATHER SAFETY VARIATIONS & DETAIL PANELS RESPONSIVE TUNING
+   ============================================================ */
+
+/* ── Tablet & Small Laptops (769px - 1024px) ── */
+@media (max-width: 1024px) {
+  .weather-slider-wrapper {
+    margin: 14px 0 18px 0;
+  }
+  
+  .inspector-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+}
+
+/* ── Mobile Devices (<= 768px) ── */
+@media (max-width: 768px) {
+  .weather-best-time-panel {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .weather-safety-overview-bar {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin-bottom: 14px !important;
+  }
+
+  .weather-variation-pill {
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .weather-instruction-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .weather-slider-wrapper {
+    position: relative;
+    width: 100%;
+    margin: 12px 0 16px 0;
+    padding: 0 4px;
+  }
+
+  .weather-slider-btn {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .weather-slider-btn.prev {
+    left: -6px !important;
+  }
+
+  .weather-slider-btn.next {
+    right: -6px !important;
+  }
+
+  .weather-safety-slider {
+    gap: 10px !important;
+    padding: 8px 4px 14px 4px !important;
+  }
+
+  /* Strict non-shrinking on mobile */
+  .month-safety-card {
+    flex: 0 0 110px !important;
+    min-width: 110px !important;
+    max-width: 110px !important;
+    width: 110px !important;
+    padding: 10px 6px 8px 6px !important;
+  }
+
+  .month-hazard-inspector {
+    padding: 16px 14px !important;
+    border-radius: 14px !important;
+  }
+
+  .inspector-title {
+    font-size: 1rem !important;
+  }
+
+  .inspector-safety-tag {
+    font-size: 0.75rem !important;
+    padding: 4px 10px !important;
+  }
+
+  .inspector-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .inspector-item {
+    padding: 12px !important;
+  }
+
+  .live-hazard-indicators {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+}
+
+/* ── Very Small Phones (<= 380px) ── */
+@media (max-width: 380px) {
+  .weather-slider-btn {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .weather-slider-btn svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .weather-slider-btn.prev {
+    left: -4px !important;
+  }
+
+  .weather-slider-btn.next {
+    right: -4px !important;
+  }
+
+  .month-safety-card {
+    flex: 0 0 102px !important;
+    min-width: 102px !important;
+    max-width: 102px !important;
+    width: 102px !important;
+    padding: 8px 4px 6px 4px !important;
+  }
+
+  .month-safety-abbr {
+    font-size: 0.88rem !important;
+  }
+
+  .month-cond-label {
+    font-size: 0.65rem !important;
+  }
+
+  .month-temp-pill {
+    font-size: 0.64rem !important;
+    padding: 1px 5px !important;
+  }
+
+  .month-safety-badge {
+    font-size: 0.58rem !important;
+    padding: 2px 5px !important;
+  }
+}
+
+/* ============================================================
+   ULTRA-WIDE & 4K DISPLAYS (1600px, 1920px, 2560px, 3840px+)
+   ============================================================ */
+@media (min-width: 1600px) {
+  .planner-app-canvas {
+    max-width: 1360px !important;
+  }
+
+  .hero-content {
+    max-width: 1440px !important;
+    margin: 0 auto !important;
+  }
+
+  .featured-scroll {
+    max-width: 1440px !important;
+    margin-inline: auto !important;
+  }
+
+  .safety-promise-inner,
+  .stats-inner,
+  .how-grid,
+  .landing-footer-inner {
+    max-width: 1400px !important;
+    margin-inline: auto !important;
+  }
+}
+
+@media (min-width: 2100px) {
+  .planner-app-canvas {
+    max-width: 1580px !important;
+  }
+
+  .hero-content {
+    max-width: 1680px !important;
+  }
+
+  .safety-promise-inner,
+  .stats-inner,
+  .how-grid,
+  .landing-footer-inner {
+    max-width: 1600px !important;
+  }
+
+  .hero-h1 {
+    font-size: 4.8rem !important;
+  }
+}
+
+/* Global viewport boundary safeguard to eliminate horizontal screen sway */
+html,
+body,
+#app,
+.planner-app-canvas,
+.global-nav {
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+

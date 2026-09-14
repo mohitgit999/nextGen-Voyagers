@@ -2509,3 +2509,934 @@
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ============================================================
+   AI LOCATION SAFETY & GUIDELINES (Deep Dive Screen 4)
+   ============================================================ */
+#planner-section .ai-guidelines-panel {
+  background: rgba(15, 23, 42, 0.85) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  border-radius: 20px !important;
+  padding: 28px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  margin-top: 24px !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  color: #F8FAFC !important;
+}
+
+.ai-guidelines-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.ai-guidelines-title-wrap h3 {
+  font-size: 1.35rem !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  margin: 0 0 6px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+.ai-guidelines-subtitle {
+  font-size: 0.88rem !important;
+  color: #CBD5E1 !important;
+  margin: 0 !important;
+}
+
+.ai-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ai-model-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  color: #34D399;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.ai-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #93C5FD;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.btn-close-guidelines {
+  transition: all 0.2s ease;
+}
+
+.btn-close-guidelines:hover {
+  background: rgba(239, 68, 68, 0.25) !important;
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  color: #FECACA !important;
+  transform: translateY(-1px);
+}
+
+.btn-call-mini {
+  transition: all 0.2s ease;
+}
+
+.btn-call-mini:hover {
+  background: rgba(52, 211, 153, 0.28) !important;
+  border-color: rgba(52, 211, 153, 0.5) !important;
+  transform: scale(1.05);
+}
+
+.ai-guidelines-summary-box {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.ai-summary-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ai-summary-text {
+  font-size: 0.94rem;
+  line-height: 1.6;
+  color: #F1F5F9 !important;
+  margin: 0;
+}
+
+.guidelines-nav-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.guideline-pill-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #E2E8F0;
+  font-size: 0.86rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.guideline-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.guideline-pill-btn.active {
+  background: #10B981 !important;
+  color: #0F172A !important;
+  border-color: #10B981 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.45) !important;
+}
+
+.guidelines-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.guideline-card-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.guideline-card-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Category Accent Borders */
+.guideline-card-item.guideline-cat-safety { border-left: 4px solid #10B981; }
+.guideline-card-item.guideline-cat-women { border-left: 4px solid #EC4899; }
+.guideline-card-item.guideline-cat-cultural { border-left: 4px solid #F59E0B; }
+.guideline-card-item.guideline-cat-health { border-left: 4px solid #06B6D4; }
+.guideline-card-item.guideline-cat-scams { border-left: 4px solid #F97316; }
+.guideline-card-item.guideline-cat-emergency { border-left: 4px solid #EF4444; }
+
+.guideline-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.guideline-item-title {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  line-height: 1.4 !important;
+}
+
+.guideline-item-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.1);
+  color: #E2E8F0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.guideline-item-desc {
+  font-size: 0.92rem !important;
+  color: #E2E8F0 !important;
+  line-height: 1.6 !important;
+  margin: 0 !important;
+}
+
+/* Emergency Helplines Interactive Section */
+.guidelines-emergency-container {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.guidelines-emergency-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.emergency-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.emergency-quick-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.emergency-quick-card:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.2);
+}
+
+.emergency-card-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.emergency-card-label {
+  font-size: 0.8rem;
+  color: #CBD5E1;
+  font-weight: 600;
+}
+
+.emergency-card-num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #FCA5A5;
+  letter-spacing: 0.5px;
+}
+
+.emergency-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #EF4444;
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+/* Ensure ALL existing safety-list elements in panel have pristine visibility */
+#planner-section .safety-list,
+.safety-list {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 12px 0 0 !important;
+}
+
+#planner-section .safety-list li,
+.safety-list li {
+  display: flex !important;
+  gap: 12px !important;
+  font-size: 0.94rem !important;
+  line-height: 1.55 !important;
+  color: #F8FAFC !important;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  align-items: flex-start !important;
+}
+
+#planner-section .safety-list li:last-child,
+.safety-list li:last-child {
+  border-bottom: none !important;
+}
+
+#planner-section .safety-list li span,
+.safety-list li span {
+  color: #F1F5F9 !important;
+  font-weight: 500 !important;
+}
+
+#planner-section .safety-list svg,
+.safety-list svg {
+  width: 18px !important;
+  height: 18px !important;
+  color: #34D399 !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+  filter: drop-shadow(0 0 6px rgba(52, 211, 153, 0.45)) !important;
+}
+
+#planner-section .safety-score-badge,
+.safety-score-badge {
+  background: linear-gradient(135deg, #10B981, #059669) !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  font-size: 0.88rem !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.ai-guidelines-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.ai-guidelines-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(16, 185, 129, 0.2);
+  border-top-color: #10B981;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 14px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   WEATHER SAFETY VARIATIONS WIDGETS (BEST TIME TO VISIT)
+   ============================================================ */
+.weather-best-time-panel {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#detail-content .panels.panels-2col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  #detail-content .panels.panels-2col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Compact Summary Bar (Saves Vertical Space) ── */
+.weather-compact-summary-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.weather-summary-metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metric-badge-safe {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.18);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6EE7B7;
+}
+
+.metric-badge-temp {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #93C5FD;
+}
+
+.metric-text {
+  font-size: 0.92rem;
+  color: #F8FAFC;
+  font-weight: 700;
+}
+
+.metric-note-text {
+  font-size: 0.82rem;
+  color: #94A3B8;
+  line-height: 1.4;
+}
+
+.weather-toggle-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.btn-toggle-weather-breakdown {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.35));
+  border: 1.5px solid rgba(16, 185, 129, 0.45);
+  color: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 12px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.25);
+  width: auto;
+  user-select: none;
+}
+
+.btn-toggle-weather-breakdown:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.55));
+  border-color: #10B981;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+}
+
+.btn-toggle-weather-breakdown.active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #E2E8F0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-toggle-weather-icon {
+  font-size: 1.15rem;
+}
+
+.btn-toggle-weather-arrow {
+  font-size: 1.1rem;
+  transition: transform 0.25s ease;
+}
+
+.weather-breakdown-collapsible {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  animation: weatherFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes weatherFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.weather-safety-overview-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 820px) {
+  .weather-safety-overview-bar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}
+
+.weather-variation-pill {
+  padding: 14px 18px;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.84rem;
+  transition: all 0.2s ease;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.weather-variation-pill.pill-safe {
+  background: rgba(16, 185, 129, 0.12) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #6EE7B7 !important;
+}
+
+.weather-variation-pill.pill-caution {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
+  color: #FCD34D !important;
+}
+
+.weather-variation-pill.pill-danger {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border: 1px solid rgba(239, 68, 68, 0.35) !important;
+  color: #FCA5A5 !important;
+}
+
+.weather-variation-label {
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: 0.74rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weather-variation-val {
+  color: #F8FAFC !important;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+/* ── Non-Shrinking Sliding Carousel Track & Controls (Strict Row) ── */
+.weather-slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 16px 0 20px 0;
+  padding: 0 6px;
+  box-sizing: border-box;
+}
+
+.weather-safety-slider {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+  gap: 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 12px 14px 18px 14px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 185, 129, 0.4) rgba(15, 23, 42, 0.6);
+  cursor: grab;
+  user-select: none;
+}
+
+.weather-safety-slider.dragging {
+  cursor: grabbing !important;
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+}
+
+.weather-safety-slider::-webkit-scrollbar {
+  height: 6px;
+}
+
+.weather-safety-slider::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 999px;
+}
+
+.weather-safety-slider::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.4);
+  border-radius: 999px;
+}
+
+.weather-safety-slider::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}
+
+.weather-slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.94);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.65);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.weather-slider-btn:hover {
+  background: #10B981;
+  color: #042F2E;
+  border-color: #10B981;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+}
+
+.weather-slider-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.weather-slider-btn.prev {
+  left: -10px;
+}
+
+.weather-slider-btn.next {
+  right: -10px;
+}
+
+@media (max-width: 640px) {
+  .weather-slider-btn.prev {
+    left: -4px;
+  }
+  .weather-slider-btn.next {
+    right: -4px;
+  }
+}
+
+/* Month card strict non-shrinking dimensions */
+.month-safety-card {
+  flex: 0 0 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  width: 120px !important;
+  scroll-snap-align: start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px 8px 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.month-safety-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.month-safety-card.card-safe {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+}
+.month-safety-card.card-safe:hover,
+.month-safety-card.card-safe.active {
+  border-color: #10B981 !important;
+  background: rgba(16, 185, 129, 0.24) !important;
+  box-shadow: 0 0 18px rgba(16, 185, 129, 0.45) !important;
+}
+
+.month-safety-card.card-caution {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+.month-safety-card.card-caution:hover,
+.month-safety-card.card-caution.active {
+  border-color: #F59E0B !important;
+  background: rgba(245, 158, 11, 0.24) !important;
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.45) !important;
+}
+
+.month-safety-card.card-danger {
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.month-safety-card.card-danger:hover,
+.month-safety-card.card-danger.active {
+  border-color: #EF4444 !important;
+  background: rgba(239, 68, 68, 0.25) !important;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.45) !important;
+}
+
+.month-safety-abbr {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #FFFFFF !important;
+  white-space: nowrap;
+}
+
+.month-cond-label {
+  font-size: 0.69rem;
+  color: #CBD5E1;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+}
+
+.month-temp-pill {
+  font-size: 0.68rem;
+  color: #94A3B8;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.07);
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.month-safety-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 3px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.badge-status-safe {
+  background: #10B981 !important;
+  color: #092E20 !important;
+}
+.badge-status-caution {
+  background: #F59E0B !important;
+  color: #3B2002 !important;
+}
+.badge-status-danger {
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+}
+
+/* Selected Month Detail Inspector Box */
+.month-hazard-inspector {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-top: 16px;
+  transition: all 0.25s ease;
+}
+
+.inspector-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.inspector-title {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.inspector-safety-tag {
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+
+.inspector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.inspector-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.inspector-item-label {
+  font-size: 0.78rem;
+  color: #94A3B8;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inspector-item-val {
+  font-size: 0.9rem !important;
+  color: #F1F5F9 !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
+/* Live Weather Safety Widget Elements */
+.live-weather-safety-gauge {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.gauge-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gauge-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 999px;
+}
+
+.live-hazard-indicators {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.hazard-micro-card {
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hazard-micro-label {
+  font-size: 0.72rem;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+.hazard-micro-val {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #F8FAFC !important;
+}

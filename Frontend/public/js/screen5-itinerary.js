@@ -265,7 +265,14 @@ function renderDayCardsHtml(d, duration, cost) {
           name: parts[0].trim(),
           location: parts[0].trim() + ', ' + d.name,
           description: parts[1] ? parts[1].trim() : rawGem,
-          bestTime: 'Early morning or gold    if (gemObj) {
+          bestTime: 'Early morning or golden hour',
+          tip: 'Ask local residents for hidden pathways.'
+        };
+      }
+    }
+
+    var gemHtml = '';
+    if (gemObj) {
       var gemMapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(gemObj.location + ', ' + d.name + (d.state ? ', ' + d.state : ''));
       gemHtml = '' +
         '<div class="day-gem-featured-card" style="margin-top:16px; padding:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.18); border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.3);">' +
@@ -388,7 +395,13 @@ function renderItineraryHiddenGemsPanel(d, plan) {
 
 /* ── Route Map Initialization ── */
 function initItineraryRouteMap(dest, duration) {
-  if (!window.L || !byId('itinerary-map-canvas') || !dest.coordinates) return;
+  if (!window.L || !byId('itinerary-map-canvas') || !dest) return;
+
+  if (!dest.coordinates && typeof resolveDestinationCoordinates === 'function') {
+    var resolved = resolveDestinationCoordinates(dest);
+    if (resolved) dest.coordinates = resolved;
+  }
+  if (!dest.coordinates) return;
 
   var map = initMap('itinerary-map-canvas', dest.coordinates.lat, dest.coordinates.lon, 12);
   if (!map) return;

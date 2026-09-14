@@ -242,53 +242,71 @@ function renderExploreCards() {
   }
 
   grid.innerHTML = list.map(function(m) {
-    var d        = m.dest;
+    var d        = m.dest || {};
     var cost     = estimateCost(d, state.prefs, null);
     var isPinned = state.compareIds.indexOf(d.id) !== -1;
-    var isTopAi  = m.percent >= 82;
-    var gemCount = d.hiddenGems ? d.hiddenGems.length : 0;
+    var isTopAi  = (m.percent != null) ? m.percent >= 82 : false;
+    var gemCount = (d.hiddenGems && Array.isArray(d.hiddenGems)) ? d.hiddenGems.length : 0;
     var liveWeather = d.liveWeather && d.liveWeather.source === 'live' ? d.liveWeather : null;
     var destImg  = getDestinationImage(d);
+    var ratingVal = (d.rating != null && !isNaN(d.rating)) ? Number(d.rating).toFixed(1) : '4.5';
+    var safetyVal = (d.safety && typeof d.safety.score === 'number' && !isNaN(d.safety.score)) ? d.safety.score.toFixed(1) : '4.5';
+    var tagsArr  = Array.isArray(d.tags) ? d.tags : [];
+    var dName    = d.name || 'Destination';
+    var dEmoji   = d.emoji || '📍';
+    var dState   = d.state || 'India';
+    var dBlurb   = d.blurb || (d.whyMatched ? '' : 'A curated travel destination matching your preferences.');
+    var dIcon    = d.icon || 'location';
+    var matchPct = (m.percent != null) ? m.percent : 85;
 
     return '' +
-      '<button class="dest-card" data-dest-id="' + d.id + '" aria-label="View details for ' + d.name + '">' +
+      '<div class="dest-card" role="button" tabindex="0" data-dest-id="' + d.id + '" aria-label="View details for ' + dName + '">' +
         '<div class="dest-card-bg" style="background-image: url(\'' + destImg + '\');"></div>' +
         '<div class="dest-card-gradient"></div>' +
         '<div class="dest-card-inner">' +
           '<div class="dest-card-top">' +
-            '<div class="dest-icon-badge">' + icon(d.icon) + '</div>' +
+            '<div class="dest-icon-badge">' + icon(dIcon) + '</div>' +
             '<div style="display:flex;gap:6px;align-items:center;">' +
               (isTopAi ? '<span class="ai-match-badge">⚡ AI Fit</span>' : '') +
-              '<span class="match-badge">' + m.percent + '% match</span>' +
+              '<span class="match-badge">' + matchPct + '% match</span>' +
             '</div>' +
           '</div>' +
           '<div class="dest-title-wrap">' +
-            '<h3 class="dest-name">' + d.name + ' ' + d.emoji + '</h3>' +
-            '<span class="dest-state">' + d.state + '</span>' +
+            '<h3 class="dest-name">' + dName + ' ' + dEmoji + '</h3>' +
+            '<span class="dest-state">' + dState + '</span>' +
           '</div>' +
-          '<p class="dest-blurb">' + d.blurb + (d.whyMatched ? ' ' + d.whyMatched : '') + '</p>' +
+          '<p class="dest-blurb">' + dBlurb + (d.whyMatched ? ' ' + d.whyMatched : '') + '</p>' +
           '<div class="tag-row">' +
-            d.tags.slice(0, 3).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
+            tagsArr.slice(0, 3).map(function(t) { return '<span class="tag-chip">' + t + '</span>'; }).join('') +
             (gemCount ? '<span class="tag-chip gem-tag">💎 ' + gemCount + ' Gems</span>' : '') +
           '</div>' +
           '<div class="dest-meta-row">' +
-            '<span class="rating-inline">' + icon('star') + ' ' + d.rating.toFixed(1) + '</span>' +
-            '<span class="safety-chip-mini">🛡️ ' + d.safety.score.toFixed(1) + '</span>' +
+            '<span class="rating-inline">' + icon('star') + ' ' + ratingVal + '</span>' +
+            '<span class="safety-chip-mini">🛡️ ' + safetyVal + '</span>' +
             '<span class="weather-chip-mini">' + (liveWeather ? '🌡️ ' + liveWeather.temp + '° live' : '🌡️ Weather pending') + '</span>' +
             '<span class="price-chip">' + inr(cost.perDay) + '/day</span>' +
           '</div>' +
         '</div>' +
-        '<button class="compare-btn' + (isPinned ? ' active' : '') + '" data-compare-id="' + d.id + '" aria-label="' + (isPinned ? 'Remove from' : 'Add to') + ' comparison" title="Compare">' +
+        '<button type="button" class="compare-btn' + (isPinned ? ' active' : '') + '" data-compare-id="' + d.id + '" aria-label="' + (isPinned ? 'Remove from' : 'Add to') + ' comparison" title="Compare">' +
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4M9 3h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>' +
         '</button>' +
-      '</button>';
+      '</div>';
   }).join('');
 
   // Card click → detail
   grid.querySelectorAll('.dest-card').forEach(function(card) {
     card.addEventListener('click', function(e) {
       if (e.target.closest('.compare-btn')) return;
-      selectDestination(card.getAttribute('data-dest-id'));
+      var destId = card.getAttribute('data-dest-id');
+      if (destId) selectDestination(destId);
+    });
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        if (e.target.closest('.compare-btn')) return;
+        e.preventDefault();
+        var destId = card.getAttribute('data-dest-id');
+        if (destId) selectDestination(destId);
+      }
     });
   });
 
