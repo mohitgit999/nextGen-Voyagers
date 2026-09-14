@@ -917,40 +917,59 @@ function saveCurrentTripToCloud(d, duration, cost) {
     }
   });
 
-  // Extract day parts
+  // Extract day parts — null-safe guards on all array accesses
   var itineraryData = [];
+  var morningActs   = (d.activities && Array.isArray(d.activities.morning)   && d.activities.morning.length)   ? d.activities.morning   : [];
+  var afternoonActs = (d.activities && Array.isArray(d.activities.afternoon) && d.activities.afternoon.length) ? d.activities.afternoon : [];
+  var eveningActs   = (d.activities && Array.isArray(d.activities.evening)   && d.activities.evening.length)   ? d.activities.evening   : [];
+  var safetyPts     = (d.safety && Array.isArray(d.safety.points) && d.safety.points.length) ? d.safety.points : [];
+  var dayThemesArr  = (Array.isArray(d.dayThemes) && d.dayThemes.length) ? d.dayThemes : [];
+
   for (var j = 1; j <= duration; j++) {
-    var theme = j === 1 ? 'Arrival & first impressions' : (j === duration && duration > 1 ? 'Leisure & departure' : d.dayThemes[(j - 1) % d.dayThemes.length]);
+    var theme = j === 1
+      ? 'Arrival & first impressions'
+      : (j === duration && duration > 1
+          ? 'Leisure & departure'
+          : (dayThemesArr.length ? dayThemesArr[(j - 1) % dayThemesArr.length] : ('Day ' + j)));
     itineraryData.push({
-      morning: d.activities.morning[(j - 1) % d.activities.morning.length],
-      afternoon: d.activities.afternoon[(j - 1) % d.activities.afternoon.length],
-      evening: d.activities.evening[(j - 1) % d.activities.evening.length],
-      safetyTip: d.safety.points[(j - 1) % d.safety.points.length]
+      morning:   morningActs.length   ? morningActs[(j - 1) % morningActs.length]     : '',
+      afternoon: afternoonActs.length ? afternoonActs[(j - 1) % afternoonActs.length] : '',
+      evening:   eveningActs.length   ? eveningActs[(j - 1) % eveningActs.length]     : '',
+      safetyTip: safetyPts.length     ? safetyPts[(j - 1) % safetyPts.length]         : ''
     });
   }
+
+  // Strip client-only `id` field; keep only schema fields (category, label, amount)
+  var cleanBudgetEntries = (state.budgetLog || []).map(function(e) {
+    return {
+      category: e.category || 'Misc',
+      label:    e.label || e.cat || 'Expense',
+      amount:   e.amount || 0
+    };
+  });
 
   var payload = {
     sessionId: state.sessionId || ('voyager-' + Date.now()),
     origin: {
-      city: state.location.city || 'India',
+      city:   state.location.city   || 'India',
       source: state.location.source || 'manual',
-      lat: state.location.lat || null,
-      lon: state.location.lon || null
+      lat:    state.location.lat    || null,
+      lon:    state.location.lon    || null
     },
     prefs: {
       destination: d.id,
-      budget: state.prefs.budget || 'mid',
-      duration: duration,
-      group: state.prefs.group || 'couple',
-      travelers: state.prefs.travelers || 2
+      budget:      state.prefs.budget   || 'mid',
+      duration:    duration,
+      group:       state.prefs.group    || 'couple',
+      travelers:   state.prefs.travelers || 2
     },
-    destinationId: d.id,
+    destinationId:   d.id,
     destinationName: d.name,
-    customPerDay: state.customPerDay || null,
-    estimatedTotal: cost.total,
-    itinerary: itineraryData,
-    budgetEntries: state.budgetLog || [],
-    packingState: state.packingState || {}
+    customPerDay:    state.customPerDay  || null,
+    estimatedTotal:  cost.total,
+    itinerary:       itineraryData,
+    budgetEntries:   cleanBudgetEntries,
+    packingState:    state.packingState  || {}
   };
 
   fetch(apiUrl('/api/trips'), {
@@ -1112,7 +1131,84 @@ function bindSharePanel(d, duration, cost) {
   });
 
   byId('btn-print-plan').addEventListener('click', function() {
-    window.print();
+    var content = byId('itinerary-content');
+    if (!content) { window.print(); return; }
+
+    var d = findDest(state.selectedId);
+    var destLabel = d ? (d.name + ' Itinerary') : 'Trip Itinerary';
+
+    var printWin = window.open('', '_blank', 'width=960,height=760');
+    if (!printWin) { window.print(); return; } // popup blocked fallback
+
+    printWin.document.write([
+      '<!DOCTYPE html><html lang="en"><head>',
+      '<meta charset="utf-8">',
+      '<title>NextGen Voyagers \u2014 ' + destLabel + '</title>',
+      '<style>',
+      '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
+      'body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; background: #fff; padding: 28px 32px; font-size: 14px; line-height: 1.55; }',
+      'h1,h2,h3,h4,h5 { color: #0a0d12; margin-bottom: 8px; }',
+      'h2 { font-size: 1.4rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 14px; }',
+      'h3 { font-size: 1.1rem; margin-bottom: 6px; }',
+      'h4 { font-size: 0.95rem; }',
+      'p, span, div { color: #222; }',
+      'a { color: #0055cc; word-break: break-word; }',
+      /* hide non-printable UI elements */
+      '.itinerary-map-panel, #itinerary-map-canvas, .day-chip-row, .share-panel,',
+      '.packing-custom-add-row, .budget-add-card, .packing-actions,',
+      '.btn-save-cloud, .btn-ghost, .btn-forest, .btn-ai-sparkle,',
+      '#btn-generate-ai, .ai-generator-card, .budget-stats-pill { display: none !important; }',
+      /* itinerary header */
+      '.itinerary-header-hero { background: #0a0d12; color: #fff; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }',
+      '.itinerary-header-hero h2, .itinerary-header-hero p { color: #fff; }',
+      /* recap bar */
+      '.itinerary-recap { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }',
+      '.recap-item { flex: 1; min-width: 100px; }',
+      '.recap-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700; }',
+      '.recap-val { font-size: 1rem; font-weight: 800; color: #0a0d12; }',
+      /* day cards */
+      '.day-card { border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; margin-bottom: 20px; page-break-inside: avoid; }',
+      '.day-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }',
+      '.day-num { font-size: 1.8rem; font-weight: 900; color: #0a0d12; }',
+      '.day-theme { font-size: 0.95rem; font-weight: 700; color: #0a0d12; }',
+      '.day-budget-badge { font-size: 0.85rem; font-weight: 700; padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; }',
+      /* activity cards */
+      '.activity-cards-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }',
+      '.activity-card-vertical { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }',
+      /* day budget chips */
+      '.day-budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }',
+      '.budget-mini-chip { font-size: 0.8rem; padding: 3px 8px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; }',
+      /* budget tracker */
+      '.budget-tracker { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin: 20px 0; }',
+      '.budget-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }',
+      '.budget-entry-del { display: none !important; }',
+      /* packing checklist */
+      '#packing-panel { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin: 20px 0; }',
+      '.pack-item { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 0.85rem; }',
+      '.pack-item.checked .pack-check::before { content: "\u2713"; color: #16a34a; font-weight: 700; }',
+      '.pack-check { width: 16px; height: 16px; border: 1px solid #94a3b8; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }',
+      '.packing-section-title { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 12px 0 4px; color: #475569; }',
+      /* gems panel */
+      '.itinerary-gems-panel, .itinerary-gem-card, .day-gem-featured-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; }',
+      /* print media */
+      '@media print {',
+      '  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
+      '  .day-card { page-break-inside: avoid; }',
+      '}',
+      '</style>',
+      '</head><body>',
+      '<h1 style="font-size:1.6rem; font-weight:900; color:#0a0d12; margin-bottom:20px;">',
+      '\uD83D\uDDFA\uFE0F NextGen Voyagers \u2014 ' + destLabel,
+      '</h1>',
+      content.innerHTML,
+      '</body></html>'
+    ].join(''));
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(function() {
+      printWin.print();
+      setTimeout(function() { printWin.close(); }, 500);
+    }, 500);
   });
 }
 

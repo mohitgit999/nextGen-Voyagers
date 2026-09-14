@@ -51,6 +51,7 @@ const tripSchema = new mongoose.Schema({
 
   // Budget log
   budgetEntries: [{
+    category:  { type: String, default: 'Misc' },
     label:     { type: String, required: true },
     amount:    { type: Number, required: true, min: 0 },
     createdAt: { type: Date, default: Date.now }

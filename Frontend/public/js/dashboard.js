@@ -234,15 +234,20 @@ function resumeTrip(trip) {
     goToStep(5);
   }
 
-  // 6. Generate itinerary AFTER screen is active so DOM targets exist
+  // 6. Generate itinerary AFTER screen is active so DOM targets exist.
+  //    Reset any stuck AI-generation flags from a previous session first.
   setTimeout(function() {
+    if (typeof isGeneratingAi !== 'undefined') isGeneratingAi = false;
+    if (typeof currentAiPlan !== 'undefined') currentAiPlan = null;
+    if (typeof currentAiPlanDest !== 'undefined') currentAiPlanDest = null;
+
     if (typeof generateItinerary === 'function') {
       generateItinerary();
     }
     // Scroll to planner after generation starts
     var plannerEl = document.getElementById('planner-section');
     if (plannerEl) plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 80);
+  }, 150);
 
   showToast('Loaded ' + (trip.destinationName || 'itinerary') + ' from cloud! 🌟', 'success');
 }
