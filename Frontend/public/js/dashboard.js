@@ -198,6 +198,57 @@ function renderSavedTrips(trips) {
   });
 }
 
+function createSyntheticDestination(trip) {
+  var name = trip.destinationName || 'Destination';
+  var id = trip.destinationId || ('dest-' + name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+  var duration = (trip.prefs && trip.prefs.duration) || (trip.itinerary ? trip.itinerary.length : 3);
+  var estCost = trip.estimatedTotal || 12000;
+  var perDay = Math.max(1000, Math.round(estCost / (duration || 1)));
+
+  return {
+    id: id,
+    name: name,
+    state: (trip.origin && trip.origin.city) ? trip.origin.city : 'India',
+    heroImage: '/img/rishikesh.jpg',
+    image: '/img/rishikesh.jpg',
+    tags: ['custom', 'ai-curated'],
+    vibes: ['adventure', 'explore'],
+    icon: 'map',
+    emoji: '📍',
+    rating: 4.8,
+    reviews: 150,
+    blurb: 'Personalized travel plan curated for ' + name,
+    whyMatched: 'Your saved custom destination',
+    cost: {
+      budget: Math.round(perDay * 0.6),
+      mid: perDay,
+      luxury: Math.round(perDay * 1.8)
+    },
+    safety: {
+      score: 4.5,
+      points: [
+        'Keep emergency contacts and ID proofs handy',
+        'Check weather before outdoor activities',
+        'Use registered local transport'
+      ]
+    },
+    weather: {
+      temp: { min: 18, max: 28 },
+      condition: 'Pleasant',
+      best: 'Oct - Mar',
+      avoid: 'Jul - Aug',
+      note: 'Favorable seasonal weather for travel'
+    },
+    hiddenGems: [],
+    nearbyAttractions: [name + ' Highlights', name + ' Viewpoint'],
+    activities: {
+      morning: (trip.itinerary || []).map(function(d){ return d.morning; }).filter(Boolean),
+      afternoon: (trip.itinerary || []).map(function(d){ return d.afternoon; }).filter(Boolean),
+      evening: (trip.itinerary || []).map(function(d){ return d.evening; }).filter(Boolean)
+    }
+  };
+}
+
 function resumeTrip(trip) {
   if (typeof state === 'undefined') return;
 
@@ -212,61 +263,127 @@ function resumeTrip(trip) {
     return;
   }
 
-  // 1. Restore state from saved trip
+  // 1. Resolve destination (handles exact ID, AI-generated IDs like ai-rishikesh-0, or name)
+  var directDest = null;
+  if (typeof findDest === 'function') {
+    directDest = findDest(trip.destinationId) || (trip.destinationName ? findDest(trip.destinationName) : null);
+  }
+
+  // Fallback: create synthetic destination object if not found in static catalog
+  if (!directDest) {
+    directDest = createSyntheticDestination(trip);
+    if (typeof window !== 'undefined') {
+      if (!window.DESTINATIONS) window.DESTINATIONS = [];
+      window.DESTINATIONS.push(directDest);
+    }
+    if (typeof DESTINATIONS !== 'undefined' && Array.isArray(DESTINATIONS)) {
+      DESTINATIONS.push(directDest);
+    }
+  }
+
+  // Cache it globally so findDest always returns it with any id alias
+  if (typeof window !== 'undefined') {
+    if (!window.__VOYAGER_DEST_CACHE__) window.__VOYAGER_DEST_CACHE__ = {};
+    if (trip.destinationId) window.__VOYAGER_DEST_CACHE__[trip.destinationId] = directDest;
+    if (directDest.id) window.__VOYAGER_DEST_CACHE__[directDest.id] = directDest;
+  }
+
+  // 1b. Restore state from saved trip
   state.sessionId = trip.sessionId || state.sessionId;
   if (trip.origin) state.location = Object.assign({}, state.location, trip.origin);
   if (trip.prefs) state.prefs = Object.assign({}, state.prefs, trip.prefs);
-  state.selectedId = trip.destinationId;
+
+  // Set selectedId to the resolved destination's id
+  state.selectedId = directDest.id || trip.destinationId;
+
   if (trip.customPerDay) state.customPerDay = trip.customPerDay;
   if (trip.budgetEntries) state.budgetLog = trip.budgetEntries;
   if (trip.packingState) state.packingState = trip.packingState;
 
-  // 1b. Guarantee prefs have safe defaults so computeMatches() works
+  // Guarantee prefs have safe defaults so computeMatches() and UI calculations work
   state.prefs.budget    = state.prefs.budget    || 'mid';
   state.prefs.group     = state.prefs.group     || 'couple';
   state.prefs.travelers = state.prefs.travelers || 2;
-  state.prefs.duration  = state.prefs.duration  || 4;
+  state.prefs.duration  = state.prefs.duration  || (trip.itinerary ? trip.itinerary.length : 4);
 
-  // 1c. Directly inject the destination into state.matches as a guaranteed fallback
-  //     so findDest() works even before computeMatches() runs
-  var directDest = (typeof findDest === 'function') ? findDest(trip.destinationId) : null;
-  if (directDest) {
-    // ensure it's in state.matches so score-based code also works
-    var alreadyIn = state.matches.some(function(m) { return m.dest && m.dest.id === trip.destinationId; });
-    if (!alreadyIn) state.matches.push({ dest: directDest, score: 100 });
+  // Compute matches first, then ensure directDest is present in state.matches
+  if (typeof computeMatches === 'function') computeMatches();
+
+  if (!state.matches) state.matches = [];
+  var alreadyIn = state.matches.some(function(m) {
+    return m.dest && (m.dest.id === directDest.id || m.dest.id === trip.destinationId);
+  });
+  if (!alreadyIn) {
+    state.matches.unshift({ dest: directDest, percent: 99, score: 99 });
   }
 
-  // 2. Echo location into prefs UI
+  // 2. Pre-populate currentAiPlan with the saved trip itinerary so it displays immediately
+  if (trip.itinerary && Array.isArray(trip.itinerary) && trip.itinerary.length) {
+    if (typeof currentAiPlan !== 'undefined') {
+      currentAiPlan = {
+        days: trip.itinerary.map(function(item, idx) {
+          var dayNum = idx + 1;
+          var theme = dayNum === 1
+            ? 'Arrival & First Impressions'
+            : (dayNum === trip.itinerary.length ? 'Leisure, Farewell & Departure' : ('Day ' + dayNum + ' - Highlights & Discovery'));
+          return {
+            day: dayNum,
+            theme: theme,
+            crowdLevel: 'Moderate',
+            weather: (directDest.weather && directDest.weather.temp)
+              ? (directDest.weather.temp.min + '-' + directDest.weather.temp.max + '°C')
+              : 'Pleasant',
+            morning: {
+              activity: item.morning || 'Morning exploration and local sightseeing',
+              location: directDest.name
+            },
+            midday: {
+              activity: 'Midday local delicacies & authentic lunch pause',
+              location: directDest.name
+            },
+            afternoon: {
+              activity: item.afternoon || 'Afternoon discovery & iconic sights',
+              location: directDest.name
+            },
+            evening: {
+              activity: item.evening || 'Sunset views, serene walks & evening vibe',
+              location: directDest.name
+            },
+            smartTip: {
+              activity: item.safetyTip || 'Stay hydrated, keep emergency contacts handy, and follow local guidelines.',
+              location: directDest.name
+            }
+          };
+        })
+      };
+      currentAiPlanDest = directDest.name;
+    }
+  }
+
+  // 3. Echo location into prefs UI
   var echo = document.getElementById('pref-origin-echo');
   if (echo && state.location.city) echo.textContent = state.location.city;
 
-  // 3. Unlock all steps up to 5 (MUST happen before goToStep)
+  // 4. Unlock all steps up to 5 (MUST happen before goToStep)
   if (typeof unlockStep === 'function') {
     unlockStep(2);
     unlockStep(3);
     unlockStep(4);
     unlockStep(5);
   }
-  // Ensure maxStep is 5 so goToStep(5) doesn't bail out
   if (typeof state !== 'undefined') state.maxStep = 5;
 
-  if (typeof computeMatches === 'function') computeMatches();
-
-
-  // 4. Close modal first
+  // 5. Close modal first
   closeDashboardModal();
 
-  // 5. Navigate to step 5 (makes screen-5 active in the DOM)
+  // 6. Navigate to step 5 (makes screen-5 active in the DOM)
   if (typeof goToStep === 'function') {
     goToStep(5);
   }
 
-  // 6. Generate itinerary AFTER screen is active so DOM targets exist.
-  //    Reset any stuck AI-generation flags from a previous session first.
+  // 7. Generate itinerary AFTER screen is active so DOM targets exist.
   setTimeout(function() {
     if (typeof isGeneratingAi !== 'undefined') isGeneratingAi = false;
-    if (typeof currentAiPlan !== 'undefined') currentAiPlan = null;
-    if (typeof currentAiPlanDest !== 'undefined') currentAiPlanDest = null;
 
     if (typeof generateItinerary === 'function') {
       generateItinerary();

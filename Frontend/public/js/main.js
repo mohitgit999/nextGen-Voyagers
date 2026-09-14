@@ -55,15 +55,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /* Auto-resume a trip that was redirected from the Home/Dashboard page */
     try {
-      var pendingTrip = sessionStorage.getItem('voyager_resume_trip');
-      if (pendingTrip && byId('screen-5')) {
-        sessionStorage.removeItem('voyager_resume_trip');
-        var tripData = JSON.parse(pendingTrip);
-        setTimeout(function() {
-          if (typeof resumeTrip === 'function') {
-            resumeTrip(tripData);
+      var rawPending = sessionStorage.getItem('voyager_resume_trip');
+      if (rawPending) {
+        var tripData = JSON.parse(rawPending);
+        var checkCount = 0;
+        var pollResume = setInterval(function() {
+          checkCount++;
+          var fn = (typeof resumeTrip === 'function') ? resumeTrip : (typeof window.resumeTrip === 'function' ? window.resumeTrip : null);
+          if (fn && byId('screen-5')) {
+            clearInterval(pollResume);
+            sessionStorage.removeItem('voyager_resume_trip');
+            fn(tripData);
+          } else if (checkCount > 40) {
+            clearInterval(pollResume);
           }
-        }, 400); // Wait for all screens + scripts to be fully ready
+        }, 100);
       }
     } catch(e) {}
   }

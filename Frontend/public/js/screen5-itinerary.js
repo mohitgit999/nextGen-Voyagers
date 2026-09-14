@@ -961,6 +961,10 @@ function saveCurrentTripToCloud(d, duration, cost) {
     };
   });
 
+  var baseSlug = (d.id && d.id.indexOf('ai-') === 0) ? d.id.replace(/^ai-/, '').replace(/-\d+$/, '') : null;
+  var staticMatch = baseSlug ? (typeof findDest === 'function' ? findDest(baseSlug) : null) : null;
+  var canonId = (staticMatch && staticMatch.id && staticMatch.id.indexOf('ai-') === -1) ? staticMatch.id : d.id;
+
   var payload = {
     sessionId: state.sessionId || ('voyager-' + Date.now()),
     origin: {
@@ -970,19 +974,20 @@ function saveCurrentTripToCloud(d, duration, cost) {
       lon:    state.location.lon    || null
     },
     prefs: {
-      destination: d.id,
+      destination: canonId,
       budget:      state.prefs.budget   || 'mid',
       duration:    duration,
       group:       state.prefs.group    || 'couple',
       travelers:   state.prefs.travelers || 2
     },
-    destinationId:   d.id,
-    destinationName: d.name,
-    customPerDay:    state.customPerDay  || null,
-    estimatedTotal:  cost.total,
-    itinerary:       itineraryData,
-    budgetEntries:   cleanBudgetEntries,
-    packingState:    state.packingState  || {}
+    destinationId:       canonId,
+    destinationName:     d.name,
+    destinationSnapshot: d,
+    customPerDay:        state.customPerDay  || null,
+    estimatedTotal:      cost.total,
+    itinerary:           itineraryData,
+    budgetEntries:       cleanBudgetEntries,
+    packingState:        state.packingState  || {}
   };
 
   fetch(apiUrl('/api/trips'), {

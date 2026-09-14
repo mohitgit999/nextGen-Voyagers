@@ -28,12 +28,22 @@ function byId(id) {
 
 function findDest(id) {
   if (!id) return null;
+
+  // 0. Cache check
+  if (typeof window !== 'undefined' && window.__VOYAGER_DEST_CACHE__ && window.__VOYAGER_DEST_CACHE__[id]) {
+    return window.__VOYAGER_DEST_CACHE__[id];
+  }
+
   var list = (typeof window !== 'undefined' && window.DESTINATIONS && Array.isArray(window.DESTINATIONS))
     ? window.DESTINATIONS
     : (typeof DESTINATIONS !== 'undefined' && Array.isArray(DESTINATIONS) ? DESTINATIONS : []);
+
+  // 1. Exact ID match in list
   for (var i = 0; i < list.length; i++) {
     if (list[i] && list[i].id === id) return list[i];
   }
+
+  // 2. Exact ID match in state.matches
   if (typeof state !== 'undefined' && state && state.matches && Array.isArray(state.matches)) {
     for (var j = 0; j < state.matches.length; j++) {
       if (state.matches[j] && state.matches[j].dest && state.matches[j].dest.id === id) {
@@ -41,6 +51,38 @@ function findDest(id) {
       }
     }
   }
+
+  // 3. Normalize ID (stripping 'ai-' prefix, trailing indices like '-0', punctuation)
+  var strId = String(id).trim().toLowerCase();
+  var baseSlug = strId.replace(/^ai-/, '').replace(/-\d+$/, '');
+  var normSlug = baseSlug.replace(/[^a-z0-9]/g, '');
+
+  function matchesDest(d) {
+    if (!d) return false;
+    var dId = String(d.id || '').trim().toLowerCase();
+    var dName = String(d.name || '').trim().toLowerCase();
+    if (dId === strId || dId === baseSlug) return true;
+    if (dId.replace(/[^a-z0-9]/g, '') === normSlug) return true;
+    if (dName === strId || dName === baseSlug) return true;
+    if (dName.replace(/[^a-z0-9]/g, '') === normSlug) return true;
+    if (baseSlug.length >= 3 && (dName.indexOf(baseSlug) !== -1 || baseSlug.indexOf(dName) !== -1)) return true;
+    return false;
+  }
+
+  // Search list with normalization
+  for (var k = 0; k < list.length; k++) {
+    if (matchesDest(list[k])) return list[k];
+  }
+
+  // Search state.matches with normalization
+  if (typeof state !== 'undefined' && state && state.matches && Array.isArray(state.matches)) {
+    for (var m = 0; m < state.matches.length; m++) {
+      if (state.matches[m] && matchesDest(state.matches[m].dest)) {
+        return state.matches[m].dest;
+      }
+    }
+  }
+
   return null;
 }
 

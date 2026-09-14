@@ -23,13 +23,21 @@ const PlannerPage = () => {
 
       // Auto-resume a trip redirected from Home/Dashboard (sessionStorage handoff)
       try {
-        var pendingTrip = sessionStorage.getItem('voyager_resume_trip');
-        if (pendingTrip && document.getElementById('screen-5')) {
-          sessionStorage.removeItem('voyager_resume_trip');
-          var tripData = JSON.parse(pendingTrip);
-          setTimeout(function() {
-            if (typeof window.resumeTrip === 'function') window.resumeTrip(tripData);
-          }, 300);
+        var rawPending = sessionStorage.getItem('voyager_resume_trip');
+        if (rawPending) {
+          var tripData = JSON.parse(rawPending);
+          var checkCount = 0;
+          var pollResume = setInterval(function() {
+            checkCount++;
+            var fn = (typeof window.resumeTrip === 'function') ? window.resumeTrip : (typeof resumeTrip === 'function' ? resumeTrip : null);
+            if (fn && document.getElementById('screen-5')) {
+              clearInterval(pollResume);
+              sessionStorage.removeItem('voyager_resume_trip');
+              fn(tripData);
+            } else if (checkCount > 40) {
+              clearInterval(pollResume);
+            }
+          }, 100);
         }
       } catch(e) {}
     }, 80);

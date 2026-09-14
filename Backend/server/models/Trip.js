@@ -39,9 +39,10 @@ const tripSchema = new mongoose.Schema({
   },
 
   // Selected destination
-  destinationId:   { type: String, required: true },
-  destinationName: { type: String, required: true },
-  customPerDay:    { type: Number, default: null },
+  destinationId:       { type: String, required: true },
+  destinationName:     { type: String, required: true },
+  destinationSnapshot: { type: mongoose.Schema.Types.Mixed, default: null },
+  customPerDay:        { type: Number, default: null },
 
   // Computed cost
   estimatedTotal: { type: Number, default: 0 },

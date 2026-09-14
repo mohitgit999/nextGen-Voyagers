@@ -31,7 +31,7 @@ const SCRIPT_LIST = [
   '/js/main.js',
 ];
 
-const SCRIPT_VERSION = '?v=2.4.0'; // bump this to bust cache when scripts change
+const SCRIPT_VERSION = '?v=2.5.0'; // bump this to bust cache when scripts change
 
 function loadScriptsSequentially(scripts, version, onComplete) {
   // Guard: only load once per page lifetime (survives StrictMode double-invoke)
