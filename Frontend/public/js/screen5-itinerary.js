@@ -1145,51 +1145,66 @@ function bindSharePanel(d, duration, cost) {
       '<meta charset="utf-8">',
       '<title>NextGen Voyagers \u2014 ' + destLabel + '</title>',
       '<style>',
+      /* ── Universal inline-style override: defeats ALL dark rgba/hex inline colors ── */
+      '* { color: #111 !important; background: transparent !important;',
+      '    border-color: #cbd5e1 !important; box-shadow: none !important; }',
       '*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }',
-      'body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #111; background: #fff; padding: 28px 32px; font-size: 14px; line-height: 1.55; }',
-      'h1,h2,h3,h4,h5 { color: #0a0d12; margin-bottom: 8px; }',
+      'body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;',
+      '       background: #fff !important; padding: 28px 32px; font-size: 14px; line-height: 1.55; }',
+      'h1,h2,h3,h4,h5 { color: #0a0d12 !important; margin-bottom: 8px; }',
       'h2 { font-size: 1.4rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 14px; }',
       'h3 { font-size: 1.1rem; margin-bottom: 6px; }',
       'h4 { font-size: 0.95rem; }',
-      'p, span, div { color: #222; }',
-      'a { color: #0055cc; word-break: break-word; }',
+      'a { color: #0055cc !important; word-break: break-word; }',
       /* hide non-printable UI elements */
       '.itinerary-map-panel, #itinerary-map-canvas, .day-chip-row, .share-panel,',
       '.packing-custom-add-row, .budget-add-card, .packing-actions,',
       '.btn-save-cloud, .btn-ghost, .btn-forest, .btn-ai-sparkle,',
-      '#btn-generate-ai, .ai-generator-card, .budget-stats-pill { display: none !important; }',
-      /* itinerary header */
-      '.itinerary-header-hero { background: #0a0d12; color: #fff; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }',
-      '.itinerary-header-hero h2, .itinerary-header-hero p { color: #fff; }',
-      /* recap bar */
-      '.itinerary-recap { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }',
+      '#btn-generate-ai, .ai-generator-card { display: none !important; }',
+      /* structural containers get explicit light backgrounds */
+      'body, html { background: #fff !important; }',
+      '.itinerary-header-hero { background: #0a0d12 !important; border-radius: 10px; padding: 20px 24px; margin-bottom: 16px; }',
+      '.itinerary-header-hero *, .itinerary-header-hero h2, .itinerary-header-hero p { color: #fff !important; }',
+      '.itinerary-recap { background: #f8fafc !important; border: 1px solid #e2e8f0; border-radius: 8px;',
+      '  display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 14px; }',
       '.recap-item { flex: 1; min-width: 100px; }',
-      '.recap-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; font-weight: 700; }',
-      '.recap-val { font-size: 1rem; font-weight: 800; color: #0a0d12; }',
+      '.recap-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b !important; font-weight: 700; }',
+      '.recap-val { font-size: 1rem; font-weight: 800; color: #0a0d12 !important; }',
       /* day cards */
-      '.day-card { border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; margin-bottom: 20px; page-break-inside: avoid; }',
+      '.day-card { background: #fff !important; border: 1px solid #cbd5e1 !important;',
+      '  border-radius: 10px; padding: 16px; margin-bottom: 20px; page-break-inside: avoid; }',
       '.day-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }',
-      '.day-num { font-size: 1.8rem; font-weight: 900; color: #0a0d12; }',
-      '.day-theme { font-size: 0.95rem; font-weight: 700; color: #0a0d12; }',
-      '.day-budget-badge { font-size: 0.85rem; font-weight: 700; padding: 4px 10px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; }',
+      '.day-num { font-size: 1.8rem; font-weight: 900; color: #0a0d12 !important; }',
+      '.day-theme { font-size: 0.95rem; font-weight: 700; color: #0a0d12 !important; }',
+      '.day-budget-badge { font-size: 0.85rem; font-weight: 700; padding: 4px 10px;',
+      '  background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; border-radius: 6px; }',
       /* activity cards */
       '.activity-cards-list { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }',
-      '.activity-card-vertical { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }',
+      '.activity-card-vertical { background: #f8fafc !important; border: 1px solid #e2e8f0 !important;',
+      '  border-radius: 8px; padding: 12px; }',
       /* day budget chips */
       '.day-budget-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }',
-      '.budget-mini-chip { font-size: 0.8rem; padding: 3px 8px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 4px; }',
+      '.budget-mini-chip { font-size: 0.8rem; padding: 3px 8px;',
+      '  background: #f1f5f9 !important; border: 1px solid #cbd5e1 !important; border-radius: 4px; }',
       /* budget tracker */
-      '.budget-tracker { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin: 20px 0; }',
-      '.budget-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }',
+      '.budget-tracker { background: #fff !important; border: 1px solid #e2e8f0 !important;',
+      '  border-radius: 10px; padding: 16px; margin: 20px 0; }',
+      '.budget-entry { display: flex; justify-content: space-between; padding: 6px 0;',
+      '  border-bottom: 1px solid #f1f5f9 !important; }',
       '.budget-entry-del { display: none !important; }',
       /* packing checklist */
-      '#packing-panel { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin: 20px 0; }',
+      '#packing-panel { background: #fff !important; border: 1px solid #e2e8f0 !important;',
+      '  border-radius: 10px; padding: 16px; margin: 20px 0; }',
       '.pack-item { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 0.85rem; }',
-      '.pack-item.checked .pack-check::before { content: "\u2713"; color: #16a34a; font-weight: 700; }',
-      '.pack-check { width: 16px; height: 16px; border: 1px solid #94a3b8; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }',
-      '.packing-section-title { font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; margin: 12px 0 4px; color: #475569; }',
+      '.pack-item.checked .pack-check::before { content: "\u2713"; color: #16a34a !important; font-weight: 700; }',
+      '.pack-check { width: 16px; height: 16px; border: 1px solid #94a3b8 !important;',
+      '  border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; }',
+      '.packing-section-title { font-weight: 700; font-size: 0.85rem; text-transform: uppercase;',
+      '  letter-spacing: 0.5px; margin: 12px 0 4px; color: #475569 !important; }',
       /* gems panel */
-      '.itinerary-gems-panel, .itinerary-gem-card, .day-gem-featured-card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; }',
+      '.itinerary-gems-panel, .itinerary-gem-card, .day-gem-featured-card {',
+      '  background: #f8fafc !important; border: 1px solid #e2e8f0 !important;',
+      '  border-radius: 8px; padding: 12px; margin-bottom: 12px; }',
       /* print media */
       '@media print {',
       '  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }',
@@ -1207,8 +1222,8 @@ function bindSharePanel(d, duration, cost) {
     printWin.focus();
     setTimeout(function() {
       printWin.print();
-      setTimeout(function() { printWin.close(); }, 500);
-    }, 500);
+      setTimeout(function() { printWin.close(); }, 600);
+    }, 800);  // bumped from 500ms → 800ms for reliable paint before print dialog
   });
 }
 

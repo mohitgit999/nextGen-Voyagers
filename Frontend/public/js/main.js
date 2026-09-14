@@ -52,6 +52,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (byId('screen-1') && typeof goToStep === 'function') {
       goToStep(1, true);
     }
+
+    /* Auto-resume a trip that was redirected from the Home/Dashboard page */
+    try {
+      var pendingTrip = sessionStorage.getItem('voyager_resume_trip');
+      if (pendingTrip && byId('screen-5')) {
+        sessionStorage.removeItem('voyager_resume_trip');
+        var tripData = JSON.parse(pendingTrip);
+        setTimeout(function() {
+          if (typeof resumeTrip === 'function') {
+            resumeTrip(tripData);
+          }
+        }, 400); // Wait for all screens + scripts to be fully ready
+      }
+    } catch(e) {}
   }
 });
 

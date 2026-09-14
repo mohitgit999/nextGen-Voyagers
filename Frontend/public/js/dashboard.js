@@ -201,6 +201,17 @@ function renderSavedTrips(trips) {
 function resumeTrip(trip) {
   if (typeof state === 'undefined') return;
 
+  // If the planner DOM doesn't exist on this page (e.g. Home page),
+  // store the trip in sessionStorage and redirect to /plan to resume there.
+  if (!document.getElementById('screen-5') || !document.getElementById('planner-section')) {
+    try {
+      sessionStorage.setItem('voyager_resume_trip', JSON.stringify(trip));
+    } catch(e) {}
+    closeDashboardModal();
+    window.location.href = '/plan';
+    return;
+  }
+
   // 1. Restore state from saved trip
   state.sessionId = trip.sessionId || state.sessionId;
   if (trip.origin) state.location = Object.assign({}, state.location, trip.origin);
