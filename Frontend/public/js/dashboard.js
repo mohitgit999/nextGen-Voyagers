@@ -221,6 +221,21 @@ function resumeTrip(trip) {
   if (trip.budgetEntries) state.budgetLog = trip.budgetEntries;
   if (trip.packingState) state.packingState = trip.packingState;
 
+  // 1b. Guarantee prefs have safe defaults so computeMatches() works
+  state.prefs.budget    = state.prefs.budget    || 'mid';
+  state.prefs.group     = state.prefs.group     || 'couple';
+  state.prefs.travelers = state.prefs.travelers || 2;
+  state.prefs.duration  = state.prefs.duration  || 4;
+
+  // 1c. Directly inject the destination into state.matches as a guaranteed fallback
+  //     so findDest() works even before computeMatches() runs
+  var directDest = (typeof findDest === 'function') ? findDest(trip.destinationId) : null;
+  if (directDest) {
+    // ensure it's in state.matches so score-based code also works
+    var alreadyIn = state.matches.some(function(m) { return m.dest && m.dest.id === trip.destinationId; });
+    if (!alreadyIn) state.matches.push({ dest: directDest, score: 100 });
+  }
+
   // 2. Echo location into prefs UI
   var echo = document.getElementById('pref-origin-echo');
   if (echo && state.location.city) echo.textContent = state.location.city;
@@ -236,6 +251,7 @@ function resumeTrip(trip) {
   if (typeof state !== 'undefined') state.maxStep = 5;
 
   if (typeof computeMatches === 'function') computeMatches();
+
 
   // 4. Close modal first
   closeDashboardModal();

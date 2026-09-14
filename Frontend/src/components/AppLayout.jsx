@@ -111,8 +111,6 @@ const AppLayout = ({ children }) => {
                 </div>
               </div>
               <button type="submit" className="auth-submit-btn">Sign In to Voyagers</button>
-              <div className="auth-divider">or explore instantly</div>
-              <button type="button" className="btn-demo-quick">⚡ One-Click Demo Login</button>
             </form>
 
             {/* Register Form */}
@@ -133,8 +131,6 @@ const AppLayout = ({ children }) => {
                 </div>
               </div>
               <button type="submit" className="auth-submit-btn">Create Free Account</button>
-              <div className="auth-divider">or explore instantly</div>
-              <button type="button" className="btn-demo-quick">⚡ One-Click Demo Login</button>
             </form>
           </div>
         </div>

@@ -73,7 +73,7 @@ function checkAuthSession() {
       .then(function (userData) {
         authState.user = userData;
         localStorage.setItem('voyager_user', JSON.stringify(userData));
-        updateNavAuthUI();
+        notifyAuthChange();
       })
       .catch(function () {
         // Token expired or invalid
@@ -84,131 +84,16 @@ function checkAuthSession() {
   }
 }
 
+/* ── Notify React nav of auth changes via custom event ── */
+function notifyAuthChange() {
+  window.dispatchEvent(new CustomEvent('voyager:auth-change'));
+}
+
 /* ── Update Navigation Bar Auth Elements ── */
 function updateNavAuthUI() {
-  var actionsContainer = document.querySelector('.nav-actions');
-  if (!actionsContainer) return;
-
-  var mobileSearchButton = actionsContainer.querySelector('.mobile-search-btn-nav');
-  var hamburgerButton = actionsContainer.querySelector('.nav-hamburger');
-
-  if (authState.user && authState.token) {
-    var firstName = (authState.user.name || 'Traveler').split(' ')[0];
-    var initials = (authState.user.name || 'T')
-      .split(' ')
-      .map(function (n) { return n[0]; })
-      .slice(0, 2)
-      .join('')
-      .toUpperCase();
-
-    actionsContainer.innerHTML =
-      '<div class="nav-user-wrapper" id="nav-user-wrapper">' +
-        '<button class="nav-user-pill" id="nav-user-toggle" aria-haspopup="true">' +
-          '<div class="user-avatar-badge">' + initials + '</div>' +
-          '<span>' + firstName + '</span>' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="m6 9 6 6 6-6"/></svg>' +
-        '</button>' +
-        '<div class="nav-user-dropdown" id="nav-user-dropdown">' +
-          '<div class="dropdown-user-info">' +
-            '<div class="dropdown-user-name">' + (authState.user.name || 'Traveler') + '</div>' +
-            '<div class="dropdown-user-email">' + (authState.user.email || '') + '</div>' +
-          '</div>' +
-          '<button class="dropdown-item" id="nav-drop-dashboard">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>' +
-            'My Dashboard' +
-          '</button>' +
-          '<button class="dropdown-item" id="nav-drop-trips">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>' +
-            'Saved Itineraries' +
-          '</button>' +
-          '<button class="dropdown-item danger-item" id="nav-drop-logout">' +
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>' +
-            'Log Out' +
-          '</button>' +
-        '</div>' +
-      '</div>';
-
-    if (mobileSearchButton) actionsContainer.insertBefore(mobileSearchButton, actionsContainer.firstChild);
-    if (hamburgerButton) actionsContainer.appendChild(hamburgerButton);
-
-    // Bind dropdown events
-    var toggleBtn = document.getElementById('nav-user-toggle');
-    var dropdown = document.getElementById('nav-user-dropdown');
-
-    if (toggleBtn && dropdown) {
-      toggleBtn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        dropdown.classList.toggle('show');
-      });
-
-      document.addEventListener('click', function (e) {
-        if (!e.target.closest('#nav-user-wrapper')) {
-          dropdown.classList.remove('show');
-        }
-      });
-    }
-
-    var btnDash = document.getElementById('nav-drop-dashboard');
-    if (btnDash) {
-      btnDash.addEventListener('click', function () {
-        dropdown.classList.remove('show');
-        openDashboardModal();
-      });
-    }
-
-    var btnTrips = document.getElementById('nav-drop-trips');
-    if (btnTrips) {
-      btnTrips.addEventListener('click', function () {
-        dropdown.classList.remove('show');
-        openDashboardModal('trips');
-      });
-    }
-
-    var btnLogout = document.getElementById('nav-drop-logout');
-    if (btnLogout) {
-      btnLogout.addEventListener('click', function () {
-        dropdown.classList.remove('show');
-        logout();
-      });
-    }
-  } else {
-    // Logged-out default view
-    if (!mobileSearchButton) {
-      mobileSearchButton = document.createElement('button');
-      mobileSearchButton.className = 'nav-search-icon mobile-search-btn-nav';
-      mobileSearchButton.id = 'nav-search-btn-mobile';
-      mobileSearchButton.setAttribute('aria-label', 'Search destinations');
-      mobileSearchButton.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>';
-      actionsContainer.insertBefore(mobileSearchButton, actionsContainer.firstChild);
-    }
-
-    if (!hamburgerButton) {
-      hamburgerButton = document.createElement('button');
-      hamburgerButton.className = 'nav-hamburger';
-      hamburgerButton.id = 'nav-hamburger';
-      hamburgerButton.setAttribute('aria-label', 'Toggle navigation menu');
-      hamburgerButton.setAttribute('aria-expanded', 'false');
-      hamburgerButton.innerHTML = '<span class="hamburger-line"></span><span class="hamburger-line"></span><span class="hamburger-line"></span>';
-      actionsContainer.appendChild(hamburgerButton);
-    }
-
-    var loginBtn = document.getElementById('nav-btn-login');
-    if (loginBtn) {
-      loginBtn.addEventListener('click', function () {
-        openAuthModal('login');
-      });
-    }
-
-    var signupBtn = document.getElementById('nav-btn-signup');
-    if (signupBtn) {
-      signupBtn.addEventListener('click', function (e) {
-        var plannerEl = document.getElementById('planner-section');
-        if (plannerEl) {
-          plannerEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      });
-    }
-  }
+  // Auth UI is now handled by React (GlobalNav.jsx) via the voyager:auth-change event.
+  // This function is kept as a no-op for backward compatibility.
+  notifyAuthChange();
 }
 
 /* ── Open / Close Auth Modal ── */
@@ -292,7 +177,7 @@ function login(email, password, callback) {
       localStorage.setItem('voyager_token', data.token);
       localStorage.setItem('voyager_user', JSON.stringify(data));
 
-      updateNavAuthUI();
+      notifyAuthChange();
       closeAuthModal();
       showToast('Welcome back, ' + data.name + '! 👋', 'success');
 
@@ -335,7 +220,7 @@ function register(name, email, password, callback) {
       localStorage.setItem('voyager_token', data.token);
       localStorage.setItem('voyager_user', JSON.stringify(data));
 
-      updateNavAuthUI();
+      notifyAuthChange();
       closeAuthModal();
       showToast('Account created! Welcome to NextGen Voyagers ✈️', 'success');
 
@@ -363,11 +248,13 @@ function logout(silent) {
   localStorage.removeItem('voyager_token');
   localStorage.removeItem('voyager_user');
 
-  updateNavAuthUI();
+  notifyAuthChange();
   if (!silent) {
     showToast('Logged out successfully.', 'info');
   }
 }
+
+window.logout = logout;
 
 /* ── Init Auth Bindings on DOM Load ── */
 document.addEventListener('DOMContentLoaded', function () {

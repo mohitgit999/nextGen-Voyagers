@@ -15,8 +15,21 @@ var isGeneratingAi = false;
    GENERATE ITINERARY
    ============================================================ */
 function generateItinerary() {
-  var d        = findDest(state.selectedId);
-  if (!d) return;
+  var d = findDest(state.selectedId);
+  if (!d) {
+    // Show a clear error instead of a blank screen
+    var errEl = byId('itinerary-content');
+    if (errEl) {
+      errEl.innerHTML = '<div style="padding:40px;text-align:center;color:#ef4444;">' +
+        '<div style="font-size:2rem;margin-bottom:12px">⚠️</div>' +
+        '<strong>Could not load itinerary</strong><br>' +
+        '<span style="color:#94a3b8;font-size:0.9rem">Destination not found (id: ' + (state.selectedId || 'unknown') + '). ' +
+        'Please go back and select a destination.</span>' +
+        '<br><br><button onclick="goToStep(1)" class="btn btn-ghost" style="margin-top:8px">&#8592; Start Over</button>' +
+        '</div>';
+    }
+    return;
+  }
   var duration = state.prefs.duration;
   var cost     = estimateCost(d, state.prefs, state.customPerDay);
 

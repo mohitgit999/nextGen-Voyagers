@@ -1,13 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+
+function getAuthFromStorage() {
+  try {
+    var token = localStorage.getItem('voyager_token');
+    var raw = localStorage.getItem('voyager_user');
+    if (token && raw) {
+      return { user: JSON.parse(raw), token: token };
+    }
+  } catch (e) {}
+  return { user: null, token: null };
+}
 
 const GlobalNav = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [auth, setAuth] = useState(getAuthFromStorage);
   const location = useLocation();
   const isPlanner = location.pathname === '/plan';
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  // Listen for auth changes dispatched by auth.js
+  useEffect(() => {
+    function onAuthChange() {
+      setAuth(getAuthFromStorage());
+    }
+    window.addEventListener('voyager:auth-change', onAuthChange);
+    return () => window.removeEventListener('voyager:auth-change', onAuthChange);
+  }, []);
+
+  function handleLogout() {
+    if (typeof window.logout === 'function') {
+      window.logout();
+    } else {
+      localStorage.removeItem('voyager_token');
+      localStorage.removeItem('voyager_user');
+      window.dispatchEvent(new CustomEvent('voyager:auth-change'));
+    }
+  }
+
+  function handleOpenDashboard() {
+    if (typeof window.openDashboardModal === 'function') window.openDashboardModal();
+  }
+
+  function handleOpenTrips() {
+    if (typeof window.openDashboardModal === 'function') window.openDashboardModal('trips');
+  }
+
+  function handleOpenLogin() {
+    if (typeof window.openAuthModal === 'function') window.openAuthModal('login');
+  }
+
+  const user = auth.user;
+  const initials = user
+    ? (user.name || 'T').split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
+    : '';
+  const firstName = user ? (user.name || 'Traveler').split(' ')[0] : '';
 
   return (
     <>
@@ -59,7 +107,7 @@ const GlobalNav = () => {
           </ul>
         )}
 
-        <div className="nav-actions">
+        <div className="nav-actions" id="nav-actions-root">
           {!isPlanner && (
             <button className="nav-search-icon mobile-search-btn-nav" id="nav-search-btn-mobile" aria-label="Search destinations" style={{ display: 'none' }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '18px', height: '18px' }}>
@@ -67,20 +115,61 @@ const GlobalNav = () => {
               </svg>
             </button>
           )}
-          
-          <button className="nav-btn-login" id="nav-btn-login">Log in</button>
-          
+
+          {user ? (
+            /* ── Logged-in user pill + dropdown ── */
+            <div className="nav-user-wrapper" id="nav-user-wrapper">
+              <button
+                className="nav-user-pill"
+                id="nav-user-toggle"
+                aria-haspopup="true"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const dd = document.getElementById('nav-user-dropdown');
+                  if (dd) dd.classList.toggle('show');
+                }}
+              >
+                <div className="user-avatar-badge">{initials}</div>
+                <span>{firstName}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '14px', height: '14px' }}><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div className="nav-user-dropdown" id="nav-user-dropdown">
+                <div className="dropdown-user-info">
+                  <div className="dropdown-user-name">{user.name || 'Traveler'}</div>
+                  <div className="dropdown-user-email">{user.email || ''}</div>
+                </div>
+                <button className="dropdown-item" onClick={() => { const dd = document.getElementById('nav-user-dropdown'); if(dd) dd.classList.remove('show'); handleOpenDashboard(); }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px' }}><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                  My Dashboard
+                </button>
+                <button className="dropdown-item" onClick={() => { const dd = document.getElementById('nav-user-dropdown'); if(dd) dd.classList.remove('show'); handleOpenTrips(); }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px' }}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
+                  Saved Itineraries
+                </button>
+                <button className="dropdown-item danger-item" onClick={() => { const dd = document.getElementById('nav-user-dropdown'); if(dd) dd.classList.remove('show'); handleLogout(); }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px' }}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  Log Out
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* ── Logged-out buttons ── */
+            <button className="nav-btn-login" id="nav-btn-login" onClick={handleOpenLogin}>Log in</button>
+          )}
+
           {!isPlanner && (
             <>
-              <Link
-                to="/plan"
-                className="nav-btn-signup"
-                id="nav-btn-signup"
-                data-cta="start-planning"
-                style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-              >
-                Start Planning
-              </Link>
+              {!user && (
+                <Link
+                  to="/plan"
+                  className="nav-btn-signup"
+                  id="nav-btn-signup"
+                  data-cta="start-planning"
+                  style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  Start Planning
+                </Link>
+              )}
               <button
                 className={`nav-hamburger ${isMobileMenuOpen ? 'active' : ''}`}
                 id="nav-hamburger"
@@ -108,7 +197,7 @@ const GlobalNav = () => {
             AI Trip Planner
           </Link>
           <Link to="/destinations" className="mobile-nav-link" id="mobile-link-destinations" onClick={closeMobileMenu}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '18px', height: '18px' }}><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
             Destinations
           </Link>
           <a href="/#features-section" className="mobile-nav-link" id="mobile-link-features" onClick={closeMobileMenu}>
