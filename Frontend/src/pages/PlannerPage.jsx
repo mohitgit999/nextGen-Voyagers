@@ -5,6 +5,19 @@ const PlannerPage = () => {
   const [selectedMoods, setSelectedMoods] = useState([]);
   const [selectedBudget, setSelectedBudget] = useState(null);
   const [selectedGroup, setSelectedGroup] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('voyager_planner_theme');
+    return saved ? saved === 'dark' : true;
+  });
+
+  // Sync theme when GlobalNav toggles it
+  useEffect(() => {
+    function onThemeChange(e) {
+      setIsDarkMode(e.detail.dark);
+    }
+    window.addEventListener('voyager:theme-change', onThemeChange);
+    return () => window.removeEventListener('voyager:theme-change', onThemeChange);
+  }, []);
 
   useEffect(() => {
     // Only re-initialize planner screens when navigating to /plan
@@ -95,7 +108,7 @@ const PlannerPage = () => {
     }
   };
   return (
-    <div id="planner-section" className="planner-page-container">
+    <div id="planner-section" className={`planner-page-container${isDarkMode ? '' : ' light-mode'}`}>
       {/* Background overlay */}
       <div className="planner-bg-backdrop" aria-hidden="true"></div>
 

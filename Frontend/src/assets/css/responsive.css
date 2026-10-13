@@ -1071,4 +1071,95 @@ body,
   }
 }
 
+/* ============================================================
+   UNIVERSAL RESPONSIVENESS ENHANCEMENTS FOR ALL SCREENS
+   Covers: 320px ultra-compact phones, folding devices, 
+   tablets, laptops, desktops, and 4K/Ultra-wide monitors
+   ============================================================ */
+
+/* Universal Layout & Anti-Overflow Guard */
+html, body {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box !important;
+}
+
+img, video, canvas, svg {
+  max-width: 100%;
+}
+
+/* Modals & Dialogs on Small Displays */
+@media (max-width: 480px) {
+  .modal-box,
+  .app-modal-card {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    padding: 22px 16px !important;
+    margin: 12px auto !important;
+    border-radius: 18px !important;
+  }
+
+  .modal-overlay {
+    padding: 12px !important;
+  }
+
+  .auth-form-row {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .auth-submit-btn {
+    width: 100% !important;
+  }
+
+  /* Compare Drawer on Mobile */
+  .compare-drawer {
+    width: 100% !important;
+    max-width: 100vw !important;
+    padding: 16px !important;
+  }
+
+  .compare-table-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* Destinations catalog grid */
+  .dest-catalog-grid,
+  .destinations-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Footer on mobile */
+  .footer-inner,
+  .landing-footer .footer-content {
+    flex-direction: column !important;
+    gap: 24px !important;
+    text-align: center;
+  }
+
+  .footer-links-group {
+    justify-content: center !important;
+  }
+}
+
+/* Ultra-Wide Monitors (> 1920px & 4K) */
+@media (min-width: 1920px) {
+  .site-layout-wrapper,
+  .site-main-content,
+  .landing-hero-inner,
+  .dest-page-wrapper,
+  .planner-app-canvas {
+    max-width: 1440px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
 

@@ -1608,25 +1608,32 @@
 }
 
 .compare-drawer {
-  position: fixed;
-  top: 0;
-  right: -600px;
-  width: min(100%, 580px);
-  height: 100vh;
-  background: rgba(11, 14, 19, 0.95);
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  z-index: 1000;
-  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.6);
-  padding: 30px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  position: fixed !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  width: min(100%, 580px) !important;
+  height: 100vh !important;
+  background: rgba(11, 14, 19, 0.95) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  z-index: 1000 !important;
+  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.6) !important;
+  padding: 30px !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  transform: translateX(100%) !important;
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
 .compare-drawer.open {
-  right: 0;
+  transform: translateX(0) !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 /* ---------- SCREEN 4: DETAIL PANELS ---------- */
@@ -2479,10 +2486,54 @@
   }
 }
 
+/* Compact Stepper & Mobile Layout (under 560px) */
+@media (max-width: 560px) {
+  #planner-section .step-label {
+    display: none !important;
+  }
+
+  #planner-section .route-stepper {
+    min-height: 56px !important;
+    padding: 10px 14px !important;
+    align-items: center !important;
+    border-radius: 999px !important;
+  }
+
+  #planner-section .route-stepper::before,
+  #planner-section .route-stepper::after {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  #planner-section .step-item {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+  }
+}
+
 /* Extra Small Phones (under 480px, e.g. iPhone SE, 360px Androids) */
 @media (max-width: 480px) {
   .planner-hero-title {
-    font-size: 1.7rem;
+    font-size: clamp(1.6rem, 6.5vw, 2rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  .planner-hero-subtitle {
+    font-size: 0.88rem !important;
+    line-height: 1.5 !important;
+  }
+
+  #planner-section.planner-page-container {
+    padding-top: 80px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    padding-bottom: 80px !important;
+  }
+
+  .planner-app-canvas {
+    padding: 0 4px !important;
   }
 
   #planner-section .manual-row {
@@ -2490,35 +2541,103 @@
     align-items: stretch !important;
   }
 
+  #manual-city-input,
+  #planner-section #manual-city-input {
+    width: 100% !important;
+    font-size: 16px !important;
+  }
+
   #btn-set-manual {
     width: 100% !important;
   }
 
-  #planner-section .route-stepper {
-    padding: 10px 8px 8px !important;
+  .modern-locate-card,
+  #planner-section .modern-locate-card {
+    padding: 20px 14px !important;
+    border-radius: 18px !important;
   }
 
-  #planner-section .step-dot {
-    width: 28px !important;
-    height: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    font-size: 0.74rem !important;
-  }
-
-  #planner-section .step-label {
-    font-size: 0.62rem !important;
-  }
-
-  #planner-section .route-stepper::before,
-  #planner-section .route-stepper::after {
-    top: 24px !important;
+  .locate-method-box,
+  #planner-section .locate-method-box {
+    padding: 20px 14px !important;
+    min-height: auto !important;
   }
 
   .duration-presets-row {
     grid-template-columns: 1fr !important;
+  }
+
+  .modern-tiles-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .modern-tier-tile,
+  #planner-section .tile,
+  .modern-group-tile,
+  #planner-section .group-tile {
+    min-height: auto !important;
+    padding: 16px 14px !important;
+  }
+
+  #detail-content .panel,
+  #planner-section .panel {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .day-card,
+  #planner-section .day-card {
+    padding: 18px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .itinerary-header-hero {
+    padding: 20px 14px !important;
+    border-radius: 16px !important;
+  }
+
+  .itinerary-recap {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    padding: 12px 14px !important;
+  }
+
+  .recap-item:last-child {
+    grid-column: 1 / -1 !important;
+  }
+
+  .ai-generator-card {
+    padding: 18px 14px !important;
+  }
+
+  .weather-month-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+}
+
+/* Tiny Mobile Screens (under 360px, e.g. 320px screen width) */
+@media (max-width: 360px) {
+  .planner-hero-title {
+    font-size: 1.45rem !important;
+  }
+
+  .btn {
+    padding: 0 16px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .hero-feature-pill {
+    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+  }
+
+  .itinerary-recap {
+    grid-template-columns: 1fr !important;
+  }
+
+  .weather-month-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 }
 
@@ -3451,4 +3570,1426 @@
   font-size: 0.84rem;
   font-weight: 700;
   color: #F8FAFC !important;
+}
+
+/* ============================================================
+   LIGHT MODE — Complete Theme Override
+   Toggled by adding .light-mode to #planner-section
+   ============================================================ */
+
+/* ---------- Light-Mode Token Overrides ---------- */
+/* ---------- Light-Mode Token Overrides ---------- */
+#planner-section.light-mode {
+  --canvas-bg: #F8FAFC;
+  --glass-surface: rgba(255, 255, 255, 0.92);
+  --glass-surface-hover: #FFFFFF;
+  --glass-surface-active: rgba(15, 23, 42, 0.05);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --glass-border-hover: rgba(15, 23, 42, 0.25);
+  --glass-border-active: #0F172A;
+  --glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+
+  --accent-white: #0F172A;
+  --accent-offwhite: #1E293B;
+  --accent-silver: #334155;
+  --accent-lightgrey: #475569;
+  --accent-muted: #64748B;
+  --accent-dim: #64748B;
+  --accent-dark: #F8FAFC;
+  --accent-dark-surface: #F1F5F9;
+
+  --ink: #0F172A;
+  --ink-soft: #334155;
+  --ink-muted: #64748B;
+  --ink-faint: #94A3B8;
+  --text: #0F172A;
+  --surface: #FFFFFF;
+  --surface-mid: #F8FAFC;
+  --surface-soft: #F1F5F9;
+  --surface-deep: #E2E8F0;
+  --paper: #FFFFFF;
+  --paper-raised: #F8FAFC;
+  --paper-deep: #F1F5F9;
+  --border: rgba(15, 23, 42, 0.1);
+  --line: rgba(15, 23, 42, 0.1);
+  --forest: #059669;
+  --forest-deep: #064E3B;
+  --teal: #059669;
+  --teal-dark: #047857;
+
+  --btn-primary-bg: #0F172A;
+  --btn-primary-text: #FFFFFF;
+  --btn-ghost-bg: rgba(15, 23, 42, 0.04);
+  --btn-ghost-border: rgba(15, 23, 42, 0.14);
+  --btn-ghost-text: #0F172A;
+}
+
+/* ---------- Light-Mode Page Background ---------- */
+#planner-section.light-mode.planner-page-container {
+  background-color: #F8FAFC;
+  background-image:
+    radial-gradient(circle at 50% 0%, #FFFFFF 0%, #F1F5F9 50%, #F8FAFC 100%);
+  color: #0F172A;
+}
+
+#planner-section.light-mode .planner-bg-backdrop {
+  background:
+    radial-gradient(circle at 50% 10%, rgba(15, 23, 42, 0.02) 0%, transparent 55%),
+    radial-gradient(circle at 80% 40%, rgba(15, 23, 42, 0.015) 0%, transparent 40%),
+    radial-gradient(circle at 20% 60%, rgba(15, 23, 42, 0.015) 0%, transparent 40%);
+}
+
+#planner-section.light-mode::before {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px) !important;
+}
+
+/* ---------- Master High-Contrast Typography for Light Mode ---------- */
+#planner-section.light-mode h1,
+#planner-section.light-mode h2,
+#planner-section.light-mode h3,
+#planner-section.light-mode h4,
+#planner-section.light-mode h5,
+#planner-section.light-mode h6,
+#planner-section.light-mode .screen-head h2,
+#planner-section.light-mode .locate-method-box h3,
+#planner-section.light-mode .tile-title,
+#planner-section.light-mode .tile-badge,
+#planner-section.light-mode .field-title,
+#planner-section.light-mode .cost-total,
+#planner-section.light-mode .day-num,
+#planner-section.light-mode .day-title,
+#planner-section.light-mode .act-title,
+#planner-section.light-mode .activity-title,
+#planner-section.light-mode .recap-val,
+#planner-section.light-mode .num-display,
+#planner-section.light-mode .sugg-title,
+#planner-section.light-mode .compare-drawer-head h2,
+#planner-section.light-mode .ai-guidelines-title-wrap h3,
+#planner-section.light-mode .ai-badge-header strong {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode p,
+#planner-section.light-mode .hint-text,
+#planner-section.light-mode .step-header-desc,
+#planner-section.light-mode .cost-note,
+#planner-section.light-mode .date-hint,
+#planner-section.light-mode .field-sub,
+#planner-section.light-mode .locate-method-box p,
+#planner-section.light-mode .planner-hero-subtitle,
+#planner-section.light-mode .eyebrow-note,
+#planner-section.light-mode .ai-card-sub,
+#planner-section.light-mode .ai-guidelines-subtitle,
+#planner-section.light-mode .act-desc,
+#planner-section.light-mode .activity-desc,
+#planner-section.light-mode .tile-desc,
+#planner-section.light-mode .cost-row span,
+#planner-section.light-mode .metric-note-text {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode label,
+#planner-section.light-mode .field-label,
+#planner-section.light-mode .counter-label,
+#planner-section.light-mode .day-part-label,
+#planner-section.light-mode .recap-label,
+#planner-section.light-mode .hazard-micro-label,
+#planner-section.light-mode .filter-label,
+#planner-section.light-mode .packing-section-title {
+  color: #0F172A !important;
+}
+
+/* ---------- Light-Mode Hero Banner ---------- */
+#planner-section.light-mode .planner-hero-title {
+  background: linear-gradient(180deg, #0F172A 20%, #334155 65%, #64748B 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+#planner-section.light-mode .hero-feature-pill {
+  color: #334155 !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+#planner-section.light-mode .hero-feature-pill:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.22) !important;
+  color: #0F172A !important;
+}
+
+/* ---------- Light-Mode Stepper ---------- */
+#planner-section.light-mode .route-stepper {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: var(--glass-specular), 0 12px 32px rgba(15, 23, 42, 0.06) !important;
+  backdrop-filter: blur(20px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+}
+
+#planner-section.light-mode .route-stepper::before {
+  background: rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .route-stepper::after {
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.4), #0F172A) !important;
+  box-shadow: 0 0 12px rgba(15, 23, 42, 0.2) !important;
+}
+
+#planner-section.light-mode .step-dot {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.2) !important;
+  color: #64748B !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .step-item.active .step-dot {
+  background: #0F172A !important;
+  border-color: #0F172A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.14), 0 0 20px rgba(15, 23, 42, 0.18) !important;
+}
+
+#planner-section.light-mode .step-item.done .step-dot {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .step-label {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .step-item.active .step-label {
+  color: #0F172A !important;
+  font-weight: 700 !important;
+}
+
+#planner-section.light-mode .step-item.done .step-label {
+  color: #334155 !important;
+}
+
+/* ---------- Light-Mode Cards & Glass Surfaces ---------- */
+#planner-section.light-mode .modern-locate-card,
+#planner-section.light-mode .pref-card,
+#planner-section.light-mode .panel,
+#planner-section.light-mode #detail-content .panel,
+#planner-section.light-mode .day-card,
+#planner-section.light-mode .itin-card,
+#planner-section.light-mode .itin-day-card,
+#planner-section.light-mode .share-panel,
+#planner-section.light-mode .itinerary-recap,
+#planner-section.light-mode .compare-drawer,
+#planner-section.light-mode .budget-summary-card,
+#planner-section.light-mode .weather-best-time-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}
+
+#planner-section.light-mode .locate-method-box {
+  background: rgba(248, 250, 252, 0.85) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03) !important;
+}
+
+#planner-section.light-mode .locate-method-box:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+}
+
+#planner-section.light-mode .locate-icon-wrap {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0F172A !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05) !important;
+}
+
+#planner-section.light-mode .locate-icon-wrap svg {
+  stroke: #0F172A !important;
+}
+
+#planner-section.light-mode .ai-location-note {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode #pref-origin-echo {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .location-suggestions-dropdown,
+#planner-section.light-mode #manual-location-suggestions {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12) !important;
+}
+
+#planner-section.light-mode .location-suggestion-item:hover,
+#planner-section.light-mode .location-suggestion-item.active {
+  background: rgba(15, 23, 42, 0.05) !important;
+}
+
+#planner-section.light-mode .sugg-title {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .sugg-sub,
+#planner-section.light-mode .sugg-status {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .sugg-status.sugg-empty b {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .locate-status {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .locate-status svg {
+  color: #059669 !important;
+  stroke: #059669 !important;
+}
+
+/* ---------- Light-Mode Preferences (Screen 2) ---------- */
+#planner-section.light-mode .pref-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 10px 32px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+#planner-section.light-mode .pref-step-icon {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .field-legend {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .field-sub {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .counter-label,
+#planner-section.light-mode .counter-unit {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .stepper-control {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+#planner-section.light-mode .modern-tier-tile,
+#planner-section.light-mode .modern-group-tile,
+#planner-section.light-mode .tile,
+#planner-section.light-mode .group-tile,
+#planner-section.light-mode .pref-option-card,
+#planner-section.light-mode .mood-chip,
+#planner-section.light-mode .mood-tile {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #0F172A !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03) !important;
+}
+
+#planner-section.light-mode .modern-tier-tile:hover,
+#planner-section.light-mode .modern-group-tile:hover,
+#planner-section.light-mode .tile:hover,
+#planner-section.light-mode .group-tile:hover,
+#planner-section.light-mode .pref-option-card:hover,
+#planner-section.light-mode .mood-chip:hover,
+#planner-section.light-mode .mood-tile:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.25) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .modern-tier-tile.selected,
+#planner-section.light-mode .modern-tier-tile.active,
+#planner-section.light-mode .modern-group-tile.selected,
+#planner-section.light-mode .modern-group-tile.active,
+#planner-section.light-mode .tile.selected,
+#planner-section.light-mode .tile.active,
+#planner-section.light-mode .group-tile.selected,
+#planner-section.light-mode .group-tile.active,
+#planner-section.light-mode .pref-option-card.selected,
+#planner-section.light-mode .mood-chip.selected,
+#planner-section.light-mode .mood-tile.selected,
+#planner-section.light-mode .mood-tile.active {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 2px solid #0F172A !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.12), 0 8px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .mood-label {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .mood-selected-indicator {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .group-name {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .tile-sub {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .tile-desc {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .duration-preset-btn {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .duration-preset-btn strong {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .duration-preset-btn span {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .duration-preset-btn:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.25) !important;
+}
+
+#planner-section.light-mode .duration-preset-btn.active,
+#planner-section.light-mode .duration-preset-btn.selected {
+  background: #0F172A !important;
+  border-color: #0F172A !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.2) !important;
+}
+
+#planner-section.light-mode .duration-preset-btn.active strong,
+#planner-section.light-mode .duration-preset-btn.selected strong {
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .duration-preset-btn.active span,
+#planner-section.light-mode .duration-preset-btn.selected span {
+  color: #94A3B8 !important;
+}
+
+#planner-section.light-mode .num-btn {
+  background: rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .num-btn:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.12) !important;
+  border-color: #0F172A !important;
+}
+
+#planner-section.light-mode .num-display {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .validation-msg,
+#planner-section.light-mode #pref-validation {
+  color: #DC2626 !important;
+}
+
+/* ---------- Light-Mode Buttons ---------- */
+#planner-section.light-mode .btn-primary {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.2) !important;
+}
+
+#planner-section.light-mode .btn-primary:hover:not(:disabled) {
+  background: #1E293B !important;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.3) !important;
+}
+
+#planner-section.light-mode .btn-primary:disabled {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: rgba(15, 23, 42, 0.3) !important;
+  border-color: rgba(15, 23, 42, 0.06) !important;
+}
+
+#planner-section.light-mode .btn-ghost {
+  background: rgba(15, 23, 42, 0.04) !important;
+  color: #0F172A !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+#planner-section.light-mode .btn-ghost:hover:not(:disabled) {
+  background: rgba(15, 23, 42, 0.08) !important;
+  border-color: rgba(15, 23, 42, 0.25) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode #btn-back-to-explore,
+#planner-section.light-mode #btn-back-to-detail,
+#planner-section.light-mode #btn-back-to-locate,
+#planner-section.light-mode #btn-back-to-prefs,
+#planner-section.light-mode #btn-new-trip,
+#planner-section.light-mode .btn-text {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode #btn-back-to-explore:hover,
+#planner-section.light-mode #btn-back-to-detail:hover,
+#planner-section.light-mode #btn-back-to-locate:hover,
+#planner-section.light-mode #btn-back-to-prefs:hover,
+#planner-section.light-mode #btn-new-trip:hover,
+#planner-section.light-mode .btn-text:hover {
+  color: #0F172A !important;
+}
+
+/* ---------- Light-Mode Inputs & Selects ---------- */
+#planner-section.light-mode input[type="text"],
+#planner-section.light-mode input[type="number"],
+#planner-section.light-mode input[type="date"],
+#planner-section.light-mode select,
+#planner-section.light-mode textarea,
+#planner-section.light-mode #manual-city-input,
+#planner-section.light-mode .modern-text-input,
+#planner-section.light-mode .cost-edit-input,
+#planner-section.light-mode .sort-select {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.16) !important;
+  color: #0F172A !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+}
+
+#planner-section.light-mode input::placeholder,
+#planner-section.light-mode textarea::placeholder,
+#planner-section.light-mode #manual-city-input::placeholder {
+  color: #94A3B8 !important;
+}
+
+#planner-section.light-mode select option,
+#planner-section.light-mode .sort-select option {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+}
+
+/* Autocomplete suggestions */
+#planner-section.light-mode .sugg-box,
+#planner-section.light-mode #autocomplete-suggestions {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12) !important;
+}
+
+#planner-section.light-mode .sugg-item {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.06) !important;
+}
+
+#planner-section.light-mode .sugg-item:hover,
+#planner-section.light-mode .sugg-item.active {
+  background: rgba(15, 23, 42, 0.04) !important;
+}
+
+/* ---------- Light-Mode Explore Controls & Filters ---------- */
+#planner-section.light-mode .modern-explore-toolbar {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .filter-label {
+  color: #0F172A !important;
+  font-weight: 700;
+}
+
+#planner-section.light-mode .tag-chip.filter-chip {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .tag-chip.filter-chip:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .tag-chip.filter-chip.active {
+  background: #0F172A !important;
+  border-color: #0F172A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22) !important;
+}
+
+/* ---------- High-Visibility Destination Cards in Light Mode ---------- */
+/* Destination cards retain dark gradient photographic overlay for contrast against photo */
+#planner-section.light-mode .dest-card {
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.16) !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+#planner-section.light-mode .dest-card .dest-name,
+#planner-section.light-mode .dest-card h3 {
+  color: #FFFFFF !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8) !important;
+}
+
+#planner-section.light-mode .dest-card .dest-state {
+  color: #CBD5E1 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+#planner-section.light-mode .dest-card .dest-blurb {
+  color: #E2E8F0 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6) !important;
+}
+
+#planner-section.light-mode .dest-card .tag-chip {
+  color: #E2E8F0 !important;
+  background: rgba(15, 23, 42, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+#planner-section.light-mode .dest-card .tag-chip.gem-tag {
+  background: rgba(14, 165, 233, 0.24) !important;
+  color: #38BDF8 !important;
+  border: 1px solid rgba(56, 189, 248, 0.45) !important;
+}
+
+#planner-section.light-mode .dest-card .price-chip {
+  color: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+#planner-section.light-mode .dest-card .match-badge {
+  color: #FFFFFF !important;
+  background: rgba(15, 23, 42, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+#planner-section.light-mode .dest-card .ai-match-badge {
+  background: #FFFFFF !important;
+  color: #0A0D12 !important;
+}
+
+#planner-section.light-mode .dest-card .dest-meta-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
+}
+
+#planner-section.light-mode .dest-card .rating-inline {
+  color: #FBBF24 !important;
+}
+
+#planner-section.light-mode .dest-card .safety-chip-mini {
+  color: #34D399 !important;
+}
+
+#planner-section.light-mode .dest-card .weather-chip-mini {
+  color: #CBD5E1 !important;
+}
+
+#planner-section.light-mode .dest-card .compare-btn {
+  background: rgba(15, 23, 42, 0.78) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #CBD5E1 !important;
+}
+
+#planner-section.light-mode .dest-card .compare-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .dest-card .compare-btn.active {
+  background: #FFFFFF !important;
+  border-color: #FFFFFF !important;
+  color: #0A0D12 !important;
+}
+
+/* ---------- Light-Mode Screen 4 Details ---------- */
+#planner-section.light-mode .detail-rating-pill {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .detail-rating-pill strong {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .detail-rating-pill .hint-text {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .safety-score-badge {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #065F46 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+#planner-section.light-mode .safety-list li span {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .bar-track {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .bar-fill {
+  background: linear-gradient(90deg, #10B981, #059669) !important;
+}
+
+#planner-section.light-mode .bar-row-top {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .cost-row {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .weather-best-time-panel h3 {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .weather-compact-summary-row {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .metric-text {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .metric-note-text {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .btn-toggle-weather-breakdown {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .btn-toggle-weather-breakdown:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .btn-toggle-weather-breakdown.active {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .weather-safety-overview-bar .weather-variation-pill {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .weather-variation-label {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .weather-variation-val {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .weather-instruction-row p {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .weather-slide-hint {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .weather-slider-btn {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0F172A !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .weather-slider-btn:hover {
+  background: #FFFFFF !important;
+  border-color: #0F172A !important;
+}
+
+#planner-section.light-mode .month-safety-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04) !important;
+}
+
+#planner-section.light-mode .month-safety-card:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+}
+
+#planner-section.light-mode .month-safety-abbr {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .month-cond-label {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .month-temp-pill {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .month-safety-card.card-safe.active {
+  border-color: #059669 !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25) !important;
+}
+
+#planner-section.light-mode .month-safety-card.card-caution.active {
+  border-color: #D97706 !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.25) !important;
+}
+
+#planner-section.light-mode .month-safety-card.card-danger.active {
+  border-color: #DC2626 !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25) !important;
+}
+
+#planner-section.light-mode .month-hazard-inspector {
+  background: rgba(248, 250, 252, 0.98) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.04) !important;
+}
+
+#planner-section.light-mode .inspector-head {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .inspector-title {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .inspector-item {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.02) !important;
+}
+
+#planner-section.light-mode .inspector-item-label {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .inspector-item-val {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .weather-month-grid .month-cell {
+  background: rgba(15, 23, 42, 0.035) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .weather-month-grid .month-cell.best {
+  background: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+  color: #065F46 !important;
+  font-weight: 700;
+}
+
+/* Live Weather & Crowd Intensity */
+#planner-section.light-mode .live-temp-huge {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .live-cond-name {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .live-cond-desc {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .live-sub-stats {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .weather-status-tag {
+  color: #334155 !important;
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .live-weather-safety-gauge {
+  background: rgba(15, 23, 42, 0.03) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .gauge-status-row span {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .hazard-micro-card {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02) !important;
+}
+
+#planner-section.light-mode .hazard-micro-label {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .hazard-micro-val {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .crowd-meter-head .crowd-score-num {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .crowd-bar-track {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .crowd-detail-item .crowd-label {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .crowd-detail-item .crowd-val {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .crowd-tip-box {
+  background: rgba(15, 23, 42, 0.035) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #334155 !important;
+}
+
+/* Culture, Heritage & Hidden Gems */
+#planner-section.light-mode .culture-grid .culture-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .culture-card-title {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .culture-card-text {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .culture-tags .tag-chip {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .language-bar {
+  background: rgba(15, 23, 42, 0.035) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .language-bar strong {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .language-bar span {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .gem-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .gem-title-wrap h4 {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .gem-desc {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .gem-meta-row strong,
+#planner-section.light-mode .gem-tip-row em {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .gem-meta-row span,
+#planner-section.light-mode .gem-tip-row span {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .badge-gem-count {
+  background: rgba(14, 165, 233, 0.12) !important;
+  color: #0284C7 !important;
+  border: 1px solid rgba(14, 165, 233, 0.3) !important;
+}
+
+#planner-section.light-mode .transport-item {
+  background: rgba(15, 23, 42, 0.03) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .transport-item strong,
+#planner-section.light-mode .emergency-item strong {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .transport-item span,
+#planner-section.light-mode .emergency-item span {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .ai-guidelines-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .ai-guidelines-header {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+/* ---------- Light-Mode Screen 5 Itinerary ---------- */
+#planner-section.light-mode .itinerary-header-hero {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%) !important;
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .itinerary-header-hero h2,
+#planner-section.light-mode .itinerary-hero-text h2 {
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .itinerary-header-hero p,
+#planner-section.light-mode .itinerary-hero-text p {
+  color: #CBD5E1 !important;
+}
+
+#planner-section.light-mode .itinerary-map-head h3 {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .map-status-pill {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .itinerary-recap {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04) !important;
+}
+
+#planner-section.light-mode .ai-generator-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.9)) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05) !important;
+}
+
+#planner-section.light-mode .btn-ai-sparkle {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border-color: #0F172A !important;
+}
+
+#planner-section.light-mode .day-chip {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.12) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .day-chip:hover {
+  background: #FFFFFF !important;
+  border-color: rgba(15, 23, 42, 0.3) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .day-chip.active,
+#planner-section.light-mode .day-chip.scrolled-active {
+  background: #0F172A !important;
+  border-color: #0F172A !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.22) !important;
+}
+
+#planner-section.light-mode .day-card-head {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .day-num {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+}
+
+#planner-section.light-mode .day-title {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .day-part {
+  background: rgba(15, 23, 42, 0.025) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+}
+
+#planner-section.light-mode .day-part-label {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .act-title,
+#planner-section.light-mode .activity-title {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .act-desc,
+#planner-section.light-mode .activity-desc {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode .act-meta-pill {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .budget-summary-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .budget-total-val {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .budget-bar-track {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .budget-slice-item {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .btn-save-cloud {
+  background: #0F172A !important;
+  color: #FFFFFF !important;
+  border: 1px solid #0F172A !important;
+}
+
+#planner-section.light-mode .btn-save-cloud:hover {
+  background: #1E293B !important;
+}
+
+#planner-section.light-mode .pack-item {
+  color: #334155 !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .pack-item span {
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .pack-check {
+  background: rgba(15, 23, 42, 0.04) !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.25) !important;
+}
+
+#planner-section.light-mode .pack-item.checked .pack-check {
+  background: #0F172A !important;
+  border-color: #0F172A !important;
+}
+
+#planner-section.light-mode .pack-item.checked .pack-check svg {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+#planner-section.light-mode .packing-summary {
+  color: #0F172A !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+#planner-section.light-mode .packing-progress {
+  background: rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode .packing-progress-fill {
+  background: linear-gradient(90deg, #10B981, #059669) !important;
+}
+
+#planner-section.light-mode .custom-pack-row input {
+  background: #FFFFFF !important;
+  border: 1.5px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .share-panel h3 {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .share-panel h3 svg {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .share-actions .btn {
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: #0F172A !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+}
+
+#planner-section.light-mode .share-actions .btn:hover {
+  background: rgba(15, 23, 42, 0.1) !important;
+}
+
+/* Compare bar and drawer */
+#planner-section.light-mode ~ .compare-bar,
+#planner-section.light-mode .compare-bar {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0F172A !important;
+  box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.08) !important;
+}
+
+#planner-section.light-mode ~ .compare-bar .compare-bar-names,
+#planner-section.light-mode .compare-bar .compare-bar-names {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .compare-drawer-head {
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .compare-section-label {
+  color: #64748B !important;
+}
+
+#planner-section.light-mode .compare-val {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode .compare-val.winner {
+  color: #059669 !important;
+}
+
+#planner-section.light-mode .compare-val.loser {
+  color: #64748B !important;
+}
+
+/* Safety status colors stay semantic */
+#planner-section.light-mode .safety-safe { background: #059669 !important; }
+#planner-section.light-mode .safety-moderate { background: #D97706 !important; }
+#planner-section.light-mode .safety-risky { background: #DC2626 !important; }
+
+/* Smooth transitions */
+#planner-section.light-mode,
+#planner-section.light-mode .planner-bg-backdrop,
+#planner-section.light-mode .route-stepper,
+#planner-section.light-mode .modern-locate-card,
+#planner-section.light-mode .pref-card,
+#planner-section.light-mode .panel,
+#planner-section.light-mode .btn,
+#planner-section.light-mode .screen-head h2,
+#planner-section.light-mode .hero-feature-pill {
+  transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+/* ---------- Override Dynamic JS Inline Text Colors in Light Mode ---------- */
+#planner-section.light-mode [style*="color:#FFFFFF"],
+#planner-section.light-mode [style*="color: #FFFFFF"],
+#planner-section.light-mode [style*="color:#fff"],
+#planner-section.light-mode [style*="color: #fff"],
+#planner-section.light-mode [style*="color:#F8FAFC"],
+#planner-section.light-mode [style*="color: #F8FAFC"],
+#planner-section.light-mode [style*="color:#E2E8F0"],
+#planner-section.light-mode [style*="color: #E2E8F0"] {
+  color: #0F172A !important;
+}
+
+#planner-section.light-mode [style*="color:#CBD5E1"],
+#planner-section.light-mode [style*="color: #CBD5E1"],
+#planner-section.light-mode [style*="color:#94A3B8"],
+#planner-section.light-mode [style*="color: #94A3B8"] {
+  color: #475569 !important;
+}
+
+#planner-section.light-mode a[style*="color:#FFFFFF"],
+#planner-section.light-mode a[style*="color: #FFFFFF"],
+#planner-section.light-mode a[style*="color:#fff"] {
+  color: #0D9488 !important;
+}
+
+/* Detail guide link and rating pill in Light Mode */
+#planner-section.light-mode .detail-head a.btn-ghost {
+  background: rgba(15, 23, 42, 0.05) !important;
+  color: #0F172A !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+#planner-section.light-mode .detail-head a.btn-ghost:hover {
+  background: rgba(15, 23, 42, 0.1) !important;
+}
+
+#planner-section.light-mode .tag-chip {
+  background: rgba(15, 23, 42, 0.05) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #334155 !important;
+}
+
+#planner-section.light-mode .tag-chip:hover {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0F172A !important;
+}
+
+/* ============================================================
+   NAV THEME TOGGLE — Navbar Dark / Light Mode Switcher
+   ============================================================ */
+.nav-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #FFFFFF;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.nav-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.nav-theme-toggle:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* Light mode state for nav-theme-toggle */
+.nav-theme-toggle.light,
+.global-nav.light-nav .nav-theme-toggle,
+.global-nav.scrolled .nav-theme-toggle {
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  color: #0F172A;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.nav-theme-toggle.light:hover,
+.global-nav.light-nav .nav-theme-toggle:hover,
+.global-nav.scrolled .nav-theme-toggle:hover {
+  background: rgba(15, 23, 42, 0.1);
+  border-color: rgba(15, 23, 42, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Light mode navbar styling on planner page */
+.global-nav.light-nav {
+  background: rgba(248, 250, 252, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+.global-nav.light-nav .nav-brand-name {
+  color: #0F172A !important;
+}
+
+.global-nav.light-nav .nav-btn-login {
+  color: #334155 !important;
+}
+
+.global-nav.light-nav .nav-btn-login:hover {
+  background: rgba(0, 0, 0, 0.06) !important;
+  color: #0F172A !important;
+}
+
+.global-nav.light-nav .nav-toggle span {
+  background: #0F172A !important;
+}
+
+/* Icon wrapper */
+.nav-theme-toggle .theme-icon-wrapper {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-theme-toggle .theme-icon {
+  position: absolute;
+  inset: 0;
+  width: 18px;
+  height: 18px;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Sun icon states */
+.nav-theme-toggle .theme-icon-wrapper.show-moon .sun-icon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+.nav-theme-toggle .theme-icon-wrapper.show-sun .sun-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  color: #F59E0B;
+}
+
+/* Moon icon states */
+.nav-theme-toggle .theme-icon-wrapper.show-sun .moon-icon {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.5);
+}
+.nav-theme-toggle .theme-icon-wrapper.show-moon .moon-icon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+  color: #60A5FA;
+}
+
+.nav-theme-toggle .theme-toggle-label {
+  user-select: none;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* Responsive: smaller toggle on mobile */
+@media (max-width: 640px) {
+  .nav-theme-toggle {
+    padding: 5px 10px 5px 8px;
+    font-size: 0.74rem;
+  }
+  .nav-theme-toggle .theme-icon-wrapper,
+  .nav-theme-toggle .theme-icon {
+    width: 16px;
+    height: 16px;
+  }
 }
